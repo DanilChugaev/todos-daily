@@ -1,7 +1,9 @@
+import { Header } from './components/Header/Header.tsx';
+
 function App() {
   return (
     <>
-      TODOS daily
+      <Header />
     </>
   );
 }

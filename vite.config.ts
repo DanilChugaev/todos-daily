@@ -32,4 +32,7 @@ export default defineConfig({
       },
     }),
   ],
+  css: {
+    postcss: './postcss.config.mjs',
+  },
 });
