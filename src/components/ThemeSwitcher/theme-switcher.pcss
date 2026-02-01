@@ -1,0 +1,92 @@
+.theme-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    margin: 0;
+    padding: var(--spacer-a);
+    border: none;
+    position: absolute;
+    right: var(--spacer-d);
+    top: 50%;
+    transform: translateY(-50%);
+
+    &__legend {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &__radio {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+        width: 28px;
+        height: 28px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 20px;
+        transition: filter 0.1s ease-in;
+        filter: var(--theme-switcher-radio-filter);
+
+        &:checked {
+            filter: var(--theme-switcher-radio-filter-checked);
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:focus-visible {
+            & ~ .theme-switcher__status {
+                box-shadow: 0 0 0 2px black;
+            }
+        }
+
+        &--light {
+            background-image: url('/src/icons/light.svg');
+
+            &:checked {
+                & ~ .theme-switcher__status {
+                    background-position: left 2px center;
+                }
+            }
+        }
+
+        &--system {
+            background-image: url('/src/icons/system.svg');
+
+            &:checked {
+                & ~ .theme-switcher__status {
+                    background-position: center center;
+                }
+            }
+        }
+
+        &--dark {
+            background-image: url('/src/icons/dark.svg');
+
+            &:checked {
+                & ~ .theme-switcher__status {
+                    background-position: right 2px center;
+                }
+            }
+        }
+    }
+
+    &__status {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2);
+        border-radius: var(--border-radius-d);
+        background-color: rgba(255, 255, 255, 0.5);
+        background-repeat: no-repeat;
+        background-image: url('/src/icons/status.svg');
+        background-size: 28px;
+        background-position: center;
+        transition: background-position 0.15s ease-in;
+        filter: var(--theme-switcher-status-filter);
+    }
+}

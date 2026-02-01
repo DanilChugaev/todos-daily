@@ -1,4 +1,9 @@
 :root {
     --bg-color: #f8fafc;
     --text-color: #0f172a;
+
+    /* ThemeSwitcher */
+    --theme-switcher-radio-filter: invert(0);
+    --theme-switcher-radio-filter-checked: invert(1);
+    --theme-switcher-status-filter: invert(0);
 }
