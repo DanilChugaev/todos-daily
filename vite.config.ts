@@ -13,6 +13,7 @@ export default defineConfig({
         name: 'TODOS daily',
         short_name: 'TODOS',
         description: 'To-do list for daily use',
+        display: "fullscreen",
         icons: [
           {
             src: 'todos-192x192.png',
