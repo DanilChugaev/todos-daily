@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import './theme-switcher.pcss';
 
-type ThemeSwitcherState = 'light' | 'system' | 'dark';
+type ThemeColorState = 'light' | 'dark';
+type ThemeSwitcherState = ThemeColorState | 'system';
 type SchemeMediaAttribute = '(prefers-color-scheme: light)' | '(prefers-color-scheme: dark)' | 'not all' | 'all';
 
 const COLOR_SCHEME_KEY = 'color-scheme';
@@ -11,14 +13,12 @@ const lightMediaMapping: Record<ThemeSwitcherState, SchemeMediaAttribute> = {
   dark: 'not all',
   system: '(prefers-color-scheme: light)',
 };
-
 const darkMediaMapping: Record<ThemeSwitcherState, SchemeMediaAttribute> = {
   light: 'not all',
   dark: 'all',
   system: '(prefers-color-scheme: dark)',
 };
-
-const themeColorMapping: Record<'light' | 'dark', string> = {
+const themeColorMapping: Record<ThemeColorState, string> = {
   light: '#f8fafc',
   dark: '#09090b',
 };
@@ -38,54 +38,70 @@ export function ThemeSwitcher() {
     }
   }
 
-  function getSavedScheme(): ThemeSwitcherState | null {
-    return localStorage.getItem(COLOR_SCHEME_KEY) as ThemeSwitcherState | null;
+  function getSavedScheme(): ThemeColorState | null {
+    try {
+      return localStorage.getItem(COLOR_SCHEME_KEY) as ThemeColorState | null;
+    } catch (err) {
+      console.error('LocalStorage get error:', err);
+      return null;
+    }
   }
 
   function saveScheme(scheme: ThemeSwitcherState) {
-    localStorage.setItem(COLOR_SCHEME_KEY, scheme);
+    try {
+      localStorage.setItem(COLOR_SCHEME_KEY, scheme);
+    } catch (err) {
+      console.error('LocalStorage save error:', err);
+    }
   }
 
   function clearScheme() {
-    localStorage.removeItem(COLOR_SCHEME_KEY);
+    try {
+      localStorage.removeItem(COLOR_SCHEME_KEY);
+    } catch (err) {
+      console.error('LocalStorage clear error:', err);
+    }
   }
 
-  function getThemeColorMapping() {
-    return {
-      light: themeColorMapping['light'],
-      dark: themeColorMapping['dark'],
-      system: matchMedia('(prefers-color-scheme: dark)').matches ? themeColorMapping['dark'] : themeColorMapping['light'],
-    };
-  }
-
-  useEffect(() => {
-    const lightLinkTag = document.getElementById('light-scheme');
-    const darkLinkTag = document.getElementById('dark-scheme');
-    const themeColorTag = document.getElementById('theme-color');
-
-    lightLinkTag?.setAttribute('media', lightMediaMapping[selected]);
-    darkLinkTag?.setAttribute('media', darkMediaMapping[selected]);
-    themeColorTag?.setAttribute('content', getThemeColorMapping()[selected]);
-  }, [selected]);
+  const themeColors = useMemo(() => ({
+    light: themeColorMapping.light,
+    dark: themeColorMapping.dark,
+    system: matchMedia('(prefers-color-scheme: dark)').matches ? themeColorMapping.dark : themeColorMapping.light,
+  }), []);
 
   return (
-    <fieldset className="theme-switcher">
-      <legend className="theme-switcher__legend">Scheme</legend>
+    <>
+      {createPortal(
+        (
+          <>
+            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}src/styles/theme/light.css`}
+                  media={lightMediaMapping[selected]}/>
+            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}src/styles/theme/dark.css`}
+                  media={darkMediaMapping[selected]}/>
+            <meta name="theme-color" content={themeColors[selected]}/>
+          </>
+        ),
+        document.head,
+      )}
 
-      {items.map(item => (
-        <input
-          key={item}
-          className={`theme-switcher__radio theme-switcher__radio--${item}`}
-          type="radio"
-          name="color-scheme"
-          value={item}
-          aria-label={item}
-          checked={selected === item}
-          onChange={() => setScheme(item)}
-        />
-      ))}
+      <fieldset className="theme-switcher">
+        <legend className="theme-switcher__legend">Scheme</legend>
 
-      <div className="theme-switcher__status"></div>
-    </fieldset>
+        {items.map(item => (
+          <input
+            key={item}
+            className={`theme-switcher__radio theme-switcher__radio--${item}`}
+            type="radio"
+            name="color-scheme"
+            value={item}
+            aria-label={item}
+            checked={selected === item}
+            onChange={() => setScheme(item)}
+          />
+        ))}
+
+        <div className="theme-switcher__status"></div>
+      </fieldset>
+    </>
   );
 }
