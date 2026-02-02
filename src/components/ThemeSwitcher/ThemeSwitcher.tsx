@@ -1,44 +1,74 @@
+import { useEffect, useState } from 'react';
 import './theme-switcher.pcss';
-import { useState } from 'react';
 
 type ThemeSwitcherState = 'light' | 'system' | 'dark';
+type SchemeMediaAttribute = '(prefers-color-scheme: light)' | '(prefers-color-scheme: dark)' | 'not all' | 'all';
+
+const COLOR_SCHEME_KEY = 'color-scheme';
+
+const lightMediaMapping: Record<ThemeSwitcherState, SchemeMediaAttribute> = {
+  light: 'all',
+  dark: 'not all',
+  system: '(prefers-color-scheme: light)',
+};
+
+const darkMediaMapping: Record<ThemeSwitcherState, SchemeMediaAttribute> = {
+  light: 'not all',
+  dark: 'all',
+  system: '(prefers-color-scheme: dark)',
+};
+
+const items: ThemeSwitcherState[] = ['light', 'system', 'dark'];
 
 export function ThemeSwitcher() {
-  const [selected, setSelected] = useState<ThemeSwitcherState>('system');
+  const [selected, setSelected] = useState<ThemeSwitcherState>(getSavedScheme() || 'system');
+
+  function setScheme(scheme: ThemeSwitcherState) {
+    setSelected(scheme);
+
+    if (scheme === 'system') {
+      clearScheme();
+    } else {
+      saveScheme(scheme);
+    }
+  }
+
+  function getSavedScheme(): ThemeSwitcherState | null {
+    return localStorage.getItem(COLOR_SCHEME_KEY) as ThemeSwitcherState | null;
+  }
+
+  function saveScheme(scheme: ThemeSwitcherState) {
+    localStorage.setItem(COLOR_SCHEME_KEY, scheme);
+  }
+
+  function clearScheme() {
+    localStorage.removeItem(COLOR_SCHEME_KEY);
+  }
+
+  useEffect(() => {
+    const lightLinkTag = document.getElementById('light-scheme');
+    const darkLinkTag = document.getElementById('dark-scheme');
+
+    lightLinkTag?.setAttribute('media', lightMediaMapping[selected]);
+    darkLinkTag?.setAttribute('media', darkMediaMapping[selected]);
+  }, [selected]);
 
   return (
     <fieldset className="theme-switcher">
       <legend className="theme-switcher__legend">Scheme</legend>
 
-      <input
-        className="theme-switcher__radio theme-switcher__radio--light"
-        type="radio"
-        name="color-scheme"
-        value="light"
-        aria-label="Light"
-        checked={selected === 'light'}
-        onClick={() => setSelected('light')}
-      />
-
-      <input
-        className="theme-switcher__radio theme-switcher__radio--system"
-        type="radio"
-        name="color-scheme"
-        value="system"
-        aria-label="System"
-        checked={selected === 'system'}
-        onClick={() => setSelected('system')}
-      />
-
-      <input
-        className="theme-switcher__radio theme-switcher__radio--dark"
-        type="radio"
-        name="color-scheme"
-        value="dark"
-        aria-label="Dark"
-        checked={selected === 'dark'}
-        onClick={() => setSelected('dark')}
-      />
+      {items.map(item => (
+        <input
+          key={item}
+          className={`theme-switcher__radio theme-switcher__radio--${item}`}
+          type="radio"
+          name="color-scheme"
+          value={item}
+          aria-label={item}
+          checked={selected === item}
+          onChange={() => setScheme(item)}
+        />
+      ))}
 
       <div className="theme-switcher__status"></div>
     </fieldset>
