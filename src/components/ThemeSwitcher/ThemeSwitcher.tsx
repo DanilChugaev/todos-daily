@@ -18,6 +18,11 @@ const darkMediaMapping: Record<ThemeSwitcherState, SchemeMediaAttribute> = {
   system: '(prefers-color-scheme: dark)',
 };
 
+const themeColorMapping: Record<'light' | 'dark', string> = {
+  light: '#f8fafc',
+  dark: '#09090b',
+};
+
 const items: ThemeSwitcherState[] = ['light', 'system', 'dark'];
 
 export function ThemeSwitcher() {
@@ -45,12 +50,22 @@ export function ThemeSwitcher() {
     localStorage.removeItem(COLOR_SCHEME_KEY);
   }
 
+  function getThemeColorMapping() {
+    return {
+      light: themeColorMapping['light'],
+      dark: themeColorMapping['dark'],
+      system: matchMedia('(prefers-color-scheme: dark)').matches ? themeColorMapping['dark'] : themeColorMapping['light'],
+    };
+  }
+
   useEffect(() => {
     const lightLinkTag = document.getElementById('light-scheme');
     const darkLinkTag = document.getElementById('dark-scheme');
+    const themeColorTag = document.getElementById('theme-color');
 
     lightLinkTag?.setAttribute('media', lightMediaMapping[selected]);
     darkLinkTag?.setAttribute('media', darkMediaMapping[selected]);
+    themeColorTag?.setAttribute('content', getThemeColorMapping()[selected]);
   }, [selected]);
 
   return (
