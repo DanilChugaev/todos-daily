@@ -74,9 +74,9 @@ export function ThemeSwitcher() {
       {createPortal(
         (
           <>
-            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}src/styles/theme/light.css`}
+            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}theme/light.css`}
                   media={lightMediaMapping[selected]}/>
-            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}src/styles/theme/dark.css`}
+            <link rel="stylesheet" href={`${import.meta.env.BASE_URL}theme/dark.css`}
                   media={darkMediaMapping[selected]}/>
             <meta name="theme-color" content={themeColors[selected]}/>
           </>
