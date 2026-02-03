@@ -24,7 +24,8 @@ export default defineConfig([
       'quotes': ['error', 'single'],
       'semi': ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
-      "object-curly-spacing": ["error", "always"]
+      "object-curly-spacing": ["error", "always"],
+      "@typescript-eslint/ban-ts-comment": 'off'
     }
   },
 ])

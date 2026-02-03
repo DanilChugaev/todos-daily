@@ -1,0 +1,22 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacer-b);
+    padding: var(--spacer-c);
+    cursor: pointer;
+    font-size: 1rem;
+    border: none;
+    border-radius: var(--border-radius-c);
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: rgb(from var(--button-bg-color) r g b / 90%);
+    }
+
+    &:active {
+        background-color: rgb(from var(--button-bg-color) r g b / 80%);
+    }
+}

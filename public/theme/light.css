@@ -6,4 +6,8 @@
     --theme-switcher-radio-filter: invert(0);
     --theme-switcher-radio-filter-checked: invert(1);
     --theme-switcher-status-filter: invert(0);
+
+    /* Button */
+    --button-bg-color: var(--text-color);
+    --button-text-color: var(--bg-color);
 }
