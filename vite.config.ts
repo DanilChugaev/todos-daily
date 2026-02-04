@@ -14,6 +14,7 @@ export default defineConfig({
         short_name: 'TODOS',
         description: 'To-do list for daily use',
         display: 'fullscreen',
+        theme_color: '#f8fafc',
         icons: [
           {
             src: 'todos-192x192.png',
