@@ -8,8 +8,6 @@ export function TodoList({ items, onAddItem }: { items: any[], onAddItem: () => 
   return (
     <div className="todo-list">
       <div className="todo-list__content">
-        <div className="todo-list__week">week</div>
-
         <div className="todo-list__filters">filters</div>
 
         <ul className="todo-list__items">

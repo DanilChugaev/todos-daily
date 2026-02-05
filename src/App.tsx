@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
 import { TodoList } from './components/TodoList/TodoList.tsx';
+import { Week } from './components/Calendar/Week/Week.tsx';
 
 function App() {
   const [items, setItems] = useState(['первая таска', '2 task', '3 таск']);
@@ -14,7 +15,9 @@ function App() {
     <>
       <Header />
 
-      <TodoList items={items} onAddItem={addItem}/>
+      <Week />
+
+      <TodoList items={items} onAddItem={addItem} />
     </>
   );
 }
