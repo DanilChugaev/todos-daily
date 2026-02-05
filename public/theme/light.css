@@ -1,6 +1,7 @@
 :root {
     --bg-color: #f8fafc;
     --text-color: #0f172a;
+    --border-color: rgb(from var(--text-color) r g b / 60%);
 
     /* ThemeSwitcher */
     --theme-switcher-radio-filter: invert(0);
