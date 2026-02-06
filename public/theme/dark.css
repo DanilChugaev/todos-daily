@@ -11,4 +11,8 @@
     /* Button */
     --button-bg-color: var(--text-color);
     --button-text-color: var(--bg-color);
+
+    /* ModalDialog */
+    --model-dialog-bg-color: var(--text-color);
+    --model-dialog-text-color: var(--bg-color);
 }

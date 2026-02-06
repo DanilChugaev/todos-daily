@@ -1,0 +1,35 @@
+.modal-dialog {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--spacer-d);
+    margin-bottom: 0;
+    border-top-left-radius: var(--border-radius-c);
+    border-top-right-radius: var(--border-radius-c);
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--model-dialog-bg-color);
+    color: var(--model-dialog-text-color);
+    transform: translateY(100%);
+    transition: transform 0.2s;
+
+    &::backdrop {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    &--active {
+        transform: translateY(0);
+
+        &::backdrop {
+            opacity: 1;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+    }
+
+    &__close-btn {
+        position: absolute;
+        right: var(--spacer-d);
+        top: var(--spacer-d);
+        padding: 0;
+    }
+}

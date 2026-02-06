@@ -6,13 +6,13 @@ export function Button({
   children,
   onClick,
 }: {
-  className: string,
+  className?: string,
   children: ReactNode,
   onClick: () => void,
 }) {
   return (
     <button
-      className={`button ${className}`}
+      className={`button ${className ?? ''}`}
       type="button"
       onClick={onClick}
     >
