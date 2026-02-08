@@ -3,6 +3,7 @@ import { Header } from './components/Header/Header.tsx';
 import { TodoList } from './components/TodoList/TodoList.tsx';
 import { Week } from './components/Calendar/Week/Week.tsx';
 import { ModalDialog } from './components/ModalDialog/ModalDialog.tsx';
+import { Filters } from './components/Filters/Filters.tsx';
 
 function App() {
   const [items] = useState(['первая таска', '2 task', '3 таск']);
@@ -18,6 +19,8 @@ function App() {
       <Header />
 
       <Week />
+
+      <Filters/>
 
       <TodoList items={items} onAddItem={() => setIsOpen(true)} />
 
