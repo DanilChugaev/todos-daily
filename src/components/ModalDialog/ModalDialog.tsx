@@ -12,39 +12,55 @@ interface ModalDialogProps {
   onClose: () => void;
 }
 
+const ANIMATION_MS = 200;
+
 export function ModalDialog({ title, isOpen, children, onClose }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
-
-  const [isView, setView] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    const dialog = dialogRef.current;
+
+    if (!dialog) return;
+
     if (isOpen) {
-      dialogRef.current?.showModal();
+      dialog.showModal();
 
-      setTimeout(() => setView(true), 200);
+      setIsAnimating(true);
     } else {
-      setView(false);
+      setIsAnimating(false);
 
-      setTimeout(() => dialogRef.current?.close(), 200);
+      setTimeout(() => {
+        dialog.close();
+      }, ANIMATION_MS);
     }
+
+    return () => {
+      if (dialog.open) {
+        setTimeout(() => {
+          dialog.close();
+        }, ANIMATION_MS);
+      }
+    };
   }, [isOpen]);
 
-  return (
-    <>
-      {createPortal(
-        (
-          <dialog className={`modal-dialog ${isView ? 'modal-dialog--active' : ''}`} ref={dialogRef}>
-            <div className="modal-dialog__title">{title}</div>
+  // if (!isOpen && !isAnimating) return null;
 
-            <Button className="modal-dialog__close-btn" onClick={onClose}>
-              <CloseIcon width={ICON_SIZE} height={ICON_SIZE}/>
-            </Button>
+  return createPortal(
+    <dialog
+      className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
+      ref={dialogRef}
+    >
+      <div className="modal-dialog__header">
+        <div className="modal-dialog__title">{title}</div>
 
-            {children}
-          </dialog>
-        ),
-        document.body,
-      )}
-    </>
+        <Button className="modal-dialog__close-btn" onClick={onClose}>
+          <CloseIcon width={ICON_SIZE} height={ICON_SIZE} />
+        </Button>
+      </div>
+
+      <div className="modal-dialog__content">{children}</div>
+    </dialog>,
+    document.body,
   );
 }

@@ -29,10 +29,20 @@
         }
     }
 
+    &__header {
+        position: relative;
+    }
+
     &__close-btn {
         position: absolute;
-        right: var(--spacer-d);
-        top: var(--spacer-d);
+        right: 0;
+        top: 0;
         padding: 0;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacer-d);
     }
 }
