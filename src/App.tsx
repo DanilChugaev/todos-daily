@@ -1,23 +1,31 @@
-import { useState } from 'react';
+import { type ChangeEvent, useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
 import { TodoList } from './components/TodoList/TodoList.tsx';
 import { Week } from './components/Calendar/Week/Week.tsx';
 import { ModalDialog } from './components/ModalDialog/ModalDialog.tsx';
 import { Filters } from './components/Filters/Filters.tsx';
-import { Input } from './components/Input/Input.tsx';
+import { Input } from './components/Form/Input/Input.tsx';
+import { Textarea } from './components/Form/Textarea/Textarea.tsx';
+import { PlusIcon } from './components/Icon/PlusIcon.tsx';
+import { ICON_SIZE } from './constants.ts';
+import { Button } from './components/Button/Button.tsx';
 
 function App() {
   const [items] = useState(['первая таска', '2 task', '3 таск']);
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
   // function addItem() {
-  //   // todo при клике вызывать модалку, в которой заполнить инфу по задаче
   //   // setItems([...items, `new item - ${items.length + 1}`]);
   // }
 
-  function handleNameChange(e) {
-    setName(e.target.value);
+  function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
+    setName(event.target.value);
+  }
+
+  function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
+    setDescription(event.target.value);
   }
 
   return (
@@ -30,14 +38,29 @@ function App() {
 
       <TodoList items={items} onAddItem={() => setIsOpen(true)} />
 
-      <ModalDialog isOpen={isOpen} onClose={() => setIsOpen(false)}>
+      <ModalDialog title="Добавить задачу" isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Input
+          id="task-name"
           label="Название"
           type="text"
+          placeholder="Введите название задачи"
           value={name}
           onChange={handleNameChange}
-          placeholder="Введите название задачи"
         />
+
+        <Textarea
+          id="task-name"
+          label="Описание"
+          placeholder="Введите описание задачи"
+          value={description}
+          onChange={handleDescriptionChange}
+        />
+
+        <Button onClick={() => setIsOpen(false)}>
+          <PlusIcon width={ICON_SIZE} height={ICON_SIZE}/>
+
+          Добавить
+        </Button>
       </ModalDialog>
     </>
   );

@@ -4,11 +4,11 @@ import { ICON_SIZE } from '../../constants.ts';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { TodoItem } from './TodoItem/TodoItem.tsx';
 
-export function TodoList({ items, onAddItem }: { items: any[], onAddItem: () => void }) {
+export function TodoList({ items, onAddItem }: { items: string[], onAddItem: () => void }) {
   return (
     <div className="todo-list">
       <ul className="todo-list__items">
-        {items.map((item: any) => (
+        {items.map((item: string) => (
           <TodoItem key={item} item={item}/>
         ))}
       </ul>

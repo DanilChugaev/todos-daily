@@ -15,4 +15,8 @@
     /* ModalDialog */
     --model-dialog-bg-color: var(--text-color);
     --model-dialog-text-color: var(--bg-color);
+
+    /* Input */
+    --input-border-color: rgb(from var(--bg-color) r g b / 50%);
+    --input-color: var(--bg-color);
 }

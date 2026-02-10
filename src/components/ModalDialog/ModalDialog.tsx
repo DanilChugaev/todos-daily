@@ -5,7 +5,14 @@ import { CloseIcon } from '../Icon/CloseIcon.tsx';
 import { Button } from '../Button/Button.tsx';
 import { ICON_SIZE } from '../../constants.ts';
 
-export function ModalDialog({ isOpen, children, onClose }: { isOpen: boolean, children: ReactNode, onClose: () => void }) {
+interface ModalDialogProps {
+  title: string;
+  isOpen: boolean;
+  children: ReactNode;
+  onClose: () => void;
+}
+
+export function ModalDialog({ title, isOpen, children, onClose }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   const [isView, setView] = useState(false);
@@ -27,6 +34,8 @@ export function ModalDialog({ isOpen, children, onClose }: { isOpen: boolean, ch
       {createPortal(
         (
           <dialog className={`modal-dialog ${isView ? 'modal-dialog--active' : ''}`} ref={dialogRef}>
+            <div className="modal-dialog__title">{title}</div>
+
             <Button className="modal-dialog__close-btn" onClick={onClose}>
               <CloseIcon width={ICON_SIZE} height={ICON_SIZE}/>
             </Button>
