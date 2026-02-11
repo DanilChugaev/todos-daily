@@ -4,6 +4,7 @@ import { FormField } from '../FormField/FormField.tsx';
 
 
 interface TextareaProps {
+  inverted?: boolean;
   id: string;
   label: string;
   value: string;
@@ -11,12 +12,23 @@ interface TextareaProps {
   onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
-export function Textarea({ id, label, value, placeholder, onChange }: TextareaProps) {
+export function Textarea({
+  inverted,
+  id,
+  label,
+  value,
+  placeholder,
+  onChange,
+}: TextareaProps) {
   return (
-    <FormField id={id} className="textarea-field" label={label}>
+    <FormField
+      id={id}
+      className="textarea-field"
+      label={label}
+    >
       <textarea
         id={id}
-        className="textarea-field__textarea"
+        className={`textarea-field__textarea ${inverted ? 'textarea-field__textarea--inverted' : ''}`}
         value={value}
         onChange={onChange}
         placeholder={placeholder}

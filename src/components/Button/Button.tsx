@@ -1,18 +1,22 @@
 import type { ReactNode } from 'react';
 import './button.pcss';
 
-export function Button({
-  className,
-  children,
-  onClick,
-}: {
+interface ButtonProps {
+  inverted?: boolean,
   className?: string,
   children: ReactNode,
   onClick: () => void,
-}) {
+}
+
+export function Button({
+  inverted,
+  className,
+  children,
+  onClick,
+}: ButtonProps) {
   return (
     <button
-      className={`button ${className ?? ''}`}
+      className={`button ${className ?? ''} ${inverted ? 'button--inverted' : ''}`}
       type="button"
       onClick={onClick}
     >

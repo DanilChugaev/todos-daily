@@ -3,6 +3,7 @@ import './input.pcss';
 import { FormField } from '../FormField/FormField.tsx';
 
 interface InputProps {
+  inverted?: boolean;
   id: string;
   label: string;
   type: string;
@@ -11,12 +12,24 @@ interface InputProps {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function Input({ id, label, type, value, placeholder, onChange }: InputProps) {
+export function Input({
+  inverted,
+  id,
+  label,
+  type,
+  value,
+  placeholder,
+  onChange,
+}: InputProps) {
   return (
-    <FormField id={id} className="input-field" label={label}>
+    <FormField
+      id={id}
+      className="input-field"
+      label={label}
+    >
       <input
         id={id}
-        className="input-field__input"
+        className={`input-field__input ${inverted ? 'input-field__input--inverted' : ''}`}
         type={type}
         value={value}
         onChange={onChange}

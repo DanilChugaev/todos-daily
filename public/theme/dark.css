@@ -11,6 +11,8 @@
     /* Button */
     --button-bg-color: var(--text-color);
     --button-text-color: var(--bg-color);
+    --button-bg-color-inverted: var(--bg-color);
+    --button-text-color-inverted: var(--text-color);
 
     /* ModalDialog */
     --model-dialog-bg-color: var(--text-color);
@@ -18,5 +20,6 @@
 
     /* Input */
     --input-border-color: rgb(from var(--bg-color) r g b / 50%);
-    --input-color: var(--bg-color);
+    --input-color: var(--text-color);
+    --input-color-inverted: var(--bg-color);
 }

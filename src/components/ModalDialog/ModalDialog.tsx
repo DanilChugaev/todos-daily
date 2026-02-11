@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import './modalDialog.pcss';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
 import { Button } from '../Button/Button.tsx';
-import { ICON_SIZE } from '../../constants.ts';
+import { ANIMATION_MS } from '../../constants.ts';
 
 interface ModalDialogProps {
   title: string;
@@ -12,9 +12,12 @@ interface ModalDialogProps {
   onClose: () => void;
 }
 
-const ANIMATION_MS = 200;
-
-export function ModalDialog({ title, isOpen, children, onClose }: ModalDialogProps) {
+export function ModalDialog({
+  title,
+  isOpen,
+  children,
+  onClose,
+}: ModalDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -55,7 +58,7 @@ export function ModalDialog({ title, isOpen, children, onClose }: ModalDialogPro
         <div className="modal-dialog__title">{title}</div>
 
         <Button className="modal-dialog__close-btn" onClick={onClose}>
-          <CloseIcon width={ICON_SIZE} height={ICON_SIZE} />
+          <CloseIcon />
         </Button>
       </div>
 
