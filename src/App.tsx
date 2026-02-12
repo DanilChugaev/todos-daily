@@ -31,7 +31,7 @@ function App() {
 
   function handleAddItem() {
     if (!name) return;
-    
+
     setItems([...items, {
       id: items[items.length - 1]?.id ?? 0,
       name,
@@ -44,13 +44,13 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header/>
 
-      <Week />
+      <Week/>
 
       <Filters/>
 
-      <TodoList items={items} onAddItem={() => setIsOpen(true)} />
+      <TodoList items={items} onAddItem={() => setIsOpen(true)}/>
 
       <ModalDialog
         title="Добавить задачу"
@@ -58,6 +58,7 @@ function App() {
         onClose={() => setIsOpen(false)}
       >
         <Input
+          focus
           inverted
           id="task-name"
           label="Название"
@@ -77,7 +78,7 @@ function App() {
         />
 
         <Button inverted onClick={handleAddItem}>
-          <PlusIcon />
+          <PlusIcon/>
 
           Добавить
         </Button>

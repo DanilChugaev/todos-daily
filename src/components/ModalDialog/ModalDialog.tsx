@@ -20,50 +20,71 @@ export function ModalDialog({
 }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
+
+  function handleClose(onCloseFn: () => void) {
+    setIsAnimating(false);
+
+    setTimeout(() => {
+      onCloseFn();
+
+      setIsShowModal(false);
+    }, ANIMATION_MS);
+  }
 
   useEffect(() => {
-    const dialog = dialogRef.current;
-
-    if (!dialog) return;
-
     if (isOpen) {
-      dialog.showModal();
-
-      setIsAnimating(true);
-    } else {
-      setIsAnimating(false);
+      setIsShowModal(true);
 
       setTimeout(() => {
-        dialog.close();
-      }, ANIMATION_MS);
+        dialogRef.current?.showModal();
+
+        setIsAnimating(true);
+      }, 0);
+    } else {
+      handleClose(() => dialogRef.current?.close());
     }
 
     return () => {
-      if (dialog.open) {
-        setTimeout(() => {
-          dialog.close();
-        }, ANIMATION_MS);
+      if (dialogRef.current?.open) {
+        handleClose(() => dialogRef.current?.close());
       }
     };
   }, [isOpen]);
 
-  // if (!isOpen && !isAnimating) return null;
+  useEffect(() => {
+    if (!isOpen) return;
 
-  return createPortal(
-    <dialog
-      className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
-      ref={dialogRef}
-    >
-      <div className="modal-dialog__header">
-        <div className="modal-dialog__title">{title}</div>
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose(onClose);
+      }
+    };
 
-        <Button className="modal-dialog__close-btn" onClick={onClose}>
-          <CloseIcon />
-        </Button>
-      </div>
+    document.addEventListener('keydown', handleEscape, false);
 
-      <div className="modal-dialog__content">{children}</div>
-    </dialog>,
-    document.body,
+    return () => document.removeEventListener('keydown', handleEscape, false);
+  }, [isOpen, onClose]);
+
+  return (
+    <>
+      {isShowModal && (createPortal(
+        <dialog
+          className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
+          ref={dialogRef}
+        >
+          <div className="modal-dialog__header">
+            <div className="modal-dialog__title">{title}</div>
+
+            <Button className="modal-dialog__close-btn" onClick={() => handleClose(onClose)}>
+              <CloseIcon />
+            </Button>
+          </div>
+
+          <div className="modal-dialog__content">{children}</div>
+        </dialog>,
+        document.body,
+      ))}
+    </>
   );
 }
