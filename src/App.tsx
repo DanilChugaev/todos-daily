@@ -66,6 +66,7 @@ function App() {
           placeholder="Введите название задачи"
           value={name}
           onChange={handleNameChange}
+          onEnter={handleAddItem}
         />
 
         <Textarea

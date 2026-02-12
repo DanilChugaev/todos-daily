@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './modalDialog.pcss';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
@@ -22,7 +22,7 @@ export function ModalDialog({
   const [isAnimating, setIsAnimating] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
 
-  function handleClose(onCloseFn: () => void) {
+  const handleClose = useCallback((onCloseFn: () => void)=> {
     setIsAnimating(false);
 
     setTimeout(() => {
@@ -30,10 +30,11 @@ export function ModalDialog({
 
       setIsShowModal(false);
     }, ANIMATION_MS);
-  }
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
+       
       setIsShowModal(true);
 
       setTimeout(() => {
@@ -46,11 +47,14 @@ export function ModalDialog({
     }
 
     return () => {
-      if (dialogRef.current?.open) {
-        handleClose(() => dialogRef.current?.close());
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const dialog = dialogRef.current;
+
+      if (dialog?.open) {
+        handleClose(() => dialog.close());
       }
     };
-  }, [isOpen]);
+  }, [isOpen, handleClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -64,7 +68,7 @@ export function ModalDialog({
     document.addEventListener('keydown', handleEscape, false);
 
     return () => document.removeEventListener('keydown', handleEscape, false);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, handleClose]);
 
   return (
     <>

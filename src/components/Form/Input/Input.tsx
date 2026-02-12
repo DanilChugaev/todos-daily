@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useRef } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useRef } from 'react';
 import './input.pcss';
 import { FormField } from '../FormField/FormField.tsx';
 
@@ -11,6 +11,7 @@ interface InputProps {
   value: string;
   placeholder: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onEnter: () => void;
 }
 
 export function Input({
@@ -22,14 +23,27 @@ export function Input({
   value,
   placeholder,
   onChange,
+  onEnter,
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleEnter = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      onEnter();
+    }
+  }, [onEnter]);
 
   useEffect(() => {
     if (inputRef.current && focus) {
       inputRef.current.focus();
     }
   }, [focus]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleEnter, false);
+
+    return () => document.removeEventListener('keydown', handleEnter, false);
+  }, [handleEnter]);
 
   return (
     <FormField
