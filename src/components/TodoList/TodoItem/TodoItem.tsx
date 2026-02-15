@@ -1,9 +1,10 @@
 import './todo-item.pcss';
+import { Checkbox } from '../../Checkbox/Checkbox.tsx';
 
 export type TTodoItemPriority = 'high' | 'medium' | 'low' | 'other';
 
 export interface ITodoItem {
-  id: number;
+  id: string;
   name: string;
   parentId?: number;
   description?: string;
@@ -19,7 +20,15 @@ interface TodoItemProps {
 export function TodoItem({ item }: TodoItemProps) {
   return (
     <li className="todo-item">
-      {item.name}
+      <Checkbox id={item.id}/>
+
+      <div className="todo-item__content">
+        {item.name}
+      </div>
+
+      <div className="todo-item__actions">
+        act
+      </div>
     </li>
   );
 }

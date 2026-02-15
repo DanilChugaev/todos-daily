@@ -1,5 +1,15 @@
 .todo-item {
-    padding: var(--spacer-d);
+    display: flex;
+    align-items: center;
     border-radius: var(--border-radius-c);
     border: 1px solid var(--border-color);
+
+    &__content {
+        flex: 1;
+        /*padding: var(--spacer-b) 0;*/
+    }
+
+    &__actions {
+        padding: var(--spacer-d);
+    }
 }
