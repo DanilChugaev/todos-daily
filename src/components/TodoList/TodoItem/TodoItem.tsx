@@ -1,11 +1,14 @@
 import './todo-item.pcss';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
+import { Button } from '../../Button/Button.tsx';
+import { removeTodoById } from '../../../utils/storage.ts';
 
 export type TTodoItemPriority = 'high' | 'medium' | 'low' | 'other';
 
 export interface ITodoItem {
   id: string;
   name: string;
+  done: boolean;
   parentId?: number;
   description?: string;
   date?: Date;
@@ -15,9 +18,15 @@ export interface ITodoItem {
 
 interface TodoItemProps {
   item: ITodoItem;
+  onRemoveTodo:  () => void;
 }
 
-export function TodoItem({ item }: TodoItemProps) {
+export function TodoItem({ item, onRemoveTodo }: TodoItemProps) {
+  function handleRemoveTodo() {
+    removeTodoById(item.id);
+    onRemoveTodo();
+  }
+
   return (
     <li className="todo-item">
       <Checkbox id={item.id}/>
@@ -27,7 +36,9 @@ export function TodoItem({ item }: TodoItemProps) {
       </div>
 
       <div className="todo-item__actions">
-        act
+        <Button onClick={handleRemoveTodo}>
+          x
+        </Button>
       </div>
     </li>
   );

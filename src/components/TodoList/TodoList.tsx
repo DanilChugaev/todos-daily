@@ -5,20 +5,24 @@ import { type ITodoItem, TodoItem } from './TodoItem/TodoItem.tsx';
 
 interface TodoListProps {
   items: ITodoItem[];
-  onAddItem: () => void;
+  onAddTodo: () => void;
+  onRemoveTodo: () => void;
 }
 
-export function TodoList({ items, onAddItem }: TodoListProps) {
+export function TodoList({ items, onAddTodo, onRemoveTodo }: TodoListProps) {
   return (
     <div className="todo-list">
-      <ul className="todo-list__items">
-        {items.map((item: ITodoItem) => (
-          <TodoItem key={item.id} item={item}/>
-        ))}
-      </ul>
+      {
+        items.length
+          ? <ul className="todo-list__items">
+              {items.map((item: ITodoItem) => (
+                <TodoItem key={item.id} item={item} onRemoveTodo={onRemoveTodo}/>
+              ))}
+            </ul>
+          : <div className="todo-list__empty">Новых тасок нет</div>}
 
-      <Button className="todo-list__add-btn" onClick={onAddItem}>
-        <PlusIcon />
+      <Button className="todo-list__add-btn" onClick={onAddTodo}>
+        <PlusIcon/>
 
         Добавить
       </Button>

@@ -1,4 +1,4 @@
-import { type ChangeEvent, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
 import { TodoList } from './components/TodoList/TodoList.tsx';
 import { Week } from './components/Calendar/Week/Week.tsx';
@@ -9,6 +9,7 @@ import { Textarea } from './components/Form/Textarea/Textarea.tsx';
 import { PlusIcon } from './components/Icon/PlusIcon.tsx';
 import { Button } from './components/Button/Button.tsx';
 import type { ITodoItem } from './components/TodoList/TodoItem/TodoItem.tsx';
+import { getTodos, saveTodo } from './utils/storage.ts';
 
 function App() {
   const [items, setItems] = useState<ITodoItem[]>([]);
@@ -32,15 +33,26 @@ function App() {
   function handleAddItem() {
     if (!name) return;
 
-    setItems([...items, {
-      id: items[items.length - 1]?.id ?? 0,
+    const newItem = {
+      id: '',
+      done: false,
       name,
       description,
-    }]);
+    };
+    saveTodo(newItem);
+    setItems([...items, newItem]);
 
     clearFields();
     setIsOpen(false);
   }
+
+  const updateTodos = useCallback(() => {
+    setItems(getTodos());
+  }, [setItems]);
+
+  useEffect(() => {
+    setTimeout(updateTodos, 0);
+  }, [updateTodos]);
 
   return (
     <>
@@ -50,7 +62,11 @@ function App() {
 
       <Filters/>
 
-      <TodoList items={items} onAddItem={() => setIsOpen(true)}/>
+      <TodoList
+        items={items}
+        onAddTodo={() => setIsOpen(true)}
+        onRemoveTodo={updateTodos}
+      />
 
       <ModalDialog
         title="Добавить задачу"
