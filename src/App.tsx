@@ -75,7 +75,6 @@ function App() {
       >
         <Input
           focus
-          inverted
           id="task-name"
           label="Название"
           type="text"
@@ -86,7 +85,6 @@ function App() {
         />
 
         <Textarea
-          inverted
           id="task-name"
           label="Описание"
           placeholder="Введите описание задачи"
@@ -94,7 +92,7 @@ function App() {
           onChange={handleDescriptionChange}
         />
 
-        <Button inverted onClick={handleAddItem}>
+        <Button onClick={handleAddItem}>
           <PlusIcon/>
 
           Добавить
