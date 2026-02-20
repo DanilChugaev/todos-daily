@@ -10,7 +10,7 @@
     border-radius: var(--border-radius-c);
     background-color: var(--button-bg-color);
     color: var(--button-text-color);
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 
     &:hover {
         background-color: rgb(from var(--button-bg-color) r g b / 90%);
@@ -30,6 +30,19 @@
 
         &:active {
             background-color: rgb(from var(--button-bg-color-inverted) r g b / 80%);
+        }
+    }
+
+    &--icon {
+        background-color: transparent !important;
+        color: var(--text-color) !important;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(1px);
         }
     }
 }

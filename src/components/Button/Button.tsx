@@ -3,6 +3,7 @@ import './button.pcss';
 
 interface ButtonProps {
   inverted?: boolean,
+  icon?: boolean,
   className?: string,
   children: ReactNode,
   onClick: () => void,
@@ -10,13 +11,28 @@ interface ButtonProps {
 
 export function Button({
   inverted,
+  icon,
   className,
   children,
   onClick,
 }: ButtonProps) {
+  const classNames = ['button'];
+
+  if (className) {
+    classNames.push(className);
+  }
+
+  if (inverted) {
+    classNames.push('button--inverted');
+  }
+
+  if (icon) {
+    classNames.push('button--icon');
+  }
+
   return (
     <button
-      className={`button ${className ?? ''} ${inverted ? 'button--inverted' : ''}`}
+      className={classNames.join(' ')}
       type="button"
       onClick={onClick}
     >

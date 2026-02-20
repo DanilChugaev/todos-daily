@@ -2,6 +2,7 @@ import './todo-item.pcss';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
 import { Button } from '../../Button/Button.tsx';
 import { removeTodoById } from '../../../utils/storage.ts';
+import { TrashIcon } from '../../Icon/TrashIcon.tsx';
 
 export type TTodoItemPriority = 'high' | 'medium' | 'low' | 'other';
 
@@ -36,8 +37,8 @@ export function TodoItem({ item, onRemoveTodo }: TodoItemProps) {
       </div>
 
       <div className="todo-item__actions">
-        <Button onClick={handleRemoveTodo}>
-          x
+        <Button icon onClick={handleRemoveTodo}>
+          <TrashIcon />
         </Button>
       </div>
     </li>
