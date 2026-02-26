@@ -1,8 +1,5 @@
 import './todo-item.pcss';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
-import { Button } from '../../Button/Button.tsx';
-import { removeTodoById } from '../../../utils/storage.ts';
-import { TrashIcon } from '../../Icon/TrashIcon.tsx';
 
 export type TTodoItemPriority = 'high' | 'medium' | 'low' | 'other';
 
@@ -19,27 +16,16 @@ export interface ITodoItem {
 
 interface TodoItemProps {
   item: ITodoItem;
-  onRemoveTodo:  () => void;
+  onClick:  (id: string) => void;
 }
 
-export function TodoItem({ item, onRemoveTodo }: TodoItemProps) {
-  function handleRemoveTodo() {
-    removeTodoById(item.id);
-    onRemoveTodo();
-  }
-
+export function TodoItem({ item, onClick }: TodoItemProps) {
   return (
-    <li className="todo-item">
+    <li className="todo-item" onClick={() => onClick(item.id)}>
       <Checkbox id={item.id}/>
 
       <div className="todo-item__content">
         {item.name}
-      </div>
-
-      <div className="todo-item__actions">
-        <Button icon onClick={handleRemoveTodo}>
-          <TrashIcon />
-        </Button>
       </div>
     </li>
   );

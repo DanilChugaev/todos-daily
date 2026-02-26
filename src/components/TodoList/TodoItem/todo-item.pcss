@@ -3,13 +3,17 @@
     align-items: center;
     border-radius: var(--border-radius-c);
     border: 1px solid var(--border-color);
+    background-color: var(--todo-item-bg-color);
+    transition: all .3s ease;
+    cursor: pointer;
+
+    &:hover {
+        border-color: var(--border-color-hover);
+        box-shadow: var(--box-shadow-hover);
+    }
 
     &__content {
         flex: 1;
         /*padding: var(--spacer-b) 0;*/
-    }
-
-    &__actions {
-        padding: var(--spacer-c);
     }
 }

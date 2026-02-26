@@ -80,7 +80,7 @@ export function ModalDialog({
           <div className="modal-dialog__header">
             <div className="modal-dialog__title">{title}</div>
 
-            <Button className="modal-dialog__close-btn" onClick={() => handleClose(onClose)}>
+            <Button icon className="modal-dialog__close-btn" onClick={() => handleClose(onClose)}>
               <CloseIcon />
             </Button>
           </div>

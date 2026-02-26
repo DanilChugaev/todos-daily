@@ -1,7 +1,9 @@
 :root {
     --bg-color: #f8fafc;
     --text-color: #0f172a;
-    --border-color: rgb(from var(--text-color) r g b / 60%);
+    --border-color: rgba(0, 0, 0, .1);
+    --border-color-hover: rgba(0, 0, 0, .2);
+    --box-shadow-hover: 0 4px 12px rgba(0, 0, 0, .08);
 
     /* ThemeSwitcher */
     --theme-switcher-radio-filter: invert(0);
@@ -22,4 +24,7 @@
     --input-border-color: rgb(from var(--bg-color) r g b / 60%);
     --input-color: var(--text-color);
     --input-color-inverted: var(--bg-color);
+
+    /* TodoItem */
+    --todo-item-bg-color: rgba(240,240,240,.3);
 }
