@@ -26,5 +26,5 @@
     --input-color-inverted: var(--bg-color);
 
     /* TodoItem */
-    --todo-item-bg-color: rgba(240,240,240,.3);
+    --task-bg-color: rgba(240,240,240,.3);
 }

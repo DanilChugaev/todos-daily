@@ -6,7 +6,7 @@ interface InputProps {
   focus?: boolean;
   inverted?: boolean;
   id: string;
-  label: string;
+  label?: string;
   type: string;
   value: string;
   placeholder: string;

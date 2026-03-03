@@ -1,48 +1,61 @@
-import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
-import { TodoList } from './components/TodoList/TodoList.tsx';
-import { Week } from './components/Calendar/Week/Week.tsx';
-import { ModalDialog } from './components/ModalDialog/ModalDialog.tsx';
-import { Filters } from './components/Filters/Filters.tsx';
-import { Input } from './components/Form/Input/Input.tsx';
-import { Textarea } from './components/Form/Textarea/Textarea.tsx';
+import { TaskList } from './components/TaskList/TaskList.tsx';
+import { Categories } from './components/Categories/Categories.tsx';
 import { PlusIcon } from './components/Icon/PlusIcon.tsx';
 import { Button } from './components/Button/Button.tsx';
-import type { ITodoItem } from './components/TodoList/TodoItem/TodoItem.tsx';
-import { getTodos, saveTodo } from './utils/storage.ts';
+import { getTodos, saveTaskToStorage } from './utils/storage.ts';
+import type { ITask } from './components/TaskList/Task/types.ts';
+import { TaskEditorModal } from './components/TaskEditorModal/TaskEditorModal.tsx';
+import './styles/App.pcss';
 
 function App() {
-  const [items, setItems] = useState<ITodoItem[]>([]);
+  const [items, setItems] = useState<ITask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  // const [name, setName] = useState('');
+  // const [description, setDescription] = useState('');
 
   function clearFields() {
-    setName('');
-    setDescription('');
+    // setName('');
+    // setDescription('');
   }
 
-  function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
-    setName(event.target.value);
-  }
+  // function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
+  //   setName(event.target.value);
+  // }
+  //
+  // function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
+  //   setDescription(event.target.value);
+  // }
 
-  function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
-    setDescription(event.target.value);
-  }
-
-  function handleAddItem() {
-    if (!name) return;
-
-    const newItem = {
-      id: '',
-      done: false,
-      name,
-      description,
-    };
-    saveTodo(newItem);
-    setItems([...items, newItem]);
+  function handleSaveTask(newTask: ITask) {
+    saveTaskToStorage(newTask);
+    // после сохранения получаем обновленный список с id
+    setItems([...items, newTask]);
 
     clearFields();
+    closeTaskEditorModal();
+  }
+
+  function handleEditTask() {
+    // Implement edit functionality
+    // Open modal with ITask object
+  }
+
+  // function handleRemoveTask() {
+  //   // Implement remove functionality
+  //   // Remove item from items array
+  // }
+
+  function handleSelectCategory() {
+
+  }
+
+  function openTaskEditorModal() {
+    setIsOpen(true);
+  }
+
+  function closeTaskEditorModal() {
     setIsOpen(false);
   }
 
@@ -58,46 +71,29 @@ function App() {
     <>
       <Header/>
 
-      <Week/>
+      <Categories items={[]} onSelect={handleSelectCategory}/>
 
-      <Filters/>
+      {
+        items.length
+          ? <TaskList
+              items={items}
+              onClick={handleEditTask}
+            />
+          : <div className="empty-list">Новых задач нет</div>
+      }
 
-      <TodoList
-        items={items}
-        onAddTodo={() => setIsOpen(true)}
-        onRemoveTodo={updateTodos}
-      />
+      <Button className="new-task" onClick={openTaskEditorModal}>
+        <PlusIcon/>
 
-      <ModalDialog
-        title="Добавить задачу"
+        Добавить
+      </Button>
+
+      <TaskEditorModal
+        task={{}}
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      >
-        <Input
-          focus
-          id="task-name"
-          label="Название"
-          type="text"
-          placeholder="Введите название задачи"
-          value={name}
-          onChange={handleNameChange}
-          onEnter={handleAddItem}
-        />
-
-        <Textarea
-          id="task-name"
-          label="Описание"
-          placeholder="Введите описание задачи"
-          value={description}
-          onChange={handleDescriptionChange}
-        />
-
-        <Button onClick={handleAddItem}>
-          <PlusIcon/>
-
-          Добавить
-        </Button>
-      </ModalDialog>
+        onSave={handleSaveTask}
+        onClose={closeTaskEditorModal}
+      />
     </>
   );
 }

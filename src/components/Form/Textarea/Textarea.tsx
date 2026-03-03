@@ -6,7 +6,7 @@ import { FormField } from '../FormField/FormField.tsx';
 interface TextareaProps {
   inverted?: boolean;
   id: string;
-  label: string;
+  label?: string;
   value: string;
   placeholder: string;
   onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;

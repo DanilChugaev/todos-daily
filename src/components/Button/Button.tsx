@@ -2,17 +2,21 @@ import type { ReactNode } from 'react';
 import './button.pcss';
 
 interface ButtonProps {
-  inverted?: boolean,
-  icon?: boolean,
-  className?: string,
-  children: ReactNode,
-  onClick: () => void,
+  inverted?: boolean;
+  icon?: boolean;
+  className?: string;
+  size?: 'small' | 'normal';
+  transparent?: boolean;
+  children: ReactNode;
+  onClick: () => void;
 }
 
 export function Button({
   inverted,
   icon,
   className,
+  size,
+  transparent,
   children,
   onClick,
 }: ButtonProps) {
@@ -28,6 +32,14 @@ export function Button({
 
   if (icon) {
     classNames.push('button--icon');
+  }
+
+  if (size) {
+    classNames.push(`button--${size}`);
+  }
+
+  if (transparent) {
+    classNames.push('button--transparent');
   }
 
   return (

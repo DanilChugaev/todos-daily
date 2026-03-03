@@ -1,9 +1,9 @@
-.todo-item {
+.task {
     display: flex;
     align-items: center;
     border-radius: var(--border-radius-c);
     border: 1px solid var(--border-color);
-    background-color: var(--todo-item-bg-color);
+    background-color: var(--task-bg-color);
     transition: all .3s ease;
     cursor: pointer;
 
@@ -15,5 +15,9 @@
     &__content {
         flex: 1;
         /*padding: var(--spacer-b) 0;*/
+    }
+
+    &__actions {
+        padding: var(--spacer-d);
     }
 }
