@@ -5,67 +5,120 @@ import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
 import { useEffect, useState } from 'react';
-import type { ITask } from '../../utils/db/db.ts';
+import { DEFAULT_CATEGORIES, type ITask } from '../../utils/db/db.ts';
+import { useTasks } from '../../hooks/useTasks.ts';
+import { TrashIcon } from '../Icon/TrashIcon.tsx';
 
 interface TaskEditorModalProps {
-  task: ITask; // todo: сделать поля тут опциональными, в исходном типе обязательными
+  task?: ITask;
   isOpen: boolean;
-  onSave: (task: ITask) => void;
   onClose: () => void;
 }
 
 export function TaskEditorModal({
   task,
   isOpen,
-  onSave,
   onClose,
 }: TaskEditorModalProps) {
-  const [modalTitle, setModalTitle] = useState<string>('');
-  const [buttonText, setButtonText] = useState<string>('');
-  const [changedTask, setChangedTask] = useState<ITask>({
-    id: task.id ?? '',
-    title: task.title ?? '',
-    description: task.description ?? '',
-    completed: task.completed ?? false,
-    createdAt: task.createdAt ?? new Date(),
-    updatedAt: task.updatedAt ?? new Date(),
-    priority: task.priority ?? 'other',
-    category: task.category ?? '',
-    subtasks: task.subtasks ?? [],
+  const { addTask, updateTask, deleteTask } = useTasks();
+
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    category: DEFAULT_CATEGORIES[0],
+    priority: 'medium' as ITask['priority'],
+    dueDate: '',
+    subtasks: [] as string[],
   });
-  // const [taskDescription, setTaskDescription] = useState<string | null>(null);
-  // const [subtasks, setSubtasks] = useState<{ id: string; name: string }[]>([]);
-  // const [category, setCategory] = useState<Category | null>(null);
-  //
-  // const handleAddSubtask = (name: string) => {
-  //   setSubtasks([...subtasks, { id: Date.now().toString(), name }]);
-  // };
-  //
-  // const handleDeleteSubtask = (id: string) => {
-  //   setSubtasks(subtasks.filter((subtask) => subtask.id !== id));
-  // };
-  //
-  // const handleSaveTask = () => {
-  //   // Save task logic here
-  //   onClose();
-  // };
 
-  function handleSaveTask() {
-    if (!changedTask.title) return;
+  // const [newSubtask, setNewSubtask] = useState('');
+  const isEditMode = !!task;
 
-    onSave(changedTask);
-  }
-
+  // Подставляем данные при открытии на редактирование
   useEffect(() => {
-    setTimeout(() => {
-      setModalTitle(task.title ? 'Редактировать задачу' : 'Добавить задачу');
-      setButtonText(task.title ? ' Сохранить' : 'Добавить');
-    }, 0);
-  }, [setModalTitle, setButtonText, task]);
+    if (task) {
+      setTimeout(() => {
+        setForm({
+          title: task.title,
+          description: task.description || '',
+          category: task.category,
+          priority: task.priority,
+          dueDate: task.dueDate || '',
+          subtasks: [...task.subtasks],
+        });
+      }, 0);
+    } else {
+      // Режим создания — чистая форма
+      setTimeout(() => {
+        setForm({
+          title: '',
+          description: '',
+          category: DEFAULT_CATEGORIES[0],
+          priority: 'medium',
+          dueDate: '',
+          subtasks: [],
+        });
+      }, 0);
+    }
+    // setNewSubtask('');
+  }, [task]);
+
+  if (!isOpen) return null;
+
+  async function handleSubmit() {
+    if (!form.title.trim()) {
+      alert('Название задачи обязательно!');
+      return;
+    }
+
+    const taskData = {
+      title: form.title.trim(),
+      description: form.description.trim() || undefined,
+      category: form.category,
+      priority: form.priority,
+      dueDate: form.dueDate || undefined,
+      subtasks: form.subtasks,
+    };
+
+    if (isEditMode && task) {
+      await updateTask(task.id, taskData);
+    } else {
+      await addTask(taskData);
+    }
+
+    onClose();
+  };
+
+  // function handleAddSubtask() {
+  //   if (newSubtask.trim()) {
+  //     setForm((prev) => ({
+  //       ...prev,
+  //       subtasks: [...prev.subtasks, newSubtask.trim()],
+  //     }));
+  //     setNewSubtask('');
+  //   }
+  // };
+  //
+  // function handleRemoveSubtask(index: number) {
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     subtasks: prev.subtasks.filter((_, i) => i !== index),
+  //   }));
+  // };
+
+  async function handleDelete() {
+    if (!task) return;
+
+    const confirmed = window.confirm('Точно удалить задачу?\n\nЭто действие нельзя отменить.');
+    if (confirmed) {
+      await deleteTask(task.id);
+      onClose();
+    }
+  };
 
   return (
     <ModalDialog
-      title={modalTitle}
+      title={task?.title ? 'Редактировать задачу' : 'Добавить задачу'}
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -74,26 +127,34 @@ export function TaskEditorModal({
         id="task-name"
         type="text"
         placeholder="Введите название задачи"
-        value={changedTask.title!}
-        onChange={(event) => setChangedTask({ ...changedTask, title: event.target.value })}
-        onEnter={handleSaveTask}
+        value={form.title}
+        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        onEnter={handleSubmit}
       />
 
       <Textarea
         id="task-name"
         placeholder="Введите описание задачи"
-        value={changedTask.description!}
-        onChange={(event) => setChangedTask({ ...changedTask, description: event.target.value })}
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
 
       {/*<div>*/}
       {/*  <CategoriesPopover/>*/}
       {/*</div>*/}
 
-      <Button onClick={handleSaveTask}>
+      {isEditMode && (
+        <Button onClick={handleDelete} color="red">
+          <TrashIcon/>
+
+          Удалить задачу
+        </Button>
+      )}
+
+      <Button onClick={handleSubmit}>
         <PlusIcon/>
 
-        {buttonText}
+        {task?.title ? ' Сохранить' : 'Добавить'}
       </Button>
     </ModalDialog>
   );

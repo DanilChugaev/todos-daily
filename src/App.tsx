@@ -10,74 +10,56 @@ import { useTasks } from './hooks/useTasks';
 import type { ITask } from './utils/db/db.ts';
 
 function App() {
-  // const [items, setItems] = useState<ITask[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState<ITask | undefined>(undefined);
 
-  const { tasks, addTask, updateTask, deleteTask, toggleComplete } = useTasks();
-  // const [name, setName] = useState('');
-  // const [description, setDescription] = useState('');
+  const { tasks, toggleComplete } = useTasks();
 
-  function clearFields() {
-    // setName('');
-    // setDescription('');
+  // function clearFields() {}
+
+  function selectCategory() {}
+
+  function openAddModal() {
+    setEditingTask(undefined);
+    setModalOpen(true);
   }
 
-  function saveTask(newTask: ITask) {
-    addTask(newTask);
-
-    clearFields();
-    closeTaskEditorModal();
+  function openEditModal(task: ITask) {
+    setEditingTask(task);
+    setModalOpen(true);
   }
 
-  function editTask() {
-    // Implement edit functionality
-    // Open modal with ITask object
-  }
-
-  // function handleRemoveTask() {
-  //   // Implement remove functionality
-  //   // Remove item from items array
-  // }
-
-  function handleSelectCategory() {
-
-  }
-
-  function openTaskEditorModal() {
-    setIsOpen(true);
-  }
-
-  function closeTaskEditorModal() {
-    setIsOpen(false);
+  function closeModal() {
+    setModalOpen(false);
+    setEditingTask(undefined);
   }
 
   return (
     <>
       <Header/>
 
-      <Categories items={[]} onSelect={handleSelectCategory}/>
+      <Categories items={[]} onSelect={selectCategory}/>
 
       {
         tasks.length
           ? <TaskList
               items={tasks}
-              onClick={editTask}
+              onClick={openEditModal}
               onComplete={toggleComplete}
             />
           : <div className="empty-list">Новых задач нет</div>
       }
 
-      <Button className="new-task" onClick={openTaskEditorModal}>
+      <Button className="new-task" onClick={openAddModal}>
         <PlusIcon/>
 
         Добавить
       </Button>
 
       <TaskEditorModal
-        task={{}}
-        isOpen={isOpen}
-        onSave={saveTask}
-        onClose={closeTaskEditorModal}
+        task={editingTask}
+        isOpen={modalOpen}
+        onClose={closeModal}
       />
     </>
   );

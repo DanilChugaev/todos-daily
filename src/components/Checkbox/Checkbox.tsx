@@ -16,7 +16,7 @@ export function Checkbox({ id, label, checked, onChange }: CheckboxProps) {
   }
 
   return (
-    <label htmlFor={id} className="checkbox">
+    <label htmlFor={id} className="checkbox" onClick={(e: Event) => e?.stopPropagation()}>
       <input className="checkbox__checkbox" type="checkbox" id={id} checked={checked} onChange={(e) => checkboxChange(e.target.checked)} />
 
       <svg className="checkbox__icon" xmlns="http://www.w3.org/2000/svg" width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 512 512" fill="currentColor">

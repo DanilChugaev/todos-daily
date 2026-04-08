@@ -19,7 +19,11 @@ export function Task({
 }: TaskProps) {
   return (
     <li className="task" onClick={() => onClick(item)}>
-      <Checkbox id={item.id!} checked={item.completed} onChange={() => onComplete(item.id!)}/>
+      <Checkbox
+        id={item.id!}
+        checked={item.completed}
+        onChange={() => onComplete(item.id!)}
+      />
 
       <div className="task__content">
         {item.title}
