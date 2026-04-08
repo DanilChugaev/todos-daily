@@ -25,7 +25,8 @@ export default defineConfig([
       'semi': ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
       "object-curly-spacing": ["error", "always"],
-      "@typescript-eslint/ban-ts-comment": 'off'
+      "@typescript-eslint/ban-ts-comment": 'off',
+      "@typescript-eslint/no-explicit-any": 'off'
     }
   },
 ])

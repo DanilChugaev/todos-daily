@@ -19,7 +19,7 @@ export const PRIORITIES = [
   { value: 'medium', label: 'Средний' },
   { value: 'low', label: 'Низкий' },
   { value: 'other', label: 'Другое' },
-] as const;
+];
 
 export const DEFAULT_CATEGORIES = [
   'Работа',
@@ -29,7 +29,7 @@ export const DEFAULT_CATEGORIES = [
   'Учёба',
   'Дом',
   'Другое',
-] as const;
+];
 
 class TodosDB extends Dexie {
   tasks!: Table<ITask, string>;
