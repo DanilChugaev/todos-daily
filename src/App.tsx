@@ -48,7 +48,7 @@ function App() {
             ? (
               <>
                 {
-                  activeTasks.length && (
+                  activeTasks.length ? (
                     <>
                       <p style={{ padding: '0 var(--spacer-d)' }}>Активные</p>
 
@@ -58,11 +58,11 @@ function App() {
                         onComplete={toggleComplete}
                       />
                     </>
-                  )
+                  ) : ''
                 }
 
                 {
-                  completedTasks.length && (
+                  completedTasks.length ? (
                     <>
                       <p style={{ padding: '0 var(--spacer-d)' }}>Готовые</p>
 
@@ -72,7 +72,7 @@ function App() {
                         onComplete={toggleComplete}
                       />
                     </>
-                  )
+                  ) : ''
                 }
               </>
             )
