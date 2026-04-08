@@ -1,17 +1,19 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
 import { TaskList } from './components/TaskList/TaskList.tsx';
 import { Categories } from './components/Categories/Categories.tsx';
 import { PlusIcon } from './components/Icon/PlusIcon.tsx';
 import { Button } from './components/Button/Button.tsx';
-import { getTodos, saveTaskToStorage } from './utils/storage.ts';
-import type { ITask } from './components/TaskList/Task/types.ts';
 import { TaskEditorModal } from './components/TaskEditorModal/TaskEditorModal.tsx';
 import './styles/App.pcss';
+import { useTasks } from './hooks/useTasks';
+import type { ITask } from './utils/db/db.ts';
 
 function App() {
-  const [items, setItems] = useState<ITask[]>([]);
+  // const [items, setItems] = useState<ITask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  const { tasks, addTask, updateTask, deleteTask, toggleComplete } = useTasks();
   // const [name, setName] = useState('');
   // const [description, setDescription] = useState('');
 
@@ -20,24 +22,14 @@ function App() {
     // setDescription('');
   }
 
-  // function handleNameChange(event: ChangeEvent<HTMLInputElement>) {
-  //   setName(event.target.value);
-  // }
-  //
-  // function handleDescriptionChange(event: ChangeEvent<HTMLTextAreaElement>) {
-  //   setDescription(event.target.value);
-  // }
-
-  function handleSaveTask(newTask: ITask) {
-    saveTaskToStorage(newTask);
-    // после сохранения получаем обновленный список с id
-    setItems([...items, newTask]);
+  function saveTask(newTask: ITask) {
+    addTask(newTask);
 
     clearFields();
     closeTaskEditorModal();
   }
 
-  function handleEditTask() {
+  function editTask() {
     // Implement edit functionality
     // Open modal with ITask object
   }
@@ -59,14 +51,6 @@ function App() {
     setIsOpen(false);
   }
 
-  const updateTodos = useCallback(() => {
-    setItems(getTodos());
-  }, [setItems]);
-
-  useEffect(() => {
-    setTimeout(updateTodos, 0);
-  }, [updateTodos]);
-
   return (
     <>
       <Header/>
@@ -74,10 +58,11 @@ function App() {
       <Categories items={[]} onSelect={handleSelectCategory}/>
 
       {
-        items.length
+        tasks.length
           ? <TaskList
-              items={items}
-              onClick={handleEditTask}
+              items={tasks}
+              onClick={editTask}
+              onComplete={toggleComplete}
             />
           : <div className="empty-list">Новых задач нет</div>
       }
@@ -91,7 +76,7 @@ function App() {
       <TaskEditorModal
         task={{}}
         isOpen={isOpen}
-        onSave={handleSaveTask}
+        onSave={saveTask}
         onClose={closeTaskEditorModal}
       />
     </>

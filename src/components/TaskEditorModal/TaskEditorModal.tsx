@@ -5,7 +5,7 @@ import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
 import { useEffect, useState } from 'react';
-import type { ITask } from '../TaskList/Task/types.ts';
+import type { ITask } from '../../utils/db/db.ts';
 
 interface TaskEditorModalProps {
   task: ITask; // todo: сделать поля тут опциональными, в исходном типе обязательными
@@ -24,14 +24,14 @@ export function TaskEditorModal({
   const [buttonText, setButtonText] = useState<string>('');
   const [changedTask, setChangedTask] = useState<ITask>({
     id: task.id ?? '',
-    name: task.name ?? '',
+    title: task.title ?? '',
     description: task.description ?? '',
-    done: task.done ?? false,
-    dateCreated: task.dateCreated ?? new Date(),
-    dateChanged: task.dateChanged ?? new Date(),
+    completed: task.completed ?? false,
+    createdAt: task.createdAt ?? new Date(),
+    updatedAt: task.updatedAt ?? new Date(),
     priority: task.priority ?? 'other',
     category: task.category ?? '',
-    subTasks: task.subTasks ?? [],
+    subtasks: task.subtasks ?? [],
   });
   // const [taskDescription, setTaskDescription] = useState<string | null>(null);
   // const [subtasks, setSubtasks] = useState<{ id: string; name: string }[]>([]);
@@ -51,15 +51,15 @@ export function TaskEditorModal({
   // };
 
   function handleSaveTask() {
-    if (!changedTask.name) return;
+    if (!changedTask.title) return;
 
     onSave(changedTask);
   }
 
   useEffect(() => {
     setTimeout(() => {
-      setModalTitle(task.name ? 'Редактировать задачу' : 'Добавить задачу');
-      setButtonText(task.name ? ' Сохранить' : 'Добавить');
+      setModalTitle(task.title ? 'Редактировать задачу' : 'Добавить задачу');
+      setButtonText(task.title ? ' Сохранить' : 'Добавить');
     }, 0);
   }, [setModalTitle, setButtonText, task]);
 
@@ -74,8 +74,8 @@ export function TaskEditorModal({
         id="task-name"
         type="text"
         placeholder="Введите название задачи"
-        value={changedTask.name!}
-        onChange={(event) => setChangedTask({ ...changedTask, name: event.target.value })}
+        value={changedTask.title!}
+        onChange={(event) => setChangedTask({ ...changedTask, title: event.target.value })}
         onEnter={handleSaveTask}
       />
 

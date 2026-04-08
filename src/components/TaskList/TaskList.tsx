@@ -1,17 +1,19 @@
 import './task-list.pcss';
 import { Task } from './Task/Task.tsx';
-import type { ITask } from './Task/types.ts';
+import type { ITask } from '../../utils/db/db.ts';
 
 interface TaskListProps {
   items: ITask[];
   onClick:  (item: ITask) => void;
   onRemove?:  (id: string) => void;
+  onComplete:  (id: string) => void;
 }
 
 export function TaskList({
   items,
   onClick,
   onRemove,
+  onComplete,
 }: TaskListProps) {
   return (
     <div className="task-list">
@@ -22,6 +24,7 @@ export function TaskList({
             item={item}
             onClick={onClick}
             onRemove={onRemove}
+            onComplete={onComplete}
           />
         ))}
       </ul>
