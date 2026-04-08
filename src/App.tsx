@@ -15,7 +15,8 @@ function App() {
 
   const { tasks, toggleComplete } = useTasks();
 
-  // function clearFields() {}
+  const activeTasks = tasks.filter(task => !task.completed);
+  const completedTasks = tasks.filter(task => task.completed);
 
   function selectCategory() {}
 
@@ -40,15 +41,44 @@ function App() {
 
       <Categories items={[]} onSelect={selectCategory}/>
 
-      {
-        tasks.length
-          ? <TaskList
-              items={tasks}
-              onClick={openEditModal}
-              onComplete={toggleComplete}
-            />
-          : <div className="empty-list">Новых задач нет</div>
-      }
+      <div style={{ marginBottom: '40px' }}>
+        {
+          activeTasks.length ||
+          completedTasks.length
+            ? (
+              <>
+                {
+                  activeTasks.length && (
+                    <>
+                      <p style={{ padding: '0 var(--spacer-d)' }}>Активные</p>
+
+                      <TaskList
+                        items={activeTasks}
+                        onClick={openEditModal}
+                        onComplete={toggleComplete}
+                      />
+                    </>
+                  )
+                }
+
+                {
+                  completedTasks.length && (
+                    <>
+                      <p style={{ padding: '0 var(--spacer-d)' }}>Готовые</p>
+
+                      <TaskList
+                        items={completedTasks}
+                        onClick={openEditModal}
+                        onComplete={toggleComplete}
+                      />
+                    </>
+                  )
+                }
+              </>
+            )
+            : <div className="empty-list">Новых задач нет</div>
+        }
+      </div>
 
       <Button className="new-task" onClick={openAddModal}>
         <PlusIcon/>
