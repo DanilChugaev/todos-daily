@@ -40,9 +40,10 @@ export function Input({
   }, [focus]);
 
   useEffect(() => {
-    document.addEventListener('keydown', handleEnter, false);
+    inputRef.current?.addEventListener('keydown', handleEnter, false);
 
-    return () => document.removeEventListener('keydown', handleEnter, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => inputRef.current?.removeEventListener('keydown', handleEnter, false);
   }, [handleEnter]);
 
   return (

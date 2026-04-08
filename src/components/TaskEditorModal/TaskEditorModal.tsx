@@ -86,8 +86,8 @@ export function TaskEditorModal({
       await addTask(taskData);
     }
 
-    onClose();
-  };
+    handleBeforeClose();
+  }
 
   // function handleAddSubtask() {
   //   if (newSubtask.trim()) {
@@ -110,23 +110,38 @@ export function TaskEditorModal({
     if (!task) return;
 
     const confirmed = window.confirm('Точно удалить задачу?\n\nЭто действие нельзя отменить.');
+
     if (confirmed) {
       await deleteTask(task.id);
-      onClose();
+
+      handleBeforeClose();
     }
-  };
+  }
+
+  function handleBeforeClose() {
+    setForm({
+      title: '',
+      description: '',
+      category: DEFAULT_CATEGORIES[0],
+      priority: 'medium',
+      dueDate: '',
+      subtasks: [],
+    });
+
+    onClose();
+  }
 
   return (
     <ModalDialog
       title={task?.title ? 'Редактировать задачу' : 'Добавить задачу'}
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleBeforeClose}
     >
       <Input
         focus
         id="task-name"
         type="text"
-        placeholder="Введите название задачи"
+        placeholder="Название*"
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
         onEnter={handleSubmit}
@@ -134,7 +149,7 @@ export function TaskEditorModal({
 
       <Textarea
         id="task-name"
-        placeholder="Введите описание задачи"
+        placeholder="Описание"
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
       />

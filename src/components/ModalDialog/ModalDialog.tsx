@@ -34,6 +34,7 @@ export function ModalDialog({
 
   useEffect(() => {
     if (isOpen) {
+
        
       setIsShowModal(true);
 

@@ -30,8 +30,8 @@ function App() {
   }
 
   function closeModal() {
-    setModalOpen(false);
     setEditingTask(undefined);
+    setModalOpen(false);
   }
 
   return (
