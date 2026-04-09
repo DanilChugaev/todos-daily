@@ -12,15 +12,16 @@
     border-top-right-radius: var(--border-radius-c);
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    background-color: var(--bg-color);
-    color: var(--text-color);
+    background-color: var(--modal-dialog-bg-color);
+    color: var(--modal-dialog-text-color);
     transform: translateY(100%);
     transition: transform 0.3s;
     z-index: 10;
 
     &::backdrop {
         opacity: 0;
-        transition: opacity 0.3s;
+        background-color: transparent;
+        transition: opacity 0.3s, background-color 0.3s;
     }
 
     &--active {
@@ -28,7 +29,7 @@
 
         &::backdrop {
             opacity: 1;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: var(--modal-dialog-backdrop);
         }
     }
 
@@ -50,6 +51,13 @@
     }
 
     @media (--min-media-mobile) {
-        max-width: 500px;
+        max-width: 600px;
+        transform: translateY(-45vh);
+        opacity: 0;
+        border-radius: var(--border-radius-c);
+
+        &--active {
+            opacity: 1;
+        }
     }
 }

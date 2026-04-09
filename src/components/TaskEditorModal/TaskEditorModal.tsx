@@ -5,7 +5,7 @@ import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
 import { useEffect, useState } from 'react';
-import { DEFAULT_CATEGORIES, type ITask } from '../../utils/db/db.ts';
+import { type ITask } from '../../utils/db/db.ts';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 
@@ -25,7 +25,7 @@ export function TaskEditorModal({
   const [form, setForm] = useState({
     title: '',
     description: '',
-    category: DEFAULT_CATEGORIES[0],
+    category: 'other',
     priority: 'medium' as ITask['priority'],
     dueDate: '',
     subtasks: [] as string[],
@@ -53,7 +53,7 @@ export function TaskEditorModal({
         setForm({
           title: '',
           description: '',
-          category: DEFAULT_CATEGORIES[0],
+          category: 'other',
           priority: 'medium',
           dueDate: '',
           subtasks: [],
@@ -122,7 +122,7 @@ export function TaskEditorModal({
     setForm({
       title: '',
       description: '',
-      category: DEFAULT_CATEGORIES[0],
+      category: 'other',
       priority: 'medium',
       dueDate: '',
       subtasks: [],

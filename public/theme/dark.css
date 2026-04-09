@@ -18,8 +18,9 @@
     --button-text-color-inverted: var(--text-color);
 
     /* ModalDialog */
-    --model-dialog-bg-color: var(--text-color);
-    --model-dialog-text-color: var(--bg-color);
+    --modal-dialog-bg-color: rgb(60 60 60);
+    --modal-dialog-text-color: var(--text-color);
+    --modal-dialog-backdrop: rgba(0, 0, 0, 0.4);
 
     /* Input */
     --input-border-color: rgb(from var(--bg-color) r g b / 50%);

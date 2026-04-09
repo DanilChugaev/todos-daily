@@ -1,3 +1,20 @@
 .categories {
+    display: flex;
+    gap: var(--spacer-c);
     padding: var(--spacer-d);
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+
+    &__button {
+        background-color: var(--button-bg-color-inverted);
+        color: var(--button-text-color-inverted);
+        transition: background-color 0.3s, color 0.3s;
+
+        &:hover,
+        &--active {
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+        }
+    }
 }
