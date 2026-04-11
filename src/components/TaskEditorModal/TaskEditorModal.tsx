@@ -148,7 +148,7 @@ export function TaskEditorModal({
       />
 
       <Textarea
-        id="task-name"
+        id="task-description"
         placeholder="Описание"
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}

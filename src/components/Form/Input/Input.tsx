@@ -9,9 +9,9 @@ interface InputProps {
   label?: string;
   type: string;
   value: string;
-  placeholder: string;
+  placeholder?: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  onEnter: () => void;
+  onEnter?: () => void;
 }
 
 export function Input({
@@ -28,7 +28,7 @@ export function Input({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleEnter = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'Enter') {
+    if (onEnter && event.key === 'Enter') {
       onEnter();
     }
   }, [onEnter]);
@@ -40,11 +40,13 @@ export function Input({
   }, [focus]);
 
   useEffect(() => {
-    inputRef.current?.addEventListener('keydown', handleEnter, false);
+    if (onEnter) {
+      inputRef.current?.addEventListener('keydown', handleEnter, false);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    return () => inputRef.current?.removeEventListener('keydown', handleEnter, false);
-  }, [handleEnter]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      return () => inputRef.current?.removeEventListener('keydown', handleEnter, false);
+    }
+  }, [handleEnter, onEnter]);
 
   return (
     <FormField

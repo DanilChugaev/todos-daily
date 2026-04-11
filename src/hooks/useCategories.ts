@@ -1,12 +1,39 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-// import { useCallback } from 'react';
-import { db } from '../utils/db/db.ts';
+import { useCallback } from 'react';
+import { db, type ICategory } from '../utils/db/db.ts';
 // import type { ICategory } from '../utils/db/db.ts';
 
 export const useCategories = () => {
   const categories = useLiveQuery(() => db.categories.toArray(), []) ?? [];
 
+  // ========== CRUD ==========
+
+  const addCategory = useCallback(async (name: ICategory['name']) => {
+      const lastCategory = await db.categories.orderBy('id').last();
+
+      const newCategory: ICategory = {
+        id: ++lastCategory!.id,
+        name,
+      };
+  
+      await db.categories.add(newCategory);
+      return newCategory;
+    }, []);
+
+  const updateCategory = useCallback(async (id: number, name: ICategory['name']) => {
+      await db.categories.update(id, {
+        name: name,
+      });
+    }, []);
+
+  const deleteCategory = useCallback(async (id: number) => {
+    await db.categories.delete(id);
+  }, []);
+
   return {
     categories,
+    addCategory,
+    updateCategory,
+    deleteCategory,
   };
 };
