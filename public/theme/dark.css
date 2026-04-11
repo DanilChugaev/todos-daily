@@ -30,4 +30,8 @@
     /* Task */
     --task-bg-color: rgba(255,255,255,.05);
     --task-info-text-color: rgb(from var(--text-color) r g b / 50%);
+
+    /* Grab */
+    --grab-box-shadow: 0 0 0 2px #60a5fa;
+    --grab-background-color: #1e3a8a;
 }

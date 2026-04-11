@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { db, type ICategory } from '../utils/db/db.ts';
 
 export const useCategories = () => {
-  const categories = useLiveQuery(() => db.categories.toArray(), []) ?? [];
+  const categories = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []) ?? [];
 
   // ========== CRUD ==========
 
@@ -13,6 +13,7 @@ export const useCategories = () => {
       const newCategory: ICategory = {
         id: ++lastCategory!.id,
         name,
+        orderId: ++lastCategory!.orderId,
       };
   
       await db.categories.add(newCategory);
@@ -29,10 +30,15 @@ export const useCategories = () => {
     await db.categories.delete(id);
   }, []);
 
+  const bulkUpdateCategories = useCallback(async (categories: ICategory[]) => {
+    await db.categories.bulkPut(categories);
+  }, []);
+
   return {
     categories,
     addCategory,
     updateCategory,
     deleteCategory,
+    bulkUpdateCategories,
   };
 };

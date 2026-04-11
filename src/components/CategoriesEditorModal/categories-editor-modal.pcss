@@ -1,8 +1,36 @@
 .categories-container {
   display: flex;
+  align-items: center;
   gap: var(--spacer-a);
+  transition: all 0.2s ease;
+
+  &__grab {
+    display: flex;
+    cursor: grab;
+    padding: var(--spacer-c);
+  }
+
+  &--dragging {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+
+  &--dragover {
+    box-shadow: var(--grab-box-shadow);
+    background: var(--grab-background-color);
+  }
 
   .input-field {
     width: 100%;
   }
+}
+
+.drag-handle {
+  cursor: grab;
+  padding: 4px;
+  margin: -4px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }

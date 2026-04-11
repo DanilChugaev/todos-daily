@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import './categories-editor-modal.pcss';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
@@ -7,6 +8,7 @@ import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import type { ICategory } from '../../utils/db/db.ts';
 import { useTasks } from '../../hooks/useTasks.ts';
+import { GrabPlaceIcon } from '../Icon/GrabPlaceIcon.tsx';
 
 interface CategoriesEditorModalProps {
   selected: number;
@@ -21,7 +23,10 @@ export function CategoriesEditorModal({
   onClose,
   onSelected,
 }: CategoriesEditorModalProps) {
-  const { categories, addCategory, updateCategory, deleteCategory } = useCategories();
+  const [draggedId, setDraggedId] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const { categories, addCategory, updateCategory, deleteCategory, bulkUpdateCategories } = useCategories();
   const { reassignCategory } = useTasks();
 
   function handleUpdateCategory(id: number, name: string) {
@@ -48,7 +53,43 @@ export function CategoriesEditorModal({
     onClose();
   }
 
-  // todo: добавить перемещение категорий (тянуть за иконку перед инпутом)
+  const handleDragStart = useCallback((e: React.DragEvent, id: number) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = 'move';
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverIndex(null);
+  }, []);
+
+  const handleDrop = useCallback(async (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    setDragOverIndex(null);
+    if (draggedId === null) return;
+
+    const draggedIndex = categories.findIndex(c => c.id === draggedId);
+
+    if (draggedIndex === -1 || draggedIndex === targetIndex) {
+      setDraggedId(null);
+      return;
+    }
+
+    const newOrder = [...categories];
+    const [draggedItem] = newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedItem);
+
+    const updatedCategories = newOrder.map((category, i) => ({ ...category, orderId: i }));
+
+    await bulkUpdateCategories(updatedCategories);
+
+    setDraggedId(null);
+  }, [draggedId]);
 
   return (
     <ModalDialog
@@ -56,8 +97,25 @@ export function CategoriesEditorModal({
       isOpen={isOpen}
       onClose={handleBeforeClose}
     >
-      {categories.map(item => (
-        <div key={item.id} className="categories-container">
+      {categories.map((item, index) => (
+        <div key={item.id}
+             onDragOver={(e) => handleDragOver(e, index)}
+             onDragLeave={handleDragLeave}
+             onDrop={(e) => handleDrop(e, index)}
+             className={`categories-container ${
+               item.id === draggedId ? 'categories-container--dragging' : ''
+             } ${
+               dragOverIndex === index ? 'categories-container--dragover' : ''
+             }`}
+        >
+          <div
+            draggable
+            onDragStart={(e) => handleDragStart(e, item.id)}
+            className="categories-container__grab"
+          >
+            <GrabPlaceIcon width={14} height={14}/>
+          </div>
+
           <Input
             id="task-name"
             type="text"

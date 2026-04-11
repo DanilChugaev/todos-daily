@@ -26,15 +26,10 @@ export const useTasks = () => {
       }));
     }
 
-    const filteredTasks = await db.tasks
+    return await db.tasks
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(categoryIdFilter)
       .toArray();
-
-    return filteredTasks.map(task => ({
-      ...task,
-      category: categoryMap.get(task.categoryId) || undefined,
-    }));
   }, [categoryIdFilter]) ?? [];
 
   // ========== CRUD ==========

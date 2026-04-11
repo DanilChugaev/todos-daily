@@ -22,6 +22,7 @@ export interface ITask extends Omit<ITaskDB, 'categoryId'> {
 export interface ICategory {
   id: number;          // авто-инкремент от Dexie
   name: string;
+  orderId: number;
 }
 
 // Для удобства — константы (будут использоваться в модалке)
@@ -58,9 +59,15 @@ class TodosDB extends Dexie {
     });
 
     // Версия 3 — новая схема + миграция - замена поля category на categoryId
-    this.version(2).stores({
+    this.version(3).stores({
       tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
       categories: '++id, name',
+    });
+
+    // Версия 3 — добавлен
+    this.version(4).stores({
+      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      categories: '++id, name, orderId',
     });
 
     // Миграция данных при обновлении до версии 2
@@ -89,7 +96,10 @@ class TodosDB extends Dexie {
       console.log('Всем задачам установлен приоритет "other"');
 
       // 2. Создаём таблицу категорий и заполняем дефолтными значениями
-      const categoryTable = transaction.table<ICategory>('categories');
+      const categoryTable = transaction.table<{
+        id: number;          // авто-инкремент от Dexie
+        name: string;
+      }>('categories');
       const count = await categoryTable.count();
 
       if (count === 0) {
@@ -118,6 +128,20 @@ class TodosDB extends Dexie {
       console.log('Всем задачам установлен categoryId');
     });
 
+    // Миграция данных при обновлении до версии 4
+    this.version(4).upgrade(async (tx) => {
+      console.log('Миграция БД v4: добавляем orderId категориям');
+      const categoriesTable = tx.table<ICategory>('categories');
+      const allCategories = await categoriesTable.toArray();
+
+      // Присваиваем порядок по текущему порядку в таблице
+      for (let i = 0; i < allCategories.length; i++) {
+        await categoriesTable.update(allCategories[i].id, { orderId: i });
+      }
+
+      console.log(`orderId проставлен для ${allCategories.length} категорий`);
+    });
+
     // Заполнение при ПЕРВОМ создании БД
     this.on('populate', async () => {
       console.log('Первый запуск БД — заполняем категории');
@@ -126,6 +150,7 @@ class TodosDB extends Dexie {
       await categoryTable.bulkAdd(DEFAULT_CATEGORIES.map((item, index) => ({
         id: index + 1,
         name: item,
+        orderId: index,
       })));
 
       console.log('Добавлены дефолтные категории через populate');
