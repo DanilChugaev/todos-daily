@@ -12,7 +12,7 @@ import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
 
 interface TaskEditorModalProps {
-  task?: ITask;
+  task?: Partial<ITask>;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -35,19 +35,19 @@ export function TaskEditorModal({
   });
 
   // const [newSubtask, setNewSubtask] = useState('');
-  const isEditMode = !!task;
+  const isEditMode = Boolean(task?.id);
 
   // Подставляем данные при открытии на редактирование
   useEffect(() => {
-    if (task) {
+    if (task?.id) {
       setTimeout(() => {
         setForm({
-          title: task.title,
+          title: task.title!,
           description: task.description || '',
-          categoryId: task.categoryId!,
-          priority: task.priority,
+          categoryId: task.category?.id ?? 0,
+          priority: task.priority ?? 'medium',
           dueDate: task.dueDate || '',
-          subtasks: [...task.subtasks],
+          subtasks: [...(task.subtasks ?? [])],
         });
       }, 0);
     } else {
@@ -56,7 +56,7 @@ export function TaskEditorModal({
         setForm({
           title: '',
           description: '',
-          categoryId: 0,
+          categoryId: task?.category?.id ?? 0,
           priority: 'medium',
           dueDate: '',
           subtasks: [],
@@ -83,7 +83,7 @@ export function TaskEditorModal({
       subtasks: form.subtasks,
     };
 
-    if (isEditMode && task) {
+    if (isEditMode && task?.id) {
       await updateTask(task.id, taskData);
     } else {
       await addTask(taskData);
@@ -115,7 +115,7 @@ export function TaskEditorModal({
     const confirmed = window.confirm('Точно удалить задачу?\n\nЭто действие нельзя отменить.');
 
     if (confirmed) {
-      await deleteTask(task.id);
+      await deleteTask(task.id!);
 
       handleBeforeClose();
     }

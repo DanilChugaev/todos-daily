@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
-import { db, type ICategory } from '../utils/db/db.ts';
+import { db, type ICategory, type ITaskDB } from '../utils/db/db.ts';
 import type { ITask } from '../utils/db/db.ts';
 
 export const useTasks = () => {
@@ -39,8 +39,8 @@ export const useTasks = () => {
 
   // ========== CRUD ==========
 
-  const addTask = useCallback(async (taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
-    const newTask: ITask = {
+  const addTask = useCallback(async (taskData: Omit<ITaskDB, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
+    const newTask: ITaskDB = {
       ...taskData,
       id: Date.now().toString(36) + Math.random().toString(36).substring(2), // тот же стиль, что был в storage.ts
       completed: false,
@@ -85,6 +85,7 @@ export const useTasks = () => {
 
   return {
     tasks,
+    categoryIdFilter,
     setCategoryIdFilter,
     addTask,
     updateTask,

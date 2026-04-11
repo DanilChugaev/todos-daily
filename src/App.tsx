@@ -12,16 +12,21 @@ import { useCategories } from './hooks/useCategories.ts';
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<ITask | undefined>(undefined);
+  const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
 
-  const { tasks, setCategoryIdFilter, toggleComplete } = useTasks();
+  const { tasks, categoryIdFilter, setCategoryIdFilter, toggleComplete } = useTasks();
   const { categories } = useCategories();
 
   const activeTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
 
   function openAddModal() {
-    setEditingTask(undefined);
+    setEditingTask({
+      category: {
+        id: categoryIdFilter,
+        name: '',
+      },
+    });
     setModalOpen(true);
   }
 
