@@ -25,6 +25,7 @@ function App() {
       category: {
         id: categoryIdFilter,
         name: '',
+        orderId: 0,
       },
     });
     setModalOpen(true);

@@ -8,12 +8,13 @@ export const useCategories = () => {
   // ========== CRUD ==========
 
   const addCategory = useCallback(async (name: ICategory['name']) => {
-      const lastCategory = await db.categories.orderBy('id').last();
+      const lastCategoryById = await db.categories.orderBy('id').last();
+      const lastCategoryByOrder = await db.categories.orderBy('orderId').last();
 
       const newCategory: ICategory = {
-        id: ++lastCategory!.id,
+        id: ++lastCategoryById!.id,
         name,
-        orderId: ++lastCategory!.orderId,
+        orderId: ++lastCategoryByOrder!.orderId,
       };
   
       await db.categories.add(newCategory);
