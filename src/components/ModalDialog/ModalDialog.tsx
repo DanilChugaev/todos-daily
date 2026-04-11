@@ -1,6 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import './modalDialog.pcss';
+import './modal-dialog.pcss';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
 import { Button } from '../Button/Button.tsx';
 import { ANIMATION_MS } from '../../constants.ts';
@@ -18,11 +18,11 @@ export function ModalDialog({
   children,
   onClose,
 }: ModalDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isShowModal, setIsShowModal] = useState(false);
 
-  const handleClose = useCallback((onCloseFn: () => void)=> {
+  const handleClose = useCallback((onCloseFn: () => void) => {
     setIsAnimating(false);
 
     setTimeout(() => {
@@ -34,27 +34,18 @@ export function ModalDialog({
 
   useEffect(() => {
     if (isOpen) {
-
-       
-      setIsShowModal(true);
+      setTimeout(() => {
+        setIsShowModal(true);
+      }, 0);
 
       setTimeout(() => {
-        dialogRef.current?.showModal();
-
         setIsAnimating(true);
-      }, 0);
+      }, 10);
     } else {
-      handleClose(() => dialogRef.current?.close());
+      setTimeout(() => {
+        handleClose(() => {});
+      }, 0);
     }
-
-    return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const dialog = dialogRef.current;
-
-      if (dialog?.open) {
-        handleClose(() => dialog.close());
-      }
-    };
   }, [isOpen, handleClose]);
 
   useEffect(() => {
@@ -75,20 +66,23 @@ export function ModalDialog({
   return (
     <>
       {isShowModal && (createPortal(
-        <dialog
-          className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
-          ref={dialogRef}
-        >
-          <div className="modal-dialog__header">
-            <div className="modal-dialog__title">{title}</div>
+        <>
+          <div
+            className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
+            ref={dialogRef}
+          >
+            <div className="modal-dialog__header">
+              <div className="modal-dialog__title">{title}</div>
 
-            <Button icon className="modal-dialog__close-btn" onClick={() => handleClose(onClose)}>
-              <CloseIcon />
-            </Button>
+              <Button icon className="modal-dialog__close-btn" onClick={() => handleClose(onClose)}>
+                <CloseIcon />
+              </Button>
+            </div>
+
+            <div className="modal-dialog__content">{children}</div>
           </div>
-
-          <div className="modal-dialog__content">{children}</div>
-        </dialog>,
+          <div className="modal-dialog-backdrop" onClick={() => handleClose(onClose)}></div>
+        </>,
         document.body,
       ))}
     </>

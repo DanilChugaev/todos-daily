@@ -7,27 +7,36 @@
     width: 100%;
     max-width: 100%;
     padding: var(--spacer-d);
-    margin-bottom: 0;
     border-top-left-radius: var(--border-radius-c);
     border-top-right-radius: var(--border-radius-c);
     border: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     background-color: var(--modal-dialog-bg-color);
     color: var(--modal-dialog-text-color);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     transform: translateY(100%);
-    transition: transform 0.3s;
-    z-index: 10;
+    transition: transform 0.3s, opacity 0.3s;
+    z-index: 20;
 
-    &::backdrop {
+    & + .modal-dialog-backdrop {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         opacity: 0;
         background-color: transparent;
         transition: opacity 0.3s, background-color 0.3s;
+        z-index: 10;
     }
 
     &--active {
         transform: translateY(0);
 
-        &::backdrop {
+        & + .modal-dialog-backdrop {
             opacity: 1;
             background-color: var(--modal-dialog-backdrop);
         }
@@ -50,13 +59,19 @@
         gap: var(--spacer-d);
     }
 
+    /* Стили для десктопа */
     @media (--min-media-mobile) {
         max-width: 600px;
-        transform: translateY(-45vh);
+        top: 50%;
+        bottom: initial;
+        left: 50%;
+        right: initial;
+        transform: translate(-50%, -50%) translateY(10%);
         opacity: 0;
         border-radius: var(--border-radius-c);
 
         &--active {
+            transform: translate(-50%, -50%) translateY(0);
             opacity: 1;
         }
     }

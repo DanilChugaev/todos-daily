@@ -22,7 +22,7 @@ export function TaskList({
   const [isOpened, setIsOpened] = useState(isOpen);
 
   return (
-    <div className={`task-list ${isOpened ? 'task-list--active': ''} `}>
+    <div className={`task-list${isOpened ? ' task-list--active' : ''}`}>
       <p className="task-list__title" onClick={() => setIsOpened(!isOpened)}>
         <span>{title}</span>
 

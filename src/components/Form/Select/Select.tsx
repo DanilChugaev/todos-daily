@@ -22,7 +22,7 @@ export function Select({ id, label, placeholder, value, options, onChange }: Sel
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       >
-        <option value={0} disabled selected hidden>{placeholder}</option>
+        <option value={0} disabled hidden>{placeholder}</option>
         {
           options.map((option) => (
             <option key={option.id} value={option.id}>
