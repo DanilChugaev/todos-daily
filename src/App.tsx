@@ -49,29 +49,23 @@ function App() {
               <>
                 {
                   activeTasks.length ? (
-                    <>
-                      <p style={{ padding: '0 var(--spacer-d)', marginBottom: 0 }}>Активные</p>
-
-                      <TaskList
-                        items={activeTasks}
-                        onClick={openEditModal}
-                        onComplete={toggleComplete}
-                      />
-                    </>
+                    <TaskList
+                      title="Активные"
+                      items={activeTasks}
+                      onClick={openEditModal}
+                      onComplete={toggleComplete}
+                    />
                   ) : ''
                 }
 
                 {
                   completedTasks.length ? (
-                    <>
-                      <p style={{ padding: '0 var(--spacer-d)', marginBottom: 0 }}>Готовые</p>
-
-                      <TaskList
-                        items={completedTasks}
-                        onClick={openEditModal}
-                        onComplete={toggleComplete}
-                      />
-                    </>
+                    <TaskList
+                      title="Готовые"
+                      items={completedTasks}
+                      onClick={openEditModal}
+                      onComplete={toggleComplete}
+                    />
                   ) : ''
                 }
               </>

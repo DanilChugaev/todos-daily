@@ -1,21 +1,40 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
-import { db } from '../utils/db/db.ts';
+import { db, type ICategory } from '../utils/db/db.ts';
 import type { ITask } from '../utils/db/db.ts';
 
 export const useTasks = () => {
   const [categoryIdFilter, setCategoryIdFilter] = useState<number>(0);
 
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
-  const tasks = useLiveQuery(() => {
+  const tasks = useLiveQuery(async () => {
+    // Получаем информацию о категориях
+    const categories = await db.categories.toArray();
+
+    // Создаем карту категорий для быстрого поиска по ID
+    const categoryMap = new Map<number, ICategory>();
+    categories.forEach(category => {
+      categoryMap.set(category.id, category);
+    });
+
     if (!categoryIdFilter) {
-      return db.tasks.toArray();
+      const dbTasks = await db.tasks.toArray();
+
+      return dbTasks.map(task => ({
+        ...task,
+        category: categoryMap.get(task.categoryId) || undefined,
+      }));
     }
 
-    return db.tasks
+    const filteredTasks = await db.tasks
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(categoryIdFilter)
       .toArray();
+
+    return filteredTasks.map(task => ({
+      ...task,
+      category: categoryMap.get(task.categoryId) || undefined,
+    }));
   }, [categoryIdFilter]) ?? [];
 
   // ========== CRUD ==========

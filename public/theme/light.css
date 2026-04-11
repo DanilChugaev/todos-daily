@@ -26,6 +26,7 @@
     --input-color: var(--text-color);
     --input-color-inverted: var(--bg-color);
 
-    /* TodoItem */
+    /* Task */
     --task-bg-color: rgba(240,240,240,.3);
+    --task-info-text-color: rgb(from var(--text-color) r g b / 50%);
 }

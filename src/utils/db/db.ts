@@ -2,17 +2,21 @@ import Dexie, { type Table } from 'dexie';
 
 export type PriorityType = 'low' | 'medium' | 'high' | 'other';
 
-export interface ITask {
+export interface ITaskDB {
   id: string;
   title: string;
   description?: string;
-  categoryId?: ICategory['id'];
+  categoryId: ICategory['id'];
   priority: PriorityType;
   dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
   completed: boolean;
   subtasks: string[];            // массив текстовых подзадач
   createdAt: string;             // ISO
   updatedAt: string;             // ISO
+}
+
+export interface ITask extends Omit<ITaskDB, 'categoryId'> {
+  category?: ICategory;
 }
 
 export interface ICategory {
@@ -36,7 +40,7 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 class TodosDB extends Dexie {
-  tasks!: Table<ITask, string>;
+  tasks!: Table<ITaskDB, string>;
   categories!: Table<ICategory, number>;
 
   constructor() {
@@ -102,7 +106,7 @@ class TodosDB extends Dexie {
     this.version(3).upgrade(async (transaction) => {
       console.log('Запущена миграция БД до версии 3...');
 
-      const taskTable = transaction.table<ITask & { category: string }>('tasks');
+      const taskTable = transaction.table<ITaskDB & { category: string }>('tasks');
       await taskTable.toCollection().modify((task) => {
         // @ts-ignore
         delete task.category;

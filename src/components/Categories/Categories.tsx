@@ -35,6 +35,7 @@ export function Categories({ items, onSelect }: CategoriesProps) {
         </Button>
 
         {items.map(category => {
+
           return (
             <Button
               key={category.id}

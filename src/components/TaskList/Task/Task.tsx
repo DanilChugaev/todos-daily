@@ -1,20 +1,16 @@
 import './task.pcss';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
-import { Button } from '../../Button/Button.tsx';
-import { TrashIcon } from '../../Icon/TrashIcon.tsx';
 import type { ITask } from '../../../utils/db/db.ts';
 
 interface TaskProps {
   item: ITask;
   onClick:  (item: ITask) => void;
-  onRemove?:  (id: string) => void;
   onComplete:  (id: string) => void;
 }
 
 export function Task({
   item,
   onClick,
-  onRemove,
   onComplete,
 }: TaskProps) {
   return (
@@ -26,13 +22,16 @@ export function Task({
       />
 
       <div className="task__content">
-        {item.title}
-      </div>
+        <span>
+          {item.title}
+        </span>
 
-      <div className="task__actions">
-        {onRemove && <Button icon onClick={() => onRemove(item.id!)}>
-          <TrashIcon />
-        </Button>}
+
+        <div className="task__info">
+          {item.category?.name && (
+            <span className="task__category">{item.category?.name}</span>
+          )}
+        </div>
       </div>
     </li>
   );
