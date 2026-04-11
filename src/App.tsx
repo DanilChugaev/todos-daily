@@ -50,8 +50,9 @@ function App() {
                 {
                   activeTasks.length ? (
                     <TaskList
-                      title="Активные"
+                      title={`Активные (${activeTasks.length})`}
                       items={activeTasks}
+                      isOpen
                       onClick={openEditModal}
                       onComplete={toggleComplete}
                     />
@@ -61,7 +62,7 @@ function App() {
                 {
                   completedTasks.length ? (
                     <TaskList
-                      title="Готовые"
+                      title={`Готовые (${completedTasks.length})`}
                       items={completedTasks}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
