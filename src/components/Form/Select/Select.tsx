@@ -19,6 +19,7 @@ export function Select({ id, label, placeholder, value, options, onChange }: Sel
     >
       <select
         id={id}
+        className={`select${value ? ' select--selected' : ''}`}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       >

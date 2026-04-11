@@ -42,7 +42,6 @@ function App() {
 
   return (
     <>
-      {categoryIdFilter}
       <Header/>
 
       <Categories selected={categoryIdFilter} items={categories} onSelect={setCategoryIdFilter}/>
