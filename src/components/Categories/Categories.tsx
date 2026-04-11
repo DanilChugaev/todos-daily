@@ -3,6 +3,7 @@ import { Button } from '../Button/Button.tsx';
 import type { ICategory } from '../../utils/db/db.ts';
 import { useState } from 'react';
 import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditorModal.tsx';
+import { EditIcon } from '../Icon/EditIcon.tsx';
 
 interface CategoriesProps {
   items: ICategory[];
@@ -48,10 +49,10 @@ export function Categories({ items, onSelect }: CategoriesProps) {
         })}
 
         <Button
-          className="categories__button"
+          icon
           onClick={() => setModalOpen(true)}
         >
-          edit
+          <EditIcon width={20} height={20}/>
         </Button>
       </div>
 
