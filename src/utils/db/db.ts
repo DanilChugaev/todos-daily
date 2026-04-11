@@ -6,7 +6,7 @@ export interface ITask {
   id: string;
   title: string;
   description?: string;
-  category: string;              // например: "Работа", "Личное" и т.д.
+  categoryId?: ICategory['id'];
   priority: PriorityType;
   dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
   completed: boolean;
@@ -53,15 +53,32 @@ class TodosDB extends Dexie {
       categories: '++id, name', // ++id = авто-инкремент
     });
 
+    // Версия 3 — новая схема + миграция - замена поля category на categoryId
+    this.version(2).stores({
+      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      categories: '++id, name',
+    });
+
     // Миграция данных при обновлении до версии 2
     this.version(2).upgrade(async (transaction) => {
       console.log('Запущена миграция БД до версии 2...');
 
       // 1. Всем текущим задачам ставим priority = 'other'
-      const taskTable = transaction.table<ITask>('tasks');
+      const taskTable = transaction.table<{
+        id: string;
+        title: string;
+        description?: string;
+        category?: ICategory;              // например: "Работа", "Личное" и т.д.
+        priority: PriorityType;
+        dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
+        completed: boolean;
+        subtasks: string[];            // массив текстовых подзадач
+        createdAt: string;             // ISO
+        updatedAt: string;             // ISO
+      }>('tasks');
       await taskTable.toCollection().modify((task) => {
         task.priority = 'other';
-        task.category = '';
+        task.category = undefined;
         task.updatedAt = new Date().toISOString();
       });
 
@@ -79,6 +96,22 @@ class TodosDB extends Dexie {
 
         console.log('Добавлены дефолтные категории');
       }
+    });
+
+    // Миграция данных при обновлении до версии 3
+    this.version(3).upgrade(async (transaction) => {
+      console.log('Запущена миграция БД до версии 3...');
+
+      const taskTable = transaction.table<ITask & { category: string }>('tasks');
+      await taskTable.toCollection().modify((task) => {
+        // @ts-ignore
+        delete task.category;
+
+        task.categoryId = 0;
+        task.updatedAt = new Date().toISOString();
+      });
+
+      console.log('Всем задачам установлен categoryId');
     });
 
     // Заполнение при ПЕРВОМ создании БД

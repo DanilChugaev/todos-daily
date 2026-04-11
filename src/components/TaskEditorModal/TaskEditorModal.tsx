@@ -25,7 +25,7 @@ export function TaskEditorModal({
   const [form, setForm] = useState({
     title: '',
     description: '',
-    category: 'other',
+    categoryId: 0,
     priority: 'medium' as ITask['priority'],
     dueDate: '',
     subtasks: [] as string[],
@@ -41,7 +41,7 @@ export function TaskEditorModal({
         setForm({
           title: task.title,
           description: task.description || '',
-          category: task.category,
+          categoryId: task.categoryId!,
           priority: task.priority,
           dueDate: task.dueDate || '',
           subtasks: [...task.subtasks],
@@ -53,7 +53,7 @@ export function TaskEditorModal({
         setForm({
           title: '',
           description: '',
-          category: 'other',
+          categoryId: 0,
           priority: 'medium',
           dueDate: '',
           subtasks: [],
@@ -74,7 +74,7 @@ export function TaskEditorModal({
     const taskData = {
       title: form.title.trim(),
       description: form.description.trim() || undefined,
-      category: form.category,
+      categoryId: form.categoryId,
       priority: form.priority,
       dueDate: form.dueDate || undefined,
       subtasks: form.subtasks,
@@ -122,7 +122,7 @@ export function TaskEditorModal({
     setForm({
       title: '',
       description: '',
-      category: 'other',
+      categoryId: 0,
       priority: 'medium',
       dueDate: '',
       subtasks: [],

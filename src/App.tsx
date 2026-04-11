@@ -14,13 +14,11 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<ITask | undefined>(undefined);
 
-  const { tasks, toggleComplete } = useTasks();
+  const { tasks, setCategoryIdFilter, toggleComplete } = useTasks();
   const { categories } = useCategories();
 
   const activeTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
-
-  function selectCategory() {}
 
   function openAddModal() {
     setEditingTask(undefined);
@@ -41,7 +39,7 @@ function App() {
     <>
       <Header/>
 
-      <Categories items={categories} onSelect={selectCategory}/>
+      <Categories items={categories} onSelect={setCategoryIdFilter}/>
 
       <div style={{ marginBottom: '40px' }}>
         {
