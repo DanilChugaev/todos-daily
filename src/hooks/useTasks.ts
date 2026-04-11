@@ -83,6 +83,18 @@ export const useTasks = () => {
     await db.tasks.clear();
   }, []);
 
+  const reassignCategory = useCallback((oldCategoryId: number, newCategoryId: number) => {
+    if (oldCategoryId === newCategoryId) return;
+
+    return db.tasks
+      .where('categoryId')
+      .equals(oldCategoryId)
+      .modify({
+        categoryId: newCategoryId,
+        updatedAt: new Date().toISOString(),
+      });
+  }, []);
+
   return {
     tasks,
     categoryIdFilter,
@@ -93,5 +105,6 @@ export const useTasks = () => {
     toggleComplete,
     getTaskById,
     clearAll,
+    reassignCategory,
   };
 };

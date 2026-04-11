@@ -6,12 +6,13 @@ import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditor
 import { EditIcon } from '../Icon/EditIcon.tsx';
 
 interface CategoriesProps {
+  selected: number;
   items: ICategory[];
   onSelect: (item: number) => void;
 }
 
-export function Categories({ items, onSelect }: CategoriesProps) {
-  const [selectedCategory, setSelectedCategory] = useState<number>(0);
+export function Categories({ selected, items, onSelect }: CategoriesProps) {
+  const [selectedCategory, setSelectedCategory] = useState<number>(selected);
   const [modalOpen, setModalOpen] = useState(false);
 
   // todo: выбранную категорию сохранять в localStorage
@@ -57,7 +58,9 @@ export function Categories({ items, onSelect }: CategoriesProps) {
       </div>
 
       <CategoriesEditorModal
+        selected={selectedCategory}
         isOpen={modalOpen}
+        onSelected={handleSelect}
         onClose={() => setModalOpen(false)}
       />
     </>

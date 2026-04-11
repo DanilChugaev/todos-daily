@@ -42,9 +42,10 @@ function App() {
 
   return (
     <>
+      {categoryIdFilter}
       <Header/>
 
-      <Categories items={categories} onSelect={setCategoryIdFilter}/>
+      <Categories selected={categoryIdFilter} items={categories} onSelect={setCategoryIdFilter}/>
 
       <div style={{ marginBottom: '40px' }}>
         {
