@@ -84,12 +84,13 @@ export function CategoriesEditorModal({
     const [draggedItem] = newOrder.splice(draggedIndex, 1);
     newOrder.splice(targetIndex, 0, draggedItem);
 
+    // Присваиваем новые индексы как orderId
     const updatedCategories = newOrder.map((category, i) => ({ ...category, orderId: i }));
 
     await bulkUpdateCategories(updatedCategories);
 
     setDraggedId(null);
-  }, [draggedId]);
+  }, [draggedId, categories, bulkUpdateCategories]);
 
   return (
     <ModalDialog
