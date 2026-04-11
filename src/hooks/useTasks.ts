@@ -8,7 +8,7 @@ export const useTasks = () => {
 
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
   const tasks = useLiveQuery(() => {
-    if (categoryIdFilter === undefined) {
+    if (!categoryIdFilter) {
       return db.tasks.toArray();
     }
 

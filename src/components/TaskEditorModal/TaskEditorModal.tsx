@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react';
 import { type ITask } from '../../utils/db/db.ts';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
+import { Select } from '../Form/Select/Select.tsx';
+import { useCategories } from '../../hooks/useCategories.ts';
 
 interface TaskEditorModalProps {
   task?: ITask;
@@ -21,6 +23,7 @@ export function TaskEditorModal({
   onClose,
 }: TaskEditorModalProps) {
   const { addTask, updateTask, deleteTask } = useTasks();
+  const { categories } = useCategories();
 
   const [form, setForm] = useState({
     title: '',
@@ -154,9 +157,13 @@ export function TaskEditorModal({
         onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
 
-      {/*<div>*/}
-      {/*  <CategoriesPopover/>*/}
-      {/*</div>*/}
+      <Select
+        id="task-category"
+        placeholder="Категория"
+        value={form.categoryId}
+        onChange={(categoryId) => setForm({ ...form, categoryId })}
+        options={categories}
+      />
 
       {isEditMode && (
         <Button onClick={handleDelete} color="red">
