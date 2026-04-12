@@ -13,7 +13,9 @@
     }
 
     &__content {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacer-a);
         flex: 1;
         padding: var(--spacer-d) 0;
     }
@@ -25,9 +27,6 @@
     &__info {
         display: flex;
         gap: var(--spacer-d);
-        position: absolute;
-        left: 0;
-        bottom: var(--spacer-a);
         color: var(--task-info-text-color);
         font-size: 0.667rem; /*12px при base 18px*/
     }

@@ -4,12 +4,14 @@ import type { ITask } from '../../../utils/db/db.ts';
 
 interface TaskProps {
   item: ITask;
+  categoryName: string;
   onClick:  (item: ITask) => void;
   onComplete:  (id: string) => void;
 }
 
 export function Task({
   item,
+  categoryName,
   onClick,
   onComplete,
 }: TaskProps) {
@@ -28,8 +30,8 @@ export function Task({
 
 
         <div className="task__info">
-          {item.category?.name && (
-            <span className="task__category">{item.category?.name}</span>
+          {categoryName && (
+            <span className="task__category">{categoryName}</span>
           )}
         </div>
       </div>

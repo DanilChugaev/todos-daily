@@ -44,7 +44,6 @@ export function CategoriesEditorModal({
       }
 
       await reassignCategory(id, 0);
-      // todo: для категорий добавить orderId для порядка
       await deleteCategory(id);
     }
   }

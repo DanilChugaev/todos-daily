@@ -4,6 +4,19 @@ import { db, type ICategory } from '../utils/db/db.ts';
 
 export const useCategories = () => {
   const categories = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []) ?? [];
+  const categoriesMap = useLiveQuery(async () => {
+    // Получаем информацию о категориях
+    const categories = await db.categories.toArray();
+
+    // Создаем карту категорий для быстрого поиска по ID
+    const cMap = new Map<number, ICategory>();
+
+    categories.forEach(category => {
+      cMap.set(category.id, category);
+    });
+
+    return cMap;
+  });
 
   // ========== CRUD ==========
 
@@ -37,6 +50,7 @@ export const useCategories = () => {
 
   return {
     categories,
+    categoriesMap,
     addCategory,
     updateCategory,
     deleteCategory,

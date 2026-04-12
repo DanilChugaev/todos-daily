@@ -62,7 +62,6 @@ export function ModalDialog({
     return () => document.removeEventListener('keydown', handleEscape, false);
   }, [isOpen, onClose, handleClose]);
 
-  // todo заменить dialog на обычный div
   return (
     <>
       {isShowModal && (createPortal(

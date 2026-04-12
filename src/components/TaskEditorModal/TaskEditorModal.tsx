@@ -41,12 +41,9 @@ export function TaskEditorModal({
   useEffect(() => {
     if (task?.id) {
       setTimeout(() => {
-        debugger
         setForm({
           title: task.title!,
           description: task.description || '',
-          // todo fix this после подстановки имени категории в цикл вывода
-          // @ts-ignore
           categoryId: task.categoryId ?? 0,
           priority: task.priority ?? 'medium',
           dueDate: task.dueDate || '',
@@ -59,7 +56,7 @@ export function TaskEditorModal({
         setForm({
           title: '',
           description: '',
-          categoryId: task?.category?.id ?? 0,
+          categoryId: task?.categoryId ?? 0,
           priority: 'medium',
           dueDate: '',
           subtasks: [],

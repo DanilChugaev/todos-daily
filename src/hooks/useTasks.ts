@@ -1,33 +1,17 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
-import { db, type ICategory, type ITaskDB } from '../utils/db/db.ts';
-import type { ITask } from '../utils/db/db.ts';
+import { db, type ITask } from '../utils/db/db.ts';
 
 export const useTasks = () => {
   const [categoryIdFilter, setCategoryIdFilter] = useState<number>(0);
 
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
-  const tasks = useLiveQuery(async () => {
-    // Получаем информацию о категориях
-    const categories = await db.categories.toArray();
-
-    // Создаем карту категорий для быстрого поиска по ID
-    const categoryMap = new Map<number, ICategory>();
-    categories.forEach(category => {
-      categoryMap.set(category.id, category);
-    });
-
+  const tasks = useLiveQuery(() => {
     if (!categoryIdFilter) {
-      const dbTasks = await db.tasks.toArray();
-
-      // todo переместить подстановку имени категории в цикл вывода компонентов задачи
-      return dbTasks.map(task => ({
-        ...task,
-        category: categoryMap.get(task.categoryId) || undefined,
-      }));
+      return db.tasks.toArray();
     }
 
-    return await db.tasks
+    return db.tasks
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(categoryIdFilter)
       .toArray();
@@ -35,8 +19,8 @@ export const useTasks = () => {
 
   // ========== CRUD ==========
 
-  const addTask = useCallback(async (taskData: Omit<ITaskDB, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
-    const newTask: ITaskDB = {
+  const addTask = useCallback(async (taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
+    const newTask: ITask = {
       ...taskData,
       id: Date.now().toString(36) + Math.random().toString(36).substring(2), // тот же стиль, что был в storage.ts
       completed: false,

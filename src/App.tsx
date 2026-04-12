@@ -22,11 +22,7 @@ function App() {
 
   function openAddModal() {
     setEditingTask({
-      category: {
-        id: categoryIdFilter,
-        name: '',
-        orderId: 0,
-      },
+      categoryId: categoryIdFilter,
     });
     setModalOpen(true);
   }
@@ -58,6 +54,7 @@ function App() {
                     <TaskList
                       title={`Активные (${activeTasks.length})`}
                       items={activeTasks}
+                      categoryIdFilter={categoryIdFilter}
                       isOpen
                       onClick={openEditModal}
                       onComplete={toggleComplete}
@@ -70,6 +67,7 @@ function App() {
                     <TaskList
                       title={`Готовые (${completedTasks.length})`}
                       items={completedTasks}
+                      categoryIdFilter={categoryIdFilter}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
                     />
