@@ -20,6 +20,7 @@ export const useTasks = () => {
     if (!categoryIdFilter) {
       const dbTasks = await db.tasks.toArray();
 
+      // todo переместить подстановку имени категории в цикл вывода компонентов задачи
       return dbTasks.map(task => ({
         ...task,
         category: categoryMap.get(task.categoryId) || undefined,
