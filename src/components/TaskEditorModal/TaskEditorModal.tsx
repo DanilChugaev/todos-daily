@@ -165,19 +165,19 @@ export function TaskEditorModal({
         options={categories}
       />
 
-      {isEditMode && (
-        <Button onClick={handleDelete} color="red">
-          <TrashIcon/>
+      <div className="task-editor-modal__actions">
+        <Button className="task-editor-modal__create-btn" onClick={handleSubmit}>
+          <PlusIcon/>
 
-          Удалить задачу
+          {task?.title ? ' Сохранить' : 'Добавить'}
         </Button>
-      )}
 
-      <Button onClick={handleSubmit}>
-        <PlusIcon/>
-
-        {task?.title ? ' Сохранить' : 'Добавить'}
-      </Button>
+        {isEditMode && (
+          <Button icon onClick={handleDelete}>
+            <TrashIcon/>
+          </Button>
+        )}
+      </div>
     </ModalDialog>
   );
 }
