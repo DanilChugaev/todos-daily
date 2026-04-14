@@ -13,6 +13,10 @@
         box-shadow: var(--box-shadow-hover);
     }
 
+    &__category {
+        align-self: flex-end;
+    }
+
     &__content {
         display: flex;
         flex-direction: column;
@@ -27,7 +31,8 @@
 
     &__info {
         display: flex;
-        gap: var(--spacer-d);
+        align-items: center;
+        gap: var(--spacer-b);
         color: var(--task-info-text-color);
         font-size: 0.667rem; /*12px при base 18px*/
     }
