@@ -31,24 +31,23 @@ export function Task({
           {item.title}
         </span>
 
-
         <div className="task__info">
-          {item.priority !== 4 && (
-            <PriorityIcon
-              className="task__priority"
-              title={PRIORITY[item.priority]}
-              width="0.6rem"
-              height="0.6rem"
-              fill={PRIORITIES_COLOR_MAP[item.priority]}
-            />
-          )}
-
           {categoryName && (
             <span className="task__category">{categoryName}</span>
           )}
 
           {item.description && <DocIcon width="18px" height="18px"/>}
         </div>
+
+        {item.priority !== 4 && (
+          <PriorityIcon
+            className="task__priority"
+            title={PRIORITY[item.priority]}
+            width="0.6rem"
+            height="0.6rem"
+            fill={PRIORITIES_COLOR_MAP[item.priority]}
+          />
+        )}
       </div>
     </li>
   );
