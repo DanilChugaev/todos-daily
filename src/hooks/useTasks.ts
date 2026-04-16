@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
-import { db, type ITask } from '../utils/db/db.ts';
+import { db } from '../utils/db/db.ts';
+import type { ITask } from '../types.ts';
 
 export const useTasks = () => {
   const [categoryIdFilter, setCategoryIdFilter] = useState<number>(0);
@@ -8,13 +9,13 @@ export const useTasks = () => {
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
   const tasks = useLiveQuery(() => {
     if (!categoryIdFilter) {
-      return db.tasks.toArray();
+      return db.tasks.orderBy('priority').toArray();
     }
 
     return db.tasks
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(categoryIdFilter)
-      .toArray();
+      .sortBy('priority');
   }, [categoryIdFilter]) ?? [];
 
   // ========== CRUD ==========

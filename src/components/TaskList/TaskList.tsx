@@ -1,9 +1,9 @@
 import './task-list.pcss';
 import { Task } from './Task/Task.tsx';
-import type { ITask } from '../../utils/db/db.ts';
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowIcon } from '../Icon/ArrowIcon.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
+import type { ITask } from '../../types.ts';
 
 interface TaskListProps {
   title: string;

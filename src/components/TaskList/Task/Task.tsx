@@ -1,7 +1,9 @@
 import './task.pcss';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
-import type { ITask } from '../../../utils/db/db.ts';
 import { DocIcon } from '../../Icon/DocIcon.tsx';
+import { PriorityIcon } from '../../Icon/PriorityIcon.tsx';
+import { PRIORITIES_COLOR_MAP, PRIORITY } from '../../../constants.ts';
+import type { ITask } from '../../../types.ts';
 
 interface TaskProps {
   item: ITask;
@@ -31,6 +33,16 @@ export function Task({
 
 
         <div className="task__info">
+          {item.priority !== 4 && (
+            <PriorityIcon
+              className="task__priority"
+              title={PRIORITY[item.priority]}
+              width="0.6rem"
+              height="0.6rem"
+              fill={PRIORITIES_COLOR_MAP[item.priority]}
+            />
+          )}
+
           {categoryName && (
             <span className="task__category">{categoryName}</span>
           )}

@@ -1,40 +1,6 @@
 import Dexie, { type Table } from 'dexie';
-
-export type PriorityType = 'low' | 'medium' | 'high' | 'other';
-
-export interface ITask {
-  id: string;
-  title: string;
-  description?: string;
-  categoryId: ICategory['id'];
-  priority: PriorityType;
-  dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
-  completed: boolean;
-  subtasks: string[];            // массив текстовых подзадач
-  createdAt: string;             // ISO
-  updatedAt: string;             // ISO
-}
-
-export interface ICategory {
-  id: number;          // авто-инкремент от Dexie
-  name: string;
-  orderId: number;
-}
-
-// Для удобства — константы (будут использоваться в модалке)
-export const PRIORITIES = [
-  { value: 'high', label: 'Высокий' },
-  { value: 'medium', label: 'Средний' },
-  { value: 'low', label: 'Низкий' },
-  { value: 'other', label: 'Другое' },
-];
-
-export const DEFAULT_CATEGORIES = [
-  'Работа',
-  'Дом',
-  'Покупки',
-  'Другое',
-];
+import { type ICategory, type ITask, PriorityEnum } from '../../types.ts';
+import { DEFAULT_CATEGORIES } from '../../constants.ts';
 
 class TodosDB extends Dexie {
   tasks!: Table<ITask, string>;
@@ -60,8 +26,14 @@ class TodosDB extends Dexie {
       categories: '++id, name',
     });
 
-    // Версия 3 — добавлен
+    // Версия 4 — добавлен orderId
     this.version(4).stores({
+      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      categories: '++id, name, orderId',
+    });
+
+    // Версия 5 — priority стал числом
+    this.version(5).stores({
       tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
       categories: '++id, name, orderId',
     });
@@ -76,7 +48,7 @@ class TodosDB extends Dexie {
         title: string;
         description?: string;
         category?: ICategory;              // например: "Работа", "Личное" и т.д.
-        priority: PriorityType;
+        priority: string;
         dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
         completed: boolean;
         subtasks: string[];            // массив текстовых подзадач
@@ -136,6 +108,20 @@ class TodosDB extends Dexie {
       }
 
       console.log(`orderId проставлен для ${allCategories.length} категорий`);
+    });
+
+    // Миграция данных при обновлении до версии 5
+    this.version(5).upgrade(async (transaction) => {
+      console.log('Запущена миграция БД до версии 5...');
+
+      // Всем текущим задачам ставим priority = 4 - не определен
+      const taskTable = transaction.table<ITask>('tasks');
+      await taskTable.toCollection().modify((task) => {
+        task.priority = PriorityEnum.OTHER;
+        task.updatedAt = new Date().toISOString();
+      });
+
+      console.log('Всем задачам установлен приоритет 4 - не определен');
     });
 
     // Заполнение при ПЕРВОМ создании БД

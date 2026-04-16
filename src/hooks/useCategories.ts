@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback } from 'react';
-import { db, type ICategory } from '../utils/db/db.ts';
+import { db } from '../utils/db/db.ts';
+import type { ICategory } from '../types.ts';
 
 export const useCategories = () => {
   const categories = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []) ?? [];

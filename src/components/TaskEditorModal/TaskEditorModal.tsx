@@ -5,11 +5,12 @@ import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
 import { useEffect, useState } from 'react';
-import { type ITask } from '../../utils/db/db.ts';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
+import { type ITask, PriorityEnum } from '../../types.ts';
+import { PRIORITIES_OPTIONS } from '../../constants.ts';
 
 interface TaskEditorModalProps {
   task?: Partial<ITask>;
@@ -29,7 +30,7 @@ export function TaskEditorModal({
     title: '',
     description: '',
     categoryId: 0,
-    priority: 'medium' as ITask['priority'],
+    priority: PriorityEnum.OTHER,
     dueDate: '',
     subtasks: [] as string[],
   });
@@ -45,7 +46,7 @@ export function TaskEditorModal({
           title: task.title!,
           description: task.description || '',
           categoryId: task.categoryId ?? 0,
-          priority: task.priority ?? 'medium',
+          priority: task.priority ?? PriorityEnum.OTHER,
           dueDate: task.dueDate || '',
           subtasks: [...(task.subtasks ?? [])],
         });
@@ -57,7 +58,7 @@ export function TaskEditorModal({
           title: '',
           description: '',
           categoryId: task?.categoryId ?? 0,
-          priority: 'medium',
+          priority: PriorityEnum.OTHER,
           dueDate: '',
           subtasks: [],
         });
@@ -126,7 +127,7 @@ export function TaskEditorModal({
       title: '',
       description: '',
       categoryId: 0,
-      priority: 'medium',
+      priority: PriorityEnum.OTHER,
       dueDate: '',
       subtasks: [],
     });
@@ -157,13 +158,24 @@ export function TaskEditorModal({
         onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
 
-      <Select
-        id="task-category"
-        placeholder="Категория"
-        value={form.categoryId}
-        onChange={(categoryId) => setForm({ ...form, categoryId })}
-        options={categories}
-      />
+      <div className="task-editor-modal__selects">
+        <Select
+          id="task-category"
+          placeholder="Категория"
+          value={form.categoryId}
+          onChange={(categoryId) => setForm({ ...form, categoryId })}
+          options={categories}
+        />
+
+        <Select
+          id="task-category"
+          placeholder="Приоритет"
+          value={form.priority}
+          onChange={(priority) => setForm({ ...form, priority })}
+          options={PRIORITIES_OPTIONS}
+        />
+      </div>
+
 
       <div className="task-editor-modal__actions">
         <Button className="task-editor-modal__create-btn" onClick={handleSubmit}>

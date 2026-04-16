@@ -1,12 +1,13 @@
 import './select.pcss';
 import { FormField } from '../FormField/FormField.tsx';
+import type { ISelect } from '../../../types.ts';
 
 interface SelectProps {
   id: string;
   label?: string;
   placeholder: string;
   value: number;
-  options: {id: number; name: string}[];
+  options: ISelect<any>[];
   onChange: (value: number) => void;
 }
 

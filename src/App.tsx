@@ -7,8 +7,8 @@ import { Button } from './components/Button/Button.tsx';
 import { TaskEditorModal } from './components/TaskEditorModal/TaskEditorModal.tsx';
 import './styles/App.pcss';
 import { useTasks } from './hooks/useTasks';
-import type { ITask } from './utils/db/db.ts';
 import { useCategories } from './hooks/useCategories.ts';
+import type { ITask } from './types.ts';
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);

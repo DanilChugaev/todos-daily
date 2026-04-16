@@ -18,7 +18,8 @@
         flex-direction: column;
         gap: var(--spacer-a);
         flex: 1;
-        padding: var(--spacer-d) var(--spacer-d) var(--spacer-d) 0;
+        padding: var(--spacer-d) var(--spacer-e) var(--spacer-d) 0;
+        position: relative;
     }
 
     &__actions {
@@ -31,5 +32,20 @@
         gap: var(--spacer-b);
         color: var(--task-info-text-color);
         font-size: 0.667rem; /*12px при base 18px*/
+    }
+
+    &__icons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacer-a);
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+    &__priority {
+        position: absolute;
+        top: var(--spacer-c);
+        right: var(--spacer-c);
     }
 }
