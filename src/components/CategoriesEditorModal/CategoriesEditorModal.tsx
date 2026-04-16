@@ -6,9 +6,9 @@ import { Input } from '../Form/Input/Input.tsx';
 import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
-import type { ICategory } from '../../utils/db/db.ts';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { GrabPlaceIcon } from '../Icon/GrabPlaceIcon.tsx';
+import type {ICategory} from '../../types.ts';
 
 interface CategoriesEditorModalProps {
   selected: number;

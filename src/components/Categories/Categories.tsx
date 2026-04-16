@@ -1,9 +1,9 @@
 import './categories.pcss';
 import { Button } from '../Button/Button.tsx';
-import type { ICategory } from '../../utils/db/db.ts';
 import { useState } from 'react';
 import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditorModal.tsx';
 import { EditIcon } from '../Icon/EditIcon.tsx';
+import type {ICategory} from '../../types.ts';
 
 interface CategoriesProps {
   selected: number;
