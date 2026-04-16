@@ -15,8 +15,6 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
   const [selectedCategory, setSelectedCategory] = useState<number>(selected);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // todo: выбранную категорию сохранять в localStorage
-  // todo: добавить иконки для категорий
   function getClassName(id: number) {
     return `categories__button ${selectedCategory === id ? 'categories__button--active' : ''}`;
   }

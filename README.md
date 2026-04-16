@@ -4,10 +4,16 @@ To-do list for daily use
 
 [USE HERE](https://danilchugaev.github.io/todos-daily/)
 
-##  Features
+## Features
 
-- 
-- 
+- **Task Management**: Full CRUD functionality for tasks (create, read, update, delete).
+- **Task Prioritization**: Set priority levels (High, Medium, Low, Other) to focus on what's important.
+- **Custom Categories**: Organize tasks into categories with the ability to manage and edit them.
+- **Checklists/Subtasks**: Break down large tasks into smaller, manageable subtasks.
+- **Due Dates**: Set deadlines for tasks to keep track of your schedule (coming soon).
+- **Local Persistence**: Data is stored locally in the browser using IndexedDB (Dexie), so your tasks are safe even after a page refresh.
+- **Theming**: Built-in support for Light and Dark modes for comfortable use at any time of day.
+- **PWA Ready**: Installed as a progressive web app for a native-like experience.
 
 ## Run Locally
 
@@ -68,6 +74,8 @@ This project is deployed to GitHub Pages using GitHub Actions. See `.github/work
 - React: A JavaScript library for building user interfaces
 - TypeScript: For type-safe JavaScript
 - Vite: Fast build tool and dev server
+- Dexie.js: Wrapper for IndexedDB for efficient local data storage
+- PostCSS: For advanced styling and theme management
 - ESLint: For code linting and formatting
 
 ## Contributing
