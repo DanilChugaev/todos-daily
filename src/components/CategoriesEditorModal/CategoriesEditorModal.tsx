@@ -8,7 +8,7 @@ import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { GrabPlaceIcon } from '../Icon/GrabPlaceIcon.tsx';
-import type {ICategory} from '../../types.ts';
+import type { ICategory } from '../../types.ts';
 
 interface CategoriesEditorModalProps {
   selected: number;

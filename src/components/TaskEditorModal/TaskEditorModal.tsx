@@ -9,8 +9,9 @@ import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
-import { type ITask, PriorityEnum } from '../../types.ts';
+import { type ISubTask, type ITask, PriorityEnum } from '../../types.ts';
 import { PRIORITIES_OPTIONS } from '../../constants.ts';
+import { SubTask } from '../TaskList/Task/SubTask/SubTask.tsx';
 
 interface TaskEditorModalProps {
   task?: Partial<ITask>;
@@ -32,10 +33,10 @@ export function TaskEditorModal({
     categoryId: 0,
     priority: PriorityEnum.OTHER,
     dueDate: '',
-    subtasks: [] as string[],
+    subtasks: [] as ISubTask[],
   });
 
-  // const [newSubtask, setNewSubtask] = useState('');
+  const [newSubtask, setNewSubtask] = useState('');
   const isEditMode = Boolean(task?.id);
 
   // Подставляем данные при открытии на редактирование
@@ -64,7 +65,7 @@ export function TaskEditorModal({
         });
       }, 0);
     }
-    // setNewSubtask('');
+    setTimeout(() => setNewSubtask(''), 0);
   }, [task]);
 
   if (!isOpen) return null;
@@ -93,22 +94,29 @@ export function TaskEditorModal({
     handleBeforeClose();
   }
 
-  // function handleAddSubtask() {
-  //   if (newSubtask.trim()) {
-  //     setForm((prev) => ({
-  //       ...prev,
-  //       subtasks: [...prev.subtasks, newSubtask.trim()],
-  //     }));
-  //     setNewSubtask('');
-  //   }
-  // };
-  //
-  // function handleRemoveSubtask(index: number) {
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     subtasks: prev.subtasks.filter((_, i) => i !== index),
-  //   }));
-  // };
+  function handleAddSubtask() {
+    if (newSubtask.trim()) {
+      setForm((prev) => ({
+        ...prev,
+        subtasks: [...prev.subtasks, {
+          id: Date.now().toString(36) + Math.random().toString(36).substring(2),
+          title: newSubtask.trim(),
+          completed: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }],
+      }));
+
+      setNewSubtask('');
+    }
+  };
+
+  function handleRemoveSubtask(id: string) {
+    setForm((prev) => ({
+      ...prev,
+      subtasks: prev.subtasks.filter((item) => item.id !== id),
+    }));
+  };
 
   async function handleDelete() {
     if (!task) return;
@@ -174,6 +182,35 @@ export function TaskEditorModal({
           onChange={(priority) => setForm({ ...form, priority })}
           options={PRIORITIES_OPTIONS}
         />
+      </div>
+
+      {form.subtasks.length > 0 && (
+        <div className="task-editor-modal__subtask">
+          {form.subtasks.map((subtask, index) => (
+              <SubTask
+                key={index}
+                subtask={subtask}
+                onDelete={() => handleRemoveSubtask(subtask.id)}
+                onChange={() => {}}
+                onComplete={() => {}}
+              />
+            ))}
+        </div>)
+      }
+
+      <div className="task-editor-modal__new-subtasks">
+        <Input
+          id="add-subtask"
+          type="text"
+          placeholder="Добавить подзадачу"
+          value={newSubtask}
+          onChange={(e) => setNewSubtask(e.target.value)}
+          onEnter={handleAddSubtask}
+        />
+
+        <Button icon onClick={handleAddSubtask}>
+          <PlusIcon/>
+        </Button>
       </div>
 
 

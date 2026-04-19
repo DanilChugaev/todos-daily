@@ -3,7 +3,7 @@ import { Button } from '../Button/Button.tsx';
 import { useState } from 'react';
 import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditorModal.tsx';
 import { EditIcon } from '../Icon/EditIcon.tsx';
-import type {ICategory} from '../../types.ts';
+import type { ICategory } from '../../types.ts';
 
 interface CategoriesProps {
   selected: number;
