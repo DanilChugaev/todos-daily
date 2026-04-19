@@ -15,21 +15,21 @@
         gap: var(--spacer-c);
     }
 
-    &__subtask,
-    &__new-subtasks {
+    &__subtasks-list,
+    &__new-subtask {
         .button {
             padding-top: var(--spacer-a);
             padding-bottom: var(--spacer-a);
         }
     }
 
-    &__subtask {
+    &__subtasks-list {
         display: flex;
         flex-direction: column;
-        gap: var(--spacer-b);
+        gap: var(--spacer-c);
     }
 
-    &__new-subtasks {
+    &__new-subtask {
         display: flex;
         align-items: center;
 
@@ -41,7 +41,7 @@
             background-color: transparent;
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius-b);
-            color: rgb(117 117 117);
+            color: var(--text-color);
             cursor: pointer;
             padding: var(--spacer-b);
         }

@@ -1,22 +1,34 @@
 import './sub-task.pcss';
 import { Checkbox } from '../../../Checkbox/Checkbox.tsx';
-import type { ISubTask } from '../../../../types.ts';
+import type { ISubtask } from '../../../../types.ts';
 import { Button } from '../../../Button/Button.tsx';
 import { TrashIcon } from '../../../Icon/TrashIcon.tsx';
+import { useState } from 'react';
 
-interface SubTaskProps {
-  subtask: ISubTask;
-  onComplete: (id: string) => void;
-  onChange: (title: string) => void;
-  onDelete: () => void;
+interface SubtaskProps {
+  subtask: ISubtask;
+  onChange: (id: string, title: string, completed: boolean) => void;
+  onDelete: (id: string) => void;
 }
 
-export function SubTask({
+export function Subtask({
   subtask,
-  onComplete,
   onChange,
   onDelete,
-}: SubTaskProps) {
+}: SubtaskProps) {
+  const [title, setTitle] = useState(subtask.title);
+  const [completed, setCompleted] = useState(subtask.completed);
+
+  function handleComplete() {
+    setCompleted(!completed);
+    onChange(subtask.id!, title, !completed);
+  }
+
+  function handleChangeTitle(value: string) {
+    setTitle(value);
+    onChange(subtask.id!, title, completed);
+  }
+
   return (
     <li className="sub-task">
       <Checkbox
@@ -24,20 +36,19 @@ export function SubTask({
         className="sub-task__checkbox"
         width="18px"
         height="18px"
-        checked={subtask.completed}
-        onChange={() => onComplete(subtask.id!)}
+        checked={completed}
+        onChange={handleComplete}
       />
 
       <input
         type="text"
         className="sub-task__input"
-        value={subtask.title}
-        onChange={(e) => onChange(e.target.value)}
+        value={title}
+        onChange={(e) => handleChangeTitle(e.target.value)}
       />
 
-      <Button icon onClick={onDelete}>
-        <TrashIcon width="18px"
-                   height="18px"/>
+      <Button icon onClick={() => onDelete(subtask.id!)}>
+        <TrashIcon width="18px" height="18px"/>
       </Button>
     </li>
   );

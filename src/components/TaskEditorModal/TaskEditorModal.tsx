@@ -9,9 +9,9 @@ import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
-import { type ISubTask, type ITask, PriorityEnum } from '../../types.ts';
+import { type ISubtask, type ITask, PriorityEnum } from '../../types.ts';
 import { PRIORITIES_OPTIONS } from '../../constants.ts';
-import { SubTask } from '../TaskList/Task/SubTask/SubTask.tsx';
+import { Subtask } from '../TaskList/Task/Subtask/Subtask.tsx';
 
 interface TaskEditorModalProps {
   task?: Partial<ITask>;
@@ -33,7 +33,7 @@ export function TaskEditorModal({
     categoryId: 0,
     priority: PriorityEnum.OTHER,
     dueDate: '',
-    subtasks: [] as ISubTask[],
+    subtasks: [] as ISubtask[],
   });
 
   const [newSubtask, setNewSubtask] = useState('');
@@ -94,30 +94,6 @@ export function TaskEditorModal({
     handleBeforeClose();
   }
 
-  function handleAddSubtask() {
-    if (newSubtask.trim()) {
-      setForm((prev) => ({
-        ...prev,
-        subtasks: [...prev.subtasks, {
-          id: Date.now().toString(36) + Math.random().toString(36).substring(2),
-          title: newSubtask.trim(),
-          completed: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }],
-      }));
-
-      setNewSubtask('');
-    }
-  };
-
-  function handleRemoveSubtask(id: string) {
-    setForm((prev) => ({
-      ...prev,
-      subtasks: prev.subtasks.filter((item) => item.id !== id),
-    }));
-  };
-
   async function handleDelete() {
     if (!task) return;
 
@@ -142,6 +118,55 @@ export function TaskEditorModal({
 
     onClose();
   }
+
+  /* region Подзадачи */
+  function handleAddSubtask() {
+    if (newSubtask.trim()) {
+      setForm((prev) => ({
+        ...prev,
+        subtasks: [...prev.subtasks, {
+          id: Date.now().toString(36) + Math.random().toString(36).substring(2),
+          title: newSubtask.trim(),
+          completed: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }],
+      }));
+
+      setNewSubtask('');
+    }
+  };
+
+  function handleRemoveSubtask(id: string) {
+    const confirmed = window.confirm('Точно удалить?');
+
+    if (confirmed) {
+      setForm((prev) => ({
+        ...prev,
+        subtasks: prev.subtasks.filter((item) => item.id !== id),
+      }));
+    }
+  };
+
+  function handleUpdateSubtask(id: string, title: string, completed: boolean) {
+    setForm((prev) => ({
+      ...prev,
+      // todo subtasks сделать как Set или Map
+      subtasks: prev.subtasks.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            title,
+            completed,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        
+        return item;
+      }),
+    }));
+  }
+  /* endregion Подзадачи */
 
   return (
     <ModalDialog
@@ -185,20 +210,19 @@ export function TaskEditorModal({
       </div>
 
       {form.subtasks.length > 0 && (
-        <div className="task-editor-modal__subtask">
+        <div className="task-editor-modal__subtasks-list">
           {form.subtasks.map((subtask, index) => (
-              <SubTask
+              <Subtask
                 key={index}
                 subtask={subtask}
-                onDelete={() => handleRemoveSubtask(subtask.id)}
-                onChange={() => {}}
-                onComplete={() => {}}
+                onDelete={handleRemoveSubtask}
+                onChange={handleUpdateSubtask}
               />
             ))}
         </div>)
       }
 
-      <div className="task-editor-modal__new-subtasks">
+      <div className="task-editor-modal__new-subtask">
         <Input
           id="add-subtask"
           type="text"

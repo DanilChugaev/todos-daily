@@ -6,7 +6,7 @@ export enum PriorityEnum {
   OTHER = 4,
 }
 
-export interface ISubTask {
+export interface ISubtask {
   id: string;
   title: string;
   completed: boolean;
@@ -22,7 +22,7 @@ export interface ITask {
   priority: PriorityEnum;
   dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
   completed: boolean;
-  subtasks: ISubTask[];            // массив текстовых подзадач
+  subtasks: ISubtask[];            // массив текстовых подзадач
   createdAt: string;             // ISO
   updatedAt: string;             // ISO
 }
