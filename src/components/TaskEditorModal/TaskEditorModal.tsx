@@ -11,6 +11,7 @@ import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
 import { type ISubtask, type ITask, PriorityEnum } from '../../types.ts';
 import { PRIORITIES_OPTIONS } from '../../constants.ts';
+// @ts-ignore
 import { Subtask } from '../TaskList/Task/Subtask/Subtask.tsx';
 
 interface TaskEditorModalProps {
