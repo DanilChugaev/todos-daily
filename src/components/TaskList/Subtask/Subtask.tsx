@@ -1,8 +1,8 @@
 import './sub-task.pcss';
-import { Checkbox } from '../../../Checkbox/Checkbox.tsx';
-import type { ISubtask } from '../../../../types.ts';
-import { Button } from '../../../Button/Button.tsx';
-import { TrashIcon } from '../../../Icon/TrashIcon.tsx';
+import { Checkbox } from '../../Checkbox/Checkbox.tsx';
+import type { ISubtask } from '../../../types.ts';
+import { Button } from '../../Button/Button.tsx';
+import { TrashIcon } from '../../Icon/TrashIcon.tsx';
 import { useState } from 'react';
 
 interface SubtaskProps {
