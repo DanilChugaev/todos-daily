@@ -1,6 +1,6 @@
 import { type IPriority, PriorityEnum } from './types.ts';
 
-export const ICON_SIZE = 24;
+export const ICON_SIZE = '1rem';
 export const ANIMATION_MS = 300;
 
 export const DEFAULT_CATEGORIES = [

@@ -1,9 +1,10 @@
 import './task.pcss';
+import { type KeyboardEventHandler, memo } from 'react';
 import { Checkbox } from '../../Checkbox/Checkbox.tsx';
 import { DocIcon } from '../../Icon/DocIcon.tsx';
 import { PriorityIcon } from '../../Icon/PriorityIcon.tsx';
 import { PRIORITIES_COLOR_MAP, PRIORITY } from '../../../constants.ts';
-import type { ITask } from '../../../types.ts';
+import { type ITask, PriorityEnum } from '../../../types.ts';
 
 interface TaskProps {
   item: ITask;
@@ -12,18 +13,29 @@ interface TaskProps {
   onComplete:  (id: string) => void;
 }
 
-export function Task({
+export const Task = memo(({
   item,
   categoryName,
   onClick,
   onComplete,
-}: TaskProps) {
+}: TaskProps) => {
+  // Выносим обработчики, чтобы избежать лишних замыканий в JSX
+  const handleTaskClick = () => onClick(item);
+  const handleComplete = () => onComplete(item.id);
+  const handleKeyDown: KeyboardEventHandler<HTMLLIElement> = (e) => e.key === 'Enter' && handleTaskClick();
+
   return (
-    <li className="task" onClick={() => onClick(item)}>
+    <li
+      className="task"
+      role="button"
+      tabIndex={0}
+      onClick={handleTaskClick}
+      onKeyDown={handleKeyDown}
+    >
       <Checkbox
-        id={item.id!}
+        id={item.id}
         checked={item.completed}
-        onChange={() => onComplete(item.id!)}
+        onChange={handleComplete}
       />
 
       <div className="task__content">
@@ -36,10 +48,10 @@ export function Task({
             <span className="task__category">{categoryName}</span>
           )}
 
-          {item.description && <DocIcon width="18px" height="18px"/>}
+          {item.description && <DocIcon width="0.8rem" height="0.8rem"/>}
         </div>
 
-        {item.priority !== 4 && (
+        {item.priority !== PriorityEnum.OTHER && (
           <PriorityIcon
             className="task__priority"
             title={PRIORITY[item.priority]}
@@ -51,4 +63,6 @@ export function Task({
       </div>
     </li>
   );
-}
+});
+
+Task.displayName = 'Task';
