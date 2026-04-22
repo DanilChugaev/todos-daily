@@ -10,10 +10,10 @@ export const useCategories = () => {
     const categories = await db.categories.toArray();
 
     // Создаем карту категорий для быстрого поиска по ID
-    const cMap = new Map<number, ICategory>();
+    const cMap = new Map<number, string>();
 
     categories.forEach(category => {
-      cMap.set(category.id, category);
+      cMap.set(category.id, category.name);
     });
 
     return cMap;

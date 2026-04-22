@@ -8,14 +8,14 @@ import { type ITask, PriorityEnum } from '../../../types.ts';
 
 interface TaskProps {
   item: ITask;
-  categoryName: string;
+  categoryName?: string;
   onClick:  (item: ITask) => void;
   onComplete:  (id: string) => void;
 }
 
 export const Task = memo(({
   item,
-  categoryName,
+  categoryName = '',
   onClick,
   onComplete,
 }: TaskProps) => {

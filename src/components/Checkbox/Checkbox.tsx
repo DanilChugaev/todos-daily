@@ -34,6 +34,8 @@ export const Checkbox = memo(({
     <label
       htmlFor={id}
       className={`checkbox ${className}`}
+      role="checkbox"
+      tabIndex={0}
       onClick={handleClick}
     >
       <input
@@ -41,6 +43,7 @@ export const Checkbox = memo(({
         type="checkbox"
         id={id}
         checked={checked}
+        tabIndex={-1}
         onChange={handleChange}
       />
 

@@ -12,6 +12,8 @@ import type { ITask } from './types.ts';
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeOpen, setActiveOpen] = useState(true);
+  const [completedOpen, setCompletedOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
 
   const { tasks, categoryIdFilter, setCategoryIdFilter, toggleComplete } = useTasks();
@@ -55,9 +57,10 @@ function App() {
                       title={`Активные (${activeTasks.length})`}
                       items={activeTasks}
                       categoryIdFilter={categoryIdFilter}
-                      isOpen
+                      isOpen={activeOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
+                      onToggleView={() => setActiveOpen(!activeOpen)}
                     />
                   ) : ''
                 }
@@ -68,8 +71,10 @@ function App() {
                       title={`Готовые (${completedTasks.length})`}
                       items={completedTasks}
                       categoryIdFilter={categoryIdFilter}
+                      isOpen={completedOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
+                      onToggleView={() => setCompletedOpen(!completedOpen)}
                     />
                   ) : ''
                 }

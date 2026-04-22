@@ -1,56 +1,56 @@
 import './task-list.pcss';
 import { Task } from './Task/Task.tsx';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowIcon } from '../Icon/ArrowIcon.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
 import type { ITask } from '../../types.ts';
+import { Button } from '../Button/Button.tsx';
 
 interface TaskListProps {
   title: string;
   items: ITask[];
   categoryIdFilter: number;
-  isOpen?: boolean;
+  isOpen: boolean;
   onClick:  (item: ITask) => void;
   onComplete:  (id: string) => void;
+  onToggleView: () => void;
 }
 
 export function TaskList({
   title,
   items,
   categoryIdFilter,
-  isOpen = false,
+  isOpen,
   onClick,
   onComplete,
+  onToggleView,
 }: TaskListProps) {
-  const [isOpened, setIsOpened] = useState(isOpen);
   const [currentCategoryId, setCurrentCategoryId] = useState(0);
 
   const { categoriesMap } = useCategories();
-
-  const getCategoryName = useCallback((categoryId: number) => {
-    if (currentCategoryId === categoryId) return '';
-
-    return categoriesMap?.get(categoryId)?.name ?? '';
-  }, [categoriesMap, currentCategoryId]);
 
   useEffect(() => {
     setCurrentCategoryId(categoryIdFilter);
   }, [categoryIdFilter]);
 
   return (
-    <div className={`task-list${isOpened ? ' task-list--active' : ''}`}>
-      <p className="task-list__title" onClick={() => setIsOpened(!isOpened)}>
+    <div className={`task-list${isOpen ? ' task-list--active' : ''}`}>
+      <Button
+        className="task-list__title"
+        transparent
+        onClick={onToggleView}
+      >
         <span>{title}</span>
 
         <ArrowIcon className="task-list__toggle-icon" />
-      </p>
+      </Button>
 
       <ul className="task-list__items">
         {items.map((item: ITask) => (
           <Task
             key={item.id}
             item={item}
-            categoryName={getCategoryName(item.categoryId)}
+            categoryName={(currentCategoryId != item.categoryId) && categoriesMap ? categoriesMap.get(item.categoryId) : ''}
             onClick={onClick}
             onComplete={onComplete}
           />
