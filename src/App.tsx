@@ -22,6 +22,12 @@ function App() {
   const activeTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
 
+  function handleChangeCategory(id: number) {
+    setCategoryIdFilter(id);
+    setActiveOpen(true);
+    setCompletedOpen(false);
+  }
+
   function openAddModal() {
     setEditingTask({
       categoryId: categoryIdFilter,
@@ -43,7 +49,7 @@ function App() {
     <>
       <Header/>
 
-      <Categories selected={categoryIdFilter} items={categories} onSelect={setCategoryIdFilter}/>
+      <Categories selected={categoryIdFilter} items={categories} onSelect={handleChangeCategory}/>
 
       <div style={{ marginBottom: '40px' }}>
         {

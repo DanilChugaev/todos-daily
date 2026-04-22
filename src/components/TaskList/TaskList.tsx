@@ -1,6 +1,5 @@
 import './task-list.pcss';
 import { Task } from './Task/Task.tsx';
-import { useEffect, useState } from 'react';
 import { ArrowIcon } from '../Icon/ArrowIcon.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
 import type { ITask } from '../../types.ts';
@@ -16,6 +15,20 @@ interface TaskListProps {
   onToggleView: () => void;
 }
 
+const getCategoryName = ({
+  categoryIdFilter,
+  categoryId,
+  categoriesMap,
+}: {
+  categoryIdFilter: number;
+  categoryId?: number;
+  categoriesMap?: Map<number, string>
+}): string => {
+  if (categoryIdFilter != categoryId) return '';
+  if (categoriesMap) return categoriesMap.get(categoryId ?? 0) ?? '';
+  return '';
+};
+
 export function TaskList({
   title,
   items,
@@ -25,13 +38,7 @@ export function TaskList({
   onComplete,
   onToggleView,
 }: TaskListProps) {
-  const [currentCategoryId, setCurrentCategoryId] = useState(0);
-
   const { categoriesMap } = useCategories();
-
-  useEffect(() => {
-    setCurrentCategoryId(categoryIdFilter);
-  }, [categoryIdFilter]);
 
   return (
     <div className={`task-list${isOpen ? ' task-list--active' : ''}`}>
@@ -50,7 +57,11 @@ export function TaskList({
           <Task
             key={item.id}
             item={item}
-            categoryName={(currentCategoryId != item.categoryId) && categoriesMap ? categoriesMap.get(item.categoryId) : ''}
+            categoryName={getCategoryName({
+              categoryIdFilter,
+              categoryId: item.categoryId,
+              categoriesMap,
+            })}
             onClick={onClick}
             onComplete={onComplete}
           />
