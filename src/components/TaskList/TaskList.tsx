@@ -24,7 +24,7 @@ const getCategoryName = ({
   categoryId?: number;
   categoriesMap?: Map<number, string>
 }): string => {
-  if (categoryIdFilter != categoryId) return '';
+  if (categoryIdFilter === categoryId) return '';
   if (categoriesMap) return categoriesMap.get(categoryId ?? 0) ?? '';
   return '';
 };

@@ -5,6 +5,7 @@ import { DocIcon } from '../../Icon/DocIcon.tsx';
 import { PriorityIcon } from '../../Icon/PriorityIcon.tsx';
 import { PRIORITIES_COLOR_MAP, PRIORITY } from '../../../constants.ts';
 import { type ITask, PriorityEnum } from '../../../types.ts';
+import { BranchIcon } from '../../Icon/BranchIcon.tsx';
 
 interface TaskProps {
   item: ITask;
@@ -49,6 +50,8 @@ export const Task = memo(({
           )}
 
           {item.description && <DocIcon width="0.8rem" height="0.8rem"/>}
+
+          {item.subtasks.length > 0 && <BranchIcon width="0.8rem" height="0.8rem"/>}
         </div>
 
         {item.priority !== PriorityEnum.OTHER && (
