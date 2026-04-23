@@ -1,14 +1,21 @@
 .categories {
     display: flex;
     gap: var(--spacer-c);
-    padding: var(--spacer-d);
-    width: 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    align-items: center;
     position: sticky;
     top: 0;
     z-index: 9;
-    background-color: var(--bg-color);
+    padding: 0 var(--spacer-d);
+
+    &__container {
+        display: flex;
+        gap: var(--spacer-c);
+        padding: var(--spacer-d) 0;
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        background-color: var(--bg-color);
+    }
 
     &__button {
         background-color: var(--button-bg-color-inverted) !important;
@@ -20,5 +27,11 @@
             background-color: var(--button-bg-color) !important;
             color: var(--button-text-color) !important;
         }
+    }
+
+    &__edit {
+        position: sticky;
+        right: 0;
+        background-color: var(--bg-color) !important;
     }
 }

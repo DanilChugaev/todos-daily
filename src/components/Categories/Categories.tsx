@@ -25,8 +25,8 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
   }
 
   return (
-    <>
-      <div className="categories">
+    <div className="categories">
+      <div className="categories__container">
         <Button
           className={getClassName(0)}
           onClick={() => handleSelect(0)}
@@ -46,14 +46,15 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
             </Button>
           );
         })}
-
-        <Button
-          icon
-          onClick={() => setModalOpen(true)}
-        >
-          <EditIcon width={20} height={20}/>
-        </Button>
       </div>
+
+      <Button
+        className="categories__edit"
+        icon
+        onClick={() => setModalOpen(true)}
+      >
+        <EditIcon width={20} height={20}/>
+      </Button>
 
       <CategoriesEditorModal
         selected={selectedCategory}
@@ -61,6 +62,6 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
         onSelected={handleSelect}
         onClose={() => setModalOpen(false)}
       />
-    </>
+    </div>
   );
 }
