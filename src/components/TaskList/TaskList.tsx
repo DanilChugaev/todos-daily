@@ -8,7 +8,7 @@ import { Button } from '../Button/Button.tsx';
 interface TaskListProps {
   title: string;
   items: ITask[];
-  categoryIdFilter: number;
+  selectedCategoryId: number;
   isOpen: boolean;
   onClick:  (item: ITask) => void;
   onComplete:  (id: string) => void;
@@ -16,15 +16,15 @@ interface TaskListProps {
 }
 
 const getCategoryName = ({
-  categoryIdFilter,
+  selectedCategoryId,
   categoryId,
   categoriesMap,
 }: {
-  categoryIdFilter: number;
+  selectedCategoryId: number;
   categoryId?: number;
   categoriesMap?: Map<number, string>
 }): string => {
-  if (categoryIdFilter === categoryId) return '';
+  if (selectedCategoryId === categoryId) return '';
   if (categoriesMap) return categoriesMap.get(categoryId ?? 0) ?? '';
   return '';
 };
@@ -32,7 +32,7 @@ const getCategoryName = ({
 export function TaskList({
   title,
   items,
-  categoryIdFilter,
+  selectedCategoryId,
   isOpen,
   onClick,
   onComplete,
@@ -58,7 +58,7 @@ export function TaskList({
             key={item.id}
             item={item}
             categoryName={getCategoryName({
-              categoryIdFilter,
+              selectedCategoryId,
               categoryId: item.categoryId,
               categoriesMap,
             })}

@@ -16,21 +16,21 @@ function App() {
   const [completedOpen, setCompletedOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
 
-  const { tasks, categoryIdFilter, setCategoryIdFilter, toggleComplete } = useTasks();
+  const { tasks, selectedCategoryId, setSelectedCategoryId, toggleComplete } = useTasks();
   const { categories } = useCategories();
 
   const activeTasks = tasks.filter(task => !task.completed);
   const completedTasks = tasks.filter(task => task.completed);
 
   function handleChangeCategory(id: number) {
-    setCategoryIdFilter(id);
+    setSelectedCategoryId(id);
     setActiveOpen(true);
     setCompletedOpen(false);
   }
 
   function openAddModal() {
     setEditingTask({
-      categoryId: categoryIdFilter,
+      categoryId: selectedCategoryId,
     });
     setModalOpen(true);
   }
@@ -49,7 +49,7 @@ function App() {
     <>
       <Header/>
 
-      <Categories selected={categoryIdFilter} items={categories} onSelect={handleChangeCategory}/>
+      <Categories selected={selectedCategoryId} items={categories} onSelect={handleChangeCategory}/>
 
       <div style={{ marginBottom: '40px' }}>
         {
@@ -62,7 +62,7 @@ function App() {
                     <TaskList
                       title={`Активные (${activeTasks.length})`}
                       items={activeTasks}
-                      categoryIdFilter={categoryIdFilter}
+                      selectedCategoryId={selectedCategoryId}
                       isOpen={activeOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
@@ -76,7 +76,7 @@ function App() {
                     <TaskList
                       title={`Готовые (${completedTasks.length})`}
                       items={completedTasks}
-                      categoryIdFilter={categoryIdFilter}
+                      selectedCategoryId={selectedCategoryId}
                       isOpen={completedOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
