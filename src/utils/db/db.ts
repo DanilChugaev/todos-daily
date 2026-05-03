@@ -3,7 +3,6 @@ import { type ICategory, type ITask, PriorityEnum } from '../../types.ts';
 import { DEFAULT_CATEGORIES } from '../../constants.ts';
 
 class TodosDB extends Dexie {
-  tasks!: Table<ITask, string>;
   categories!: Table<ICategory, number>;
   todos!: Table<ITask, number>; // Новая таблица с автоинкрементными number ID
 
@@ -42,6 +41,12 @@ class TodosDB extends Dexie {
     // Версия 6 — добавлена новая таблица todos с автоинкрементными number ID
     this.version(6).stores({
       tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      todos: '++id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      categories: '++id, name, orderId',
+    });
+
+    // Версия 7 — удалена старая таблица tasks со string ID
+    this.version(7).stores({
       todos: '++id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
       categories: '++id, name, orderId',
     });
@@ -152,6 +157,14 @@ class TodosDB extends Dexie {
       await todosTable.bulkAdd(updatedTasks);
 
       console.log(`Миграция завершена. Новых ID: ${tasks.length}`);
+    });
+
+    // Явное удаление таблицы tasks в миграции v7
+    this.version(7).upgrade(async (transaction) => {
+      console.log('Миграция v7: явное удаление таблицы tasks');
+      const tasksTable = transaction.table<any>('tasks');
+      await tasksTable.clear();
+      console.log('Таблица tasks очищена. Схема будет обновлена без неё.');
     });
 
     // Заполнение при ПЕРВОМ создании БД
