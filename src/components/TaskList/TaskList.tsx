@@ -11,7 +11,7 @@ interface TaskListProps {
   selectedCategoryId: number;
   isOpen: boolean;
   onClick:  (item: ITask) => void;
-  onComplete:  (id: string) => void;
+  onComplete:  (id: number) => void;
   onToggleView: () => void;
 }
 

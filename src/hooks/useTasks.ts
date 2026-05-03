@@ -9,10 +9,10 @@ export const useTasks = () => {
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
   const tasks = useLiveQuery(() => {
     if (!selectedCategoryId) {
-      return db.tasks.orderBy('priority').toArray();
+      return db.todos.orderBy('priority').toArray();
     }
 
-    return db.tasks
+    return db.todos
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(selectedCategoryId)
       .sortBy('priority');
@@ -22,15 +22,14 @@ export const useTasks = () => {
 
   const addTask = useCallback(async (taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
     try {
-      const newTask: ITask = {
+      const newTask: Omit<ITask, 'id'> = {
         ...taskData,
-        id: Date.now().toString(36) + Math.random().toString(36).substring(2), // тот же стиль, что был в storage.ts
         completed: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
-      await db.tasks.add(newTask);
+      await db.todos.add(newTask as ITask);
       return newTask;
     } catch (error) {
       console.error('Failed to add task:', error);
@@ -38,9 +37,9 @@ export const useTasks = () => {
     }
   }, []);
 
-  const updateTask = useCallback(async (id: string, updates: Partial<Omit<ITask, 'id' | 'createdAt'>>) => {
+  const updateTask = useCallback(async (id: number, updates: Partial<Omit<ITask, 'id' | 'createdAt'>>) => {
     try {
-      await db.tasks.update(id, {
+      await db.todos.update(id, {
         ...updates,
         updatedAt: new Date().toISOString(),
       });
@@ -50,18 +49,18 @@ export const useTasks = () => {
     }
   }, []);
 
-  const deleteTask = useCallback(async (id: string) => {
+  const deleteTask = useCallback(async (id: number) => {
     try {
-      await db.tasks.delete(id);
+      await db.todos.delete(id);
     } catch (error) {
       console.error(`Failed to delete task ${id}:`, error);
       throw error;
     }
   }, []);
 
-  const toggleComplete = useCallback(async (id: string) => {
+  const toggleComplete = useCallback(async (id: number) => {
     try {
-      await db.tasks.update(id, (task) => {
+      await db.todos.update(id, (task) => {
         task.completed = !task.completed;
         task.updatedAt = new Date().toISOString();
       });
@@ -74,7 +73,7 @@ export const useTasks = () => {
   const reassignCategory = useCallback((oldCategoryId: number, newCategoryId: number) => {
     if (oldCategoryId === newCategoryId) return;
 
-    return db.tasks
+    return db.todos
       .where('categoryId')
       .equals(oldCategoryId)
       .modify({

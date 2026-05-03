@@ -5,6 +5,7 @@ import { DEFAULT_CATEGORIES } from '../../constants.ts';
 class TodosDB extends Dexie {
   tasks!: Table<ITask, string>;
   categories!: Table<ICategory, number>;
+  todos!: Table<ITask, number>; // Новая таблица с автоинкрементными number ID
 
   constructor() {
     super('TodosDailyDB');
@@ -35,6 +36,13 @@ class TodosDB extends Dexie {
     // Версия 5 — priority стал числом
     this.version(5).stores({
       tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      categories: '++id, name, orderId',
+    });
+
+    // Версия 6 — добавлена новая таблица todos с автоинкрементными number ID
+    this.version(6).stores({
+      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
+      todos: '++id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
       categories: '++id, name, orderId',
     });
 
@@ -122,6 +130,28 @@ class TodosDB extends Dexie {
       });
 
       console.log('Всем задачам установлен приоритет 4 - не определен');
+    });
+
+    // Миграция данных при обновлении до версии 6
+    this.version(6).upgrade(async (transaction) => {
+      console.log('Миграция v6: замена string ID на автоинкрементные number ID');
+
+      const taskTable = transaction.table<any>('tasks');
+      const tasks = await taskTable.toArray();
+      const todosTable = transaction.table<ITask>('todos');
+
+      console.log(`Найдено ${tasks.length} задач. Начинаем перенос ID...`);
+
+      // 1. Подготавливаем данные с новыми числовыми ID
+      const updatedTasks = tasks.map((task, index) => ({
+        ...task,
+        id: index + 1,
+      }));
+
+      // 2. Массово добавляем обновленные записи
+      await todosTable.bulkAdd(updatedTasks);
+
+      console.log(`Миграция завершена. Новых ID: ${tasks.length}`);
     });
 
     // Заполнение при ПЕРВОМ создании БД

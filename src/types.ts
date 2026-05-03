@@ -15,7 +15,7 @@ export interface ISubtask {
 }
 
 export interface ITask {
-  id: string;
+  id: number;
   title: string;
   description?: string;
   categoryId: ICategory['id'];

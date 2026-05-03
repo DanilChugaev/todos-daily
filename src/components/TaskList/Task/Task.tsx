@@ -11,7 +11,7 @@ interface TaskProps {
   item: ITask;
   categoryName?: string;
   onClick:  (item: ITask) => void;
-  onComplete:  (id: string) => void;
+  onComplete:  (id: number) => void;
 }
 
 export const Task = memo(({
@@ -34,7 +34,7 @@ export const Task = memo(({
       onKeyDown={handleKeyDown}
     >
       <Checkbox
-        id={item.id}
+        id={item.id.toString()}
         checked={item.completed}
         onChange={handleComplete}
       />
