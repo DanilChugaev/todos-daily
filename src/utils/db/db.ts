@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie';
-import { type ICategory, type ITask, PriorityEnum } from '../../types.ts';
+import { type ICategory, type ITask } from '../../types.ts';
 import { DEFAULT_CATEGORIES } from '../../constants.ts';
+import { MIGRATIONS } from './migrations';
 
 class TodosDB extends Dexie {
   categories!: Table<ICategory, number>;
@@ -9,163 +10,10 @@ class TodosDB extends Dexie {
   constructor() {
     super('TodosDailyDB');
 
-    // Схема + индексы для быстрых фильтров
-    this.version(1).stores({
-      tasks: 'id, title, completed, category, priority, dueDate, createdAt, updatedAt',
-    });
-
-    // Версия 2 — новая схема + миграция
-    this.version(2).stores({
-      tasks: 'id, title, completed, category, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name', // ++id = авто-инкремент
-    });
-
-    // Версия 3 — новая схема + миграция - замена поля category на categoryId
-    this.version(3).stores({
-      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name',
-    });
-
-    // Версия 4 — добавлен orderId
-    this.version(4).stores({
-      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name, orderId',
-    });
-
-    // Версия 5 — priority стал числом
-    this.version(5).stores({
-      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name, orderId',
-    });
-
-    // Версия 6 — добавлена новая таблица todos с автоинкрементными number ID
-    this.version(6).stores({
-      tasks: 'id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      todos: '++id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name, orderId',
-    });
-
-    // Версия 7 — удалена старая таблица tasks со string ID
-    this.version(7).stores({
-      todos: '++id, title, completed, categoryId, priority, dueDate, createdAt, updatedAt',
-      categories: '++id, name, orderId',
-    });
-
-    // Миграция данных при обновлении до версии 2
-    this.version(2).upgrade(async (transaction) => {
-      console.log('Запущена миграция БД до версии 2...');
-
-      // 1. Всем текущим задачам ставим priority = 'other'
-      const taskTable = transaction.table<{
-        id: string;
-        title: string;
-        description?: string;
-        category?: ICategory;              // например: "Работа", "Личное" и т.д.
-        priority: string;
-        dueDate?: string;              // ISO-строка (например: "2026-04-15T18:00:00.000Z")
-        completed: boolean;
-        subtasks: string[];            // массив текстовых подзадач
-        createdAt: string;             // ISO
-        updatedAt: string;             // ISO
-      }>('tasks');
-      await taskTable.toCollection().modify((task) => {
-        task.priority = 'other';
-        task.category = undefined;
-        task.updatedAt = new Date().toISOString();
-      });
-
-      console.log('Всем задачам установлен приоритет "other"');
-
-      // 2. Создаём таблицу категорий и заполняем дефолтными значениями
-      const categoryTable = transaction.table<{
-        id: number;          // авто-инкремент от Dexie
-        name: string;
-      }>('categories');
-      const count = await categoryTable.count();
-
-      if (count === 0) {
-        await categoryTable.bulkAdd(DEFAULT_CATEGORIES.map((item, index) => ({
-          id: index + 1,
-          name: item,
-        })));
-
-        console.log('Добавлены дефолтные категории');
-      }
-    });
-
-    // Миграция данных при обновлении до версии 3
-    this.version(3).upgrade(async (transaction) => {
-      console.log('Запущена миграция БД до версии 3...');
-
-      const taskTable = transaction.table<ITask & { category: string }>('tasks');
-      await taskTable.toCollection().modify((task) => {
-        // @ts-ignore
-        delete task.category;
-
-        task.categoryId = 0;
-        task.updatedAt = new Date().toISOString();
-      });
-
-      console.log('Всем задачам установлен categoryId');
-    });
-
-    // Миграция данных при обновлении до версии 4
-    this.version(4).upgrade(async (tx) => {
-      console.log('Миграция БД v4: добавляем orderId категориям');
-      const categoriesTable = tx.table<ICategory>('categories');
-      const allCategories = await categoriesTable.toArray();
-
-      // Присваиваем порядок по текущему порядку в таблице
-      for (let i = 0; i < allCategories.length; i++) {
-        await categoriesTable.update(allCategories[i].id, { orderId: i });
-      }
-
-      console.log(`orderId проставлен для ${allCategories.length} категорий`);
-    });
-
-    // Миграция данных при обновлении до версии 5
-    this.version(5).upgrade(async (transaction) => {
-      console.log('Запущена миграция БД до версии 5...');
-
-      // Всем текущим задачам ставим priority = 4 - не определен
-      const taskTable = transaction.table<ITask>('tasks');
-      await taskTable.toCollection().modify((task) => {
-        task.priority = PriorityEnum.OTHER;
-        task.updatedAt = new Date().toISOString();
-      });
-
-      console.log('Всем задачам установлен приоритет 4 - не определен');
-    });
-
-    // Миграция данных при обновлении до версии 6
-    this.version(6).upgrade(async (transaction) => {
-      console.log('Миграция v6: замена string ID на автоинкрементные number ID');
-
-      const taskTable = transaction.table<any>('tasks');
-      const tasks = await taskTable.toArray();
-      const todosTable = transaction.table<ITask>('todos');
-
-      console.log(`Найдено ${tasks.length} задач. Начинаем перенос ID...`);
-
-      // 1. Подготавливаем данные с новыми числовыми ID
-      const updatedTasks = tasks.map((task, index) => ({
-        ...task,
-        id: index + 1,
-      }));
-
-      // 2. Массово добавляем обновленные записи
-      await todosTable.bulkAdd(updatedTasks);
-
-      console.log(`Миграция завершена. Новых ID: ${tasks.length}`);
-    });
-
-    // Явное удаление таблицы tasks в миграции v7
-    this.version(7).upgrade(async (transaction) => {
-      console.log('Миграция v7: явное удаление таблицы tasks');
-      const tasksTable = transaction.table<any>('tasks');
-      await tasksTable.clear();
-      console.log('Таблица tasks очищена. Схема будет обновлена без неё.');
-    });
+    // Динамическое применение всех миграций
+    for (const { version, stores, upgrade } of MIGRATIONS) {
+      this.version(version).stores(stores).upgrade(upgrade!);
+    }
 
     // Заполнение при ПЕРВОМ создании БД
     this.on('populate', async () => {
