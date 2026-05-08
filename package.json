@@ -1,7 +1,7 @@
 {
   "name": "todos-daily",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,8 +9,7 @@
     "ts:check": "tsc -b",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview",
-    "prepare": "husky"
+    "preview": "vite preview"
   },
   "dependencies": {
     "dexie": "^4.4.2",
