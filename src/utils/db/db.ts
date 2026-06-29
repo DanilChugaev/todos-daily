@@ -3,6 +3,18 @@ import { type ICategory, type ITask } from '../../types.ts';
 import { DEFAULT_CATEGORIES } from '../../constants.ts';
 import { MIGRATIONS } from './migrations';
 
+// Запрашиваем у браузера не удалять данные автоматически
+async function persistStorage(): Promise<void> {
+  if ('storage' in navigator && typeof (navigator as any).storage?.persist === 'function') {
+    const persisted = await (navigator as any).storage.persist();
+    if (persisted) {
+      console.log('Хранилище защищено от автоматической очистки');
+    } else {
+      console.warn('Не удалось защитить хранилище от автоматической очистки');
+    }
+  }
+}
+
 class TodosDB extends Dexie {
   categories!: Table<ICategory, number>;
   todos!: Table<ITask, number>; // Новая таблица с автоинкрементными number ID
@@ -32,3 +44,6 @@ class TodosDB extends Dexie {
 }
 
 export const db = new TodosDB();
+
+// Инициализируем защиту хранилища при загрузке
+persistStorage().catch((err) => console.error('Ошибка persist storage:', err));
