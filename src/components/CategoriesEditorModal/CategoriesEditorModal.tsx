@@ -25,12 +25,14 @@ export function CategoriesEditorModal({
 }: CategoriesEditorModalProps) {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const { categories, addCategory, updateCategory, deleteCategory, bulkUpdateCategories } = useCategories();
   const { reassignCategory } = useTasks();
 
   function handleUpdateCategory(id: number, name: string) {
     updateCategory(id, name);
+    setHasUnsavedChanges(true);
   }
 
   async function handleDelete({ id, name }: ICategory) {
@@ -49,6 +51,7 @@ export function CategoriesEditorModal({
   }
 
   function handleBeforeClose() {
+    setHasUnsavedChanges(false);
     onClose();
   }
 
@@ -87,15 +90,22 @@ export function CategoriesEditorModal({
     const updatedCategories = newOrder.map((category, i) => ({ ...category, orderId: i }));
 
     await bulkUpdateCategories(updatedCategories);
+    setHasUnsavedChanges(true);
 
     setDraggedId(null);
   }, [draggedId, categories, bulkUpdateCategories]);
+
+  const handleAddCategory = () => {
+    addCategory('');
+    setHasUnsavedChanges(true);
+  };
 
   return (
     <ModalDialog
       title="Редактировать категории"
       isOpen={isOpen}
       onClose={handleBeforeClose}
+      hasUnsavedChanges={hasUnsavedChanges}
     >
       {categories.map((item, index) => (
         <div key={item.id}
@@ -129,7 +139,7 @@ export function CategoriesEditorModal({
         </div>
       ))}
 
-      <Button onClick={() => addCategory('')}>
+      <Button onClick={handleAddCategory}>
         <PlusIcon/>
 
         Добавить

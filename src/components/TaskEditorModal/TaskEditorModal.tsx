@@ -37,6 +37,7 @@ export function TaskEditorModal({
   });
 
   const [newSubtask, setNewSubtask] = useState('');
+  const [isFormModified, setIsFormModified] = useState(false);
   const isEditMode = Boolean(task?.id);
 
   // Подставляем данные при открытии на редактирование
@@ -51,9 +52,9 @@ export function TaskEditorModal({
           dueDate: task.dueDate || '',
           subtasks: [...(task.subtasks ?? [])],
         });
+        setIsFormModified(false);
       }, 0);
     } else {
-      // Режим создания — чистая форма
       setTimeout(() => {
         setForm({
           title: '',
@@ -63,10 +64,18 @@ export function TaskEditorModal({
           dueDate: '',
           subtasks: [],
         });
+        setIsFormModified(false);
       }, 0);
     }
     setTimeout(() => setNewSubtask(''), 0);
   }, [task]);
+
+  // Проверяем: форма не пустая (есть введенные данные)
+  function hasData(): boolean {
+    return form.title.trim().length > 0 ||
+           form.description.trim().length > 0 ||
+           form.subtasks.length > 0;
+  }
 
   if (!isOpen) return null;
 
@@ -91,6 +100,7 @@ export function TaskEditorModal({
       await addTask(taskData);
     }
 
+    setIsFormModified(false);
     handleBeforeClose();
   }
 
@@ -116,6 +126,7 @@ export function TaskEditorModal({
       subtasks: [],
     });
 
+    setIsFormModified(false);
     onClose();
   }
 
@@ -132,6 +143,7 @@ export function TaskEditorModal({
           updatedAt: new Date().toISOString(),
         }],
       }));
+      setIsFormModified(true);
 
       setNewSubtask('');
     }
@@ -145,13 +157,13 @@ export function TaskEditorModal({
         ...prev,
         subtasks: prev.subtasks.filter((item) => item.id !== id),
       }));
+      setIsFormModified(true);
     }
   };
 
   function handleUpdateSubtask(id: string, title: string, completed: boolean) {
     setForm((prev) => ({
       ...prev,
-      // todo subtasks сделать как Set или Map
       subtasks: prev.subtasks.map((item) => {
         if (item.id === id) {
           return {
@@ -161,18 +173,23 @@ export function TaskEditorModal({
             updatedAt: new Date().toISOString(),
           };
         }
-        
+
         return item;
       }),
     }));
+    setIsFormModified(true);
   }
   /* endregion Подзадачи */
+
+  // Показать подтверждение только если форма была модифицирована ИЛИ имеет данные
+  const showConfirmOnClose = isFormModified || hasData();
 
   return (
     <ModalDialog
       title={task?.title ? 'Редактировать задачу' : 'Добавить задачу'}
       isOpen={isOpen}
       onClose={handleBeforeClose}
+      hasUnsavedChanges={showConfirmOnClose}
     >
       <Input
         focus
@@ -180,7 +197,7 @@ export function TaskEditorModal({
         type="text"
         placeholder="Название*"
         value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        onChange={(e) => { setForm({ ...form, title: e.target.value }); setIsFormModified(true); }}
         onEnter={handleSubmit}
       />
 
@@ -188,7 +205,7 @@ export function TaskEditorModal({
         id="task-description"
         placeholder="Описание"
         value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
+        onChange={(e) => { setForm({ ...form, description: e.target.value }); setIsFormModified(true); }}
       />
 
       <div className="task-editor-modal__selects">
@@ -196,15 +213,15 @@ export function TaskEditorModal({
           id="task-category"
           placeholder="Категория"
           value={form.categoryId}
-          onChange={(categoryId) => setForm({ ...form, categoryId })}
+          onChange={(categoryId) => { setForm({ ...form, categoryId }); setIsFormModified(true); }}
           options={categories}
         />
 
         <Select
-          id="task-category"
+          id="task-priority"
           placeholder="Приоритет"
           value={form.priority}
-          onChange={(priority) => setForm({ ...form, priority })}
+          onChange={(priority) => { setForm({ ...form, priority }); setIsFormModified(true); }}
           options={PRIORITIES_OPTIONS}
         />
       </div>

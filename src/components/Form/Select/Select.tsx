@@ -1,6 +1,7 @@
 import './select.pcss';
 import { FormField } from '../FormField/FormField.tsx';
 import type { ISelect } from '../../../types.ts';
+import { ArrowIcon } from '../../Icon/ArrowIcon.tsx';
 
 interface SelectProps {
   id: string;
@@ -15,7 +16,7 @@ export function Select({ id, label, placeholder, value, options, onChange }: Sel
   return (
     <FormField
       id={id}
-      className="textarea-field"
+      className="select-field"
       label={label}
     >
       <select
@@ -33,6 +34,8 @@ export function Select({ id, label, placeholder, value, options, onChange }: Sel
           ))
         }
       </select>
+
+      <ArrowIcon width="12px" height="12px" className="select-field__icon" />
     </FormField>
   );
 }

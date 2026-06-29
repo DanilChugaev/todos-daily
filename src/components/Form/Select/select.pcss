@@ -4,9 +4,24 @@
     border-radius: var(--border-radius-b);
     color: rgb(117 117 117);
     cursor: pointer;
-    padding: var(--spacer-b);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: var(--spacer-de);
+    width: 100%;
 
     &--selected {
         color: var(--input-color);
+    }
+}
+
+.select-field {
+    position: relative;
+
+    &__icon {
+        position: absolute;
+        right: var(--spacer-c);
+        top: 50%;
+        transform: translateY(-50%);
     }
 }
