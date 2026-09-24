@@ -2,6 +2,8 @@
 
 To-do list for daily use
 
+![Project screenshot](public/todos-daily.webp)
+
 [USE HERE](https://danilchugaev.github.io/todos-daily/)
 
 ## Features
