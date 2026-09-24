@@ -1,10 +1,1 @@
-export let appVersion = '';
-
-fetch(new URL('../package.json', import.meta.url))
-  .then((res) => res.json())
-  .then((pkg) => {
-    appVersion = pkg.version;
-  })
-  .catch(() => {
-    // ignore
-  });
+export const appVersion = __APP_VERSION__;

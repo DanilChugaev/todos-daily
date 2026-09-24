@@ -1,0 +1,53 @@
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg-color: #09090b;
+    --text-color: #f8fafc;
+    --border-color: rgba(255, 255, 255, .1);
+    --border-color-hover: rgba(255, 255, 255, .2);
+    --box-shadow-hover: 0 4px 12px rgba(255, 255, 255, .08);
+    --theme-switcher-radio-filter: invert(1);
+    --theme-switcher-radio-filter-checked: invert(0);
+    --theme-switcher-status-filter: invert(1);
+    --button-bg-color: var(--text-color);
+    --button-text-color: var(--bg-color);
+    --button-bg-color-inverted: var(--bg-color);
+    --button-text-color-inverted: var(--text-color);
+    --modal-dialog-bg-color: rgb(60 60 60);
+    --modal-dialog-text-color: var(--text-color);
+    --modal-dialog-backdrop: rgba(0, 0, 0, .4);
+    --input-border-color: rgb(from var(--bg-color) r g b / 50%);
+    --input-color: var(--text-color);
+    --input-color-inverted: var(--bg-color);
+    --task-bg-color: rgba(255, 255, 255, .05);
+    --task-info-text-color: rgb(from var(--text-color) r g b / 50%);
+    --grab-box-shadow: 0 0 0 2px #60a5fa;
+    --grab-background-color: #1e3a8a;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg-color: #09090b;
+  --text-color: #f8fafc;
+  --border-color: rgba(255, 255, 255, .1);
+  --border-color-hover: rgba(255, 255, 255, .2);
+  --box-shadow-hover: 0 4px 12px rgba(255, 255, 255, .08);
+  --theme-switcher-radio-filter: invert(1);
+  --theme-switcher-radio-filter-checked: invert(0);
+  --theme-switcher-status-filter: invert(1);
+  --button-bg-color: var(--text-color);
+  --button-text-color: var(--bg-color);
+  --button-bg-color-inverted: var(--bg-color);
+  --button-text-color-inverted: var(--text-color);
+  --modal-dialog-bg-color: rgb(60 60 60);
+  --modal-dialog-text-color: var(--text-color);
+  --modal-dialog-backdrop: rgba(0, 0, 0, .4);
+  --input-border-color: rgb(from var(--bg-color) r g b / 50%);
+  --input-color: var(--text-color);
+  --input-color-inverted: var(--bg-color);
+  --task-bg-color: rgba(255, 255, 255, .05);
+  --task-info-text-color: rgb(from var(--text-color) r g b / 50%);
+  --grab-box-shadow: 0 0 0 2px #60a5fa;
+  --grab-background-color: #1e3a8a;
+}

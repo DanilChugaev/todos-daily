@@ -1,95 +1,72 @@
 # TODOS daily
 
-To-do list for daily use
+[English version](README.en.md)
 
-![Project screenshot](public/todos-daily.webp)
+> Приватный offline-first список задач для ежедневного использования.
 
-[USE HERE](https://danilchugaev.github.io/todos-daily/)
+[![Открыть приложение](https://img.shields.io/badge/Открыть_приложение-111827?style=for-the-badge)](https://danilchugaev.github.io/todos-daily/)
 
-## Features
+![Интерфейс TODOS daily](public/todos-daily.webp)
 
-- **Task Management**: Full CRUD functionality for tasks (create, read, update, delete).
-- **Task Prioritization**: Set priority levels (High, Medium, Low, Other) to focus on what's important.
-- **Custom Categories**: Organize tasks into categories with the ability to manage and edit them.
-- **Checklists/Subtasks**: Break down large tasks into smaller, manageable subtasks.
-- **Due Dates**: Set deadlines for tasks to keep track of your schedule (coming soon).
-- **Local Persistence**: Data is stored locally in the browser using IndexedDB (Dexie), so your tasks are safe even after a page refresh.
-- **Theming**: Built-in support for Light and Dark modes for comfortable use at any time of day.
-- **PWA Ready**: Installed as a progressive web app for a native-like experience.
+## О проекте
 
-## Run Locally
+TODOS daily — прогрессивное веб-приложение для управления личными задачами. Оно работает без сервера: данные сохраняются в браузере через IndexedDB и не передаются третьим лицам. Приложение можно установить на устройство как PWA и использовать после первой загрузки без подключения к интернету.
 
-Clone the project
+## Возможности
 
-```bash
-  git clone git@github.com:DanilChugaev/todos-daily.git
-```
+- создание, редактирование, завершение и удаление задач;
+- категории с изменением названий и порядка;
+- приоритеты задач: высокий, средний, низкий или без приоритета;
+- подзадачи для декомпозиции работы;
+- фильтрация по категории;
+- светлая, тёмная и системная темы;
+- предупреждение о потере несохранённых изменений;
+- локальное хранение данных в IndexedDB и запрос persistent storage;
+- установка как Progressive Web App.
 
-Go to the project directory
+## Стек
 
-```bash
-  cd todos-daily
-```
+- **React 19** и **TypeScript**;
+- **Vite**;
+- **Dexie** и **IndexedDB**;
+- **PostCSS**;
+- **vite-plugin-pwa**;
+- **ESLint** и строгая проверка TypeScript.
 
-Install dependencies
+## Архитектура
 
-```bash
-  yarn install
-```
+- `src/components` — UI-компоненты и модальные окна;
+- `src/hooks` — реактивная работа с задачами и категориями;
+- `src/utils/db` — схема Dexie и миграции IndexedDB;
+- `src/styles` — глобальные стили, дизайн-токены и темы;
+- `public` — PWA-иконки и изображение проекта.
 
-Start the development server
+Данные остаются на устройстве пользователя. Очистка данных браузера или хранилища сайта удалит локальные задачи.
 
-```bash
-  yarn dev
-```
-
-Open http://localhost:5173/todos-daily/ in your browser (note: the /todos-daily/ base path is for GitHub Pages; adjust if needed locally)
-
-## Lint project
-
-To lint code in project
+## Запуск локально
 
 ```bash
- yarn lint:fix
+git clone git@github.com:DanilChugaev/todos-daily.git
+cd todos-daily
+yarn install
+yarn dev
 ```
 
-## Build For Production
+Для локальной разработки приложение откроется по адресу `http://localhost:5173/todos-daily/`.
 
-To generate production build
+## Проверки и production-сборка
 
 ```bash
- yarn build
+yarn lint
+yarn ts:check
+yarn build
+yarn preview
 ```
 
-Preview build
+## Деплой
 
-```bash
- yarn preview
-```
+Проект автоматически публикуется в GitHub Pages при push в ветку `master`. Конфигурация находится в [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
-## Deployment
+## Лицензия
 
-This project is deployed to GitHub Pages using GitHub Actions. See `.github/workflows/deploy.yml` for the workflow configuration
-
-## Technologies Used
-
-- React: A JavaScript library for building user interfaces
-- TypeScript: For type-safe JavaScript
-- Vite: Fast build tool and dev server
-- Dexie.js: Wrapper for IndexedDB for efficient local data storage
-- PostCSS: For advanced styling and theme management
-- ESLint: For code linting and formatting
-
-## Contributing
-
-Contributions are welcome! Fork the repository, create a branch, and submit a pull request
-
-- Fork the project
-- Create your feature branch (git checkout -b feature/AmazingFeature)
-- Commit your changes (git commit -m 'Add some AmazingFeature')
-- Push to the branch (git push origin feature/AmazingFeature)
-- Open a pull request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/DanilChugaev/todos-daily/blob/master/LICENSE) file for details
+Проект распространяется по лицензии [MIT](LICENSE).

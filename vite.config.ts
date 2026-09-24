@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { version } from './package.json';
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/todos-daily/',
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   plugins: [
     react(),
     VitePWA({
@@ -12,9 +16,12 @@ export default defineConfig({
       manifest: {
         name: 'TODOS daily',
         short_name: 'TODOS',
-        description: 'To-do list for daily use',
+        description: 'Приватный офлайн-список задач для ежедневного использования.',
         display: 'fullscreen',
         theme_color: '#f8fafc',
+        background_color: '#f8fafc',
+        lang: 'ru',
+        start_url: '/todos-daily/',
         icons: [
           {
             src: 'todos-192x192.png',

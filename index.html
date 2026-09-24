@@ -1,12 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/todos.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:opsz,wght@17..18,400..700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TODOS daily — приватный офлайн-список задач с категориями, приоритетами и подзадачами." />
+    <meta name="theme-color" content="#f8fafc" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content="TODOS daily" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TODOS daily" />
+    <link rel="icon" type="image/svg+xml" href="/todos.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/todos-192x192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/todos-192x192.png" />
+    <link rel="canonical" href="https://danilchugaev.github.io/todos-daily/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content="TODOS daily" />
+    <meta property="og:title" content="TODOS daily — приватный список задач" />
+    <meta property="og:description" content="Офлайн-first PWA для ежедневных задач: категории, приоритеты и подзадачи." />
+    <meta property="og:url" content="https://danilchugaev.github.io/todos-daily/" />
+    <meta property="og:image" content="https://danilchugaev.github.io/todos-daily/todos-daily.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TODOS daily — приватный список задач" />
+    <meta name="twitter:description" content="Офлайн-first PWA для ежедневных задач." />
+    <meta name="twitter:image" content="https://danilchugaev.github.io/todos-daily/todos-daily.webp" />
+    <script>
+      (() => {
+        try {
+          const savedTheme = localStorage.getItem('color-scheme');
+          if (savedTheme === 'light' || savedTheme === 'dark') {
+            document.documentElement.dataset.theme = savedTheme;
+            document.querySelector('meta[name="theme-color"]')?.setAttribute(
+              'content',
+              savedTheme === 'dark' ? '#09090b' : '#f8fafc',
+            );
+          }
+        } catch {
+          // Theme preference is optional.
+        }
+      })();
+    </script>
     <title>TODOS daily</title>
   </head>
   <body>
