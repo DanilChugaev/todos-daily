@@ -3,33 +3,21 @@ import { useCallback, useMemo } from 'react';
 import { db } from '../utils/db/db.ts';
 import type { ICategory } from '../types.ts';
 
-// Создаем карту категорий для быстрого поиска по ID
-const cMap = new Map<number, string>();
-
 export const useCategories = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const categories = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []) ?? [];
 
-  // Вычисляем и кэшируем массив отдельно
-  const stableCategories = useMemo(() => categories, [categories]);
-
   const categoriesMap = useMemo(() => {
-    cMap.clear();
-
-    stableCategories.forEach(category => cMap.set(category.id, category.name));
-
-    return cMap;
-  }, [stableCategories]);
+    return new Map(categories.map((category) => [category.id, category.name]));
+  }, [categories]);
 
   // ========== CRUD ==========
 
   const addCategory = useCallback(async (name: ICategory['name']) => {
     try {
-      const lastCategoryByOrder = stableCategories.at(-1);
-
       const newCategory: Omit<ICategory, 'id'> = {
         name,
-        orderId: ++lastCategoryByOrder!.orderId,
+        orderId: (categories.at(-1)?.orderId ?? -1) + 1,
       };
 
       const id = await db.categories.add(newCategory as ICategory);
@@ -38,7 +26,7 @@ export const useCategories = () => {
       console.error('Failed to add category:', error);
       throw error;
     }
-  }, [stableCategories]);
+  }, [categories]);
 
   const updateCategory = useCallback(async (id: number, name: ICategory['name']) => {
     try {

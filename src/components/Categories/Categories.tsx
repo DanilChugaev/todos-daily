@@ -1,6 +1,6 @@
 import './categories.pcss';
 import { Button } from '../Button/Button.tsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditorModal.tsx';
 import { EditIcon } from '../Icon/EditIcon.tsx';
 import type { ICategory } from '../../types.ts';
@@ -12,17 +12,21 @@ interface CategoriesProps {
 }
 
 export function Categories({ selected, items, onSelect }: CategoriesProps) {
-  const [selectedCategory, setSelectedCategory] = useState<number>(selected);
   const [modalOpen, setModalOpen] = useState(false);
 
   function getClassName(id: number) {
-    return `categories__button ${selectedCategory === id ? 'categories__button--active' : ''}`;
+    return `categories__button ${selected === id ? 'categories__button--active' : ''}`;
   }
 
   function handleSelect(id: number) {
-    setSelectedCategory(id);
     onSelect(id);
   }
+
+  useEffect(() => {
+    if (selected !== 0 && !items.some((category) => category.id === selected)) {
+      onSelect(0);
+    }
+  }, [items, onSelect, selected]);
 
   return (
     <div className="categories">
@@ -57,7 +61,7 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
       </Button>
 
       <CategoriesEditorModal
-        selected={selectedCategory}
+        selected={selected}
         isOpen={modalOpen}
         onSelected={handleSelect}
         onClose={() => setModalOpen(false)}

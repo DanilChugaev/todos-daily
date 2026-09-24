@@ -1,10 +1,11 @@
-// @ts-ignore
-export enum PriorityEnum {
-  HIGH = 1,
-  MEDIUM = 2,
-  LOW = 3,
-  OTHER = 4,
-}
+export const PriorityEnum = {
+  HIGH: 1,
+  MEDIUM: 2,
+  LOW: 3,
+  OTHER: 4,
+} as const;
+
+export type PriorityEnum = typeof PriorityEnum[keyof typeof PriorityEnum];
 
 export interface ISubtask {
   id: string;

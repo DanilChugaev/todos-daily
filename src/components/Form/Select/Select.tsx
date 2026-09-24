@@ -3,16 +3,16 @@ import { FormField } from '../FormField/FormField.tsx';
 import type { ISelect } from '../../../types.ts';
 import { ArrowIcon } from '../../Icon/ArrowIcon.tsx';
 
-interface SelectProps {
+interface SelectProps<T extends number = number> {
   id: string;
   label?: string;
   placeholder: string;
-  value: number;
-  options: ISelect<any>[];
-  onChange: (value: number) => void;
+  value: T;
+  options: ISelect<T>[];
+  onChange: (value: T) => void;
 }
 
-export function Select({ id, label, placeholder, value, options, onChange }: SelectProps) {
+export function Select<T extends number = number>({ id, label, placeholder, value, options, onChange }: SelectProps<T>) {
   return (
     <FormField
       id={id}
@@ -23,7 +23,7 @@ export function Select({ id, label, placeholder, value, options, onChange }: Sel
         id={id}
         className={`select${value ? ' select--selected' : ''}`}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={(e) => onChange(Number(e.target.value) as T)}
       >
         <option value={0} disabled hidden>{placeholder}</option>
         {

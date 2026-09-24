@@ -19,6 +19,15 @@ interface TaskEditorModalProps {
   onClose: () => void;
 }
 
+interface TaskForm {
+  title: string;
+  description: string;
+  categoryId: number;
+  priority: PriorityEnum;
+  dueDate: string;
+  subtasks: ISubtask[];
+}
+
 export function TaskEditorModal({
   task,
   isOpen,
@@ -27,7 +36,7 @@ export function TaskEditorModal({
   const { addTask, updateTask, deleteTask } = useTasks();
   const { categories } = useCategories();
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<TaskForm>({
     title: '',
     description: '',
     categoryId: 0,

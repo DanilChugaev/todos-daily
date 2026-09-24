@@ -1,4 +1,4 @@
-import { type ChangeEvent, useCallback, useEffect, useRef } from 'react';
+import { type ChangeEvent, type KeyboardEvent, useEffect, useRef } from 'react';
 import './input.pcss';
 import { FormField } from '../FormField/FormField.tsx';
 
@@ -27,26 +27,17 @@ export function Input({
 }: InputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleEnter = useCallback((event: KeyboardEvent) => {
+  function handleEnter(event: KeyboardEvent<HTMLInputElement>) {
     if (onEnter && event.key === 'Enter') {
       onEnter();
     }
-  }, [onEnter]);
+  }
 
   useEffect(() => {
     if (inputRef.current && focus) {
       inputRef.current.focus();
     }
   }, [focus]);
-
-  useEffect(() => {
-    if (onEnter) {
-      inputRef.current?.addEventListener('keydown', handleEnter, false);
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      return () => inputRef.current?.removeEventListener('keydown', handleEnter, false);
-    }
-  }, [handleEnter, onEnter]);
 
   return (
     <FormField
@@ -61,6 +52,7 @@ export function Input({
         type={type}
         value={value}
         onChange={onChange}
+        onKeyDown={handleEnter}
         placeholder={placeholder}
       />
     </FormField>
