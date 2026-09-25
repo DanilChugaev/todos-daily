@@ -9,6 +9,7 @@
     transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
     cursor: pointer;
     font-size: 1rem;
+    position: relative;
 
     &:hover {
         border-color: var(--border-color-hover);
@@ -101,8 +102,15 @@
 
 @media (hover: hover) and (pointer: fine) {
     .task__actions {
+        position: absolute;
+        top: var(--spacer-c);
+        right: var(--spacer-b);
+        z-index: 2;
         opacity: 0;
         transform: translateX(.25rem);
+        background: color-mix(in srgb, var(--surface-color) 90%, transparent);
+        border-radius: var(--border-radius-c);
+        backdrop-filter: blur(8px);
         transition: opacity .18s ease, transform .18s ease;
     }
 

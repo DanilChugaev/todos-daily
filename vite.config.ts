@@ -17,7 +17,7 @@ export default defineConfig({
         name: 'TODOS daily',
         short_name: 'TODOS',
         description: 'Приватный офлайн-список задач для ежедневного использования.',
-        display: 'fullscreen',
+        display: 'standalone',
         theme_color: '#f8fafc',
         background_color: '#f8fafc',
         lang: 'ru',
