@@ -1,7 +1,8 @@
-import { type ChangeEvent } from 'react';
 import './task-toolbar.pcss';
 import type { SortOption } from '../../utils/tasks.ts';
 import { SORT_OPTIONS } from '../../utils/tasks.ts';
+import { Input } from '../Form/Input/Input.tsx';
+import { Select } from '../Form/Select/Select.tsx';
 
 interface TaskToolbarProps {
   query: string;
@@ -11,34 +12,27 @@ interface TaskToolbarProps {
 }
 
 export function TaskToolbar({ query, sortBy, onQueryChange, onSortChange }: TaskToolbarProps) {
-  function handleQueryChange(event: ChangeEvent<HTMLInputElement>) {
-    onQueryChange(event.target.value);
-  }
-
-  function handleSortChange(event: ChangeEvent<HTMLSelectElement>) {
-    onSortChange(event.target.value as SortOption);
-  }
-
   return (
     <section className="task-toolbar" aria-label="Поиск и сортировка задач">
-      <label className="task-toolbar__search">
-        <span className="visually-hidden">Поиск задач</span>
-        <input
-          type="search"
-          value={query}
-          onChange={handleQueryChange}
-          placeholder="Поиск задач"
-        />
-      </label>
+      <Input
+        id="tasks-search"
+        type="search"
+        value={query}
+        placeholder="Поиск задач"
+        ariaLabel="Поиск задач"
+        size="small"
+        onChange={(event) => onQueryChange(event.target.value)}
+      />
 
-      <label className="task-toolbar__sort">
-        <span className="visually-hidden">Сортировка задач</span>
-        <select value={sortBy} onChange={handleSortChange}>
-          {SORT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
-      </label>
+      <Select
+        id="tasks-sort"
+        placeholder="Сортировка"
+        value={sortBy}
+        options={SORT_OPTIONS.map(({ value, label }) => ({ id: value, name: label }))}
+        ariaLabel="Сортировка задач"
+        size="small"
+        onChange={onSortChange}
+      />
     </section>
   );
 }
