@@ -59,23 +59,31 @@ export const useTasks = () => {
   }, []);
 
   const duplicateTask = useCallback(async (task: ITask) => {
-    const now = new Date().toISOString();
-    const copy: Omit<ITask, 'id'> = {
-      ...task,
-      title: `${task.title} (копия)`,
-      completed: false,
-      subtasks: task.subtasks.map((subtask) => ({
-        ...subtask,
-        id: crypto.randomUUID(),
+    try {
+      const now = new Date().toISOString();
+      const copy: Omit<ITask, 'id'> = {
+        title: `${task.title} (копия)`,
+        description: task.description,
+        categoryId: task.categoryId,
+        priority: task.priority,
+        dueDate: task.dueDate,
         completed: false,
+        subtasks: task.subtasks.map((subtask) => ({
+          ...subtask,
+          id: crypto.randomUUID(),
+          completed: false,
+          createdAt: now,
+          updatedAt: now,
+        })),
         createdAt: now,
         updatedAt: now,
-      })),
-      createdAt: now,
-      updatedAt: now,
-    };
+      };
 
-    return db.todos.add(copy as ITask);
+      return db.todos.add(copy as ITask);
+    } catch (error) {
+      console.error(`Failed to duplicate task ${task.id}:`, error);
+      throw error;
+    }
   }, []);
 
   const toggleComplete = useCallback(async (id: number) => {
