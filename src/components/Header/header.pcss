@@ -2,6 +2,31 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacer-d);
+    min-height: 5rem;
+    padding: var(--spacer-d) calc(var(--spacer-d) + env(safe-area-inset-right)) var(--spacer-d) calc(var(--spacer-d) + env(safe-area-inset-left));
     position: relative;
+
+    &__controls {
+        display: flex;
+        align-items: center;
+        gap: var(--spacer-c);
+        position: absolute;
+        right: var(--spacer-d);
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
+
+@media (max-width: 520px) {
+    .header {
+        justify-content: flex-start;
+
+        &__controls {
+            gap: var(--spacer-b);
+        }
+    }
+
+    .accent-color-picker {
+        display: none;
+    }
 }

@@ -10,6 +10,7 @@ import { useTasks } from './hooks/useTasks';
 import { useCategories } from './hooks/useCategories.ts';
 import type { ITask } from './types.ts';
 import { TaskToolbar } from './components/TaskToolbar/TaskToolbar.tsx';
+import { DailySummary } from './components/DailySummary/DailySummary.tsx';
 import { matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
@@ -76,6 +77,7 @@ function App() {
       <Categories selected={selectedCategoryId} items={categories} onSelect={handleChangeCategory}/>
 
       <main style={{ marginBottom: '40px' }}>
+        <DailySummary activeCount={activeTasks.length} completedCount={completedTasks.length} />
         <TaskToolbar query={query} sortBy={sortBy} onQueryChange={setQuery} onSortChange={setSortBy} />
         {
           activeTasks.length ||

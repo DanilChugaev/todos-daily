@@ -5,7 +5,7 @@
     flex-direction: column;
     height: 100%;
     position: relative;
-    padding: var(--spacer-c) var(--spacer-d);
+    padding: var(--spacer-c) var(--spacer-d) var(--spacer-d);
 
     &__title {
         padding: 0;
@@ -13,10 +13,13 @@
         cursor: pointer;
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: var(--spacer-c) 0;
         gap: var(--spacer-b);
 
         span {
-            font-weight: 600;
+            font-weight: 650;
         }
     }
 

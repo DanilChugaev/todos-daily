@@ -1,0 +1,38 @@
+.accent-color-picker {
+  display: flex;
+  align-items: center;
+  gap: var(--spacer-b);
+  margin: 0;
+  padding: var(--spacer-b);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-d);
+  background: var(--surface-color);
+
+  &__option {
+    display: flex;
+    cursor: pointer;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  input + span {
+    width: .85rem;
+    height: .85rem;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  input:checked + span {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 2px var(--surface-color), 0 0 0 4px var(--text-color);
+  }
+
+  input:focus-visible + span {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+}

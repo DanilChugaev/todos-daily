@@ -1,10 +1,15 @@
 .new-task {
     position: sticky;
     z-index: 1;
-    bottom: var(--spacer-d);
+    bottom: calc(var(--spacer-d) + env(safe-area-inset-bottom));
     margin-top: auto;
     margin-left: var(--spacer-d);
     margin-right: var(--spacer-d);
+    min-height: 48px;
+    border-radius: var(--border-radius-d);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--accent-color) 28%, transparent);
+    background-color: var(--accent-color);
+    color: #fff;
 }
 
 .empty-list {

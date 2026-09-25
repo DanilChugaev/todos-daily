@@ -4,10 +4,6 @@
     margin: 0;
     padding: var(--spacer-a);
     border: none;
-    position: absolute;
-    right: var(--spacer-d);
-    top: 50%;
-    transform: translateY(-50%);
 
     &__legend {
         position: absolute;
@@ -38,7 +34,7 @@
 
         &:focus-visible {
             & ~ .theme-switcher__status {
-                box-shadow: 0 0 0 2px black;
+                box-shadow: 0 0 0 2px var(--accent-color);
             }
         }
 

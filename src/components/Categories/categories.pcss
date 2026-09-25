@@ -5,33 +5,44 @@
     position: sticky;
     top: 0;
     z-index: 9;
-    padding: 0 var(--spacer-d);
+    padding: 0 calc(var(--spacer-d) + env(safe-area-inset-right)) 0 calc(var(--spacer-d) + env(safe-area-inset-left));
+    background: color-mix(in srgb, var(--bg-color) 92%, transparent);
+    backdrop-filter: blur(12px);
 
     &__container {
         display: flex;
         gap: var(--spacer-c);
-        padding: var(--spacer-d) 0;
+        padding: var(--spacer-c) 0 var(--spacer-d);
         width: 100%;
         flex-wrap: nowrap;
         overflow-x: auto;
-        background-color: var(--bg-color);
+        background-color: transparent;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            display: none;
+        }
     }
 
     &__button {
         background-color: var(--button-bg-color-inverted) !important;
         color: var(--button-text-color-inverted) !important;
-        transition: background-color 0.3s, color 0.3s, transform 0.3s !important;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-d);
+        transition: background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease !important;
 
         &:hover,
         &--active {
             background-color: var(--button-bg-color) !important;
             color: var(--button-text-color) !important;
+            border-color: var(--accent-color);
+            background-color: var(--accent-color) !important;
         }
     }
 
     &__edit {
         position: sticky;
         right: 0;
-        background-color: var(--bg-color) !important;
+        background-color: transparent !important;
     }
 }

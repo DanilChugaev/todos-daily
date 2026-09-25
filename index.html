@@ -36,6 +36,17 @@
               savedTheme === 'dark' ? '#09090b' : '#f8fafc',
             );
           }
+          const accentColors = {
+            indigo: '#4f46e5',
+            blue: '#2563eb',
+            emerald: '#059669',
+            orange: '#ea580c',
+            rose: '#e11d48',
+          };
+          const savedAccentColor = localStorage.getItem('accent-color');
+          if (savedAccentColor && accentColors[savedAccentColor]) {
+            document.documentElement.style.setProperty('--accent-color', accentColors[savedAccentColor]);
+          }
         } catch {
           // Theme preference is optional.
         }
