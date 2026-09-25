@@ -12,6 +12,8 @@ interface TaskListProps {
   isOpen: boolean;
   onClick:  (item: ITask) => void;
   onComplete:  (id: number) => void;
+  onDelete: (item: ITask) => void;
+  onDuplicate: (item: ITask) => void;
   onToggleView: () => void;
 }
 
@@ -36,6 +38,8 @@ export function TaskList({
   isOpen,
   onClick,
   onComplete,
+  onDelete,
+  onDuplicate,
   onToggleView,
 }: TaskListProps) {
   const { categoriesMap } = useCategories();
@@ -64,6 +68,8 @@ export function TaskList({
             })}
             onClick={onClick}
             onComplete={onComplete}
+            onDelete={onDelete}
+            onDuplicate={onDuplicate}
           />
         ))}
       </ul>

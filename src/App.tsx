@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Header } from './components/Header/Header.tsx';
 import { TaskList } from './components/TaskList/TaskList.tsx';
 import { Categories } from './components/Categories/Categories.tsx';
@@ -9,18 +9,32 @@ import './styles/App.pcss';
 import { useTasks } from './hooks/useTasks';
 import { useCategories } from './hooks/useCategories.ts';
 import type { ITask } from './types.ts';
+import { TaskToolbar } from './components/TaskToolbar/TaskToolbar.tsx';
+import { matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
+
+const SORT_BY_KEY = 'tasks-sort-by';
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [activeOpen, setActiveOpen] = useState(true);
   const [completedOpen, setCompletedOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
+  const [query, setQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>(() => {
+    const savedSort = localStorage.getItem(SORT_BY_KEY);
+    return savedSort === 'dueDate' || savedSort === 'createdAt' ? savedSort : 'priority';
+  });
 
-  const { tasks, selectedCategoryId, setSelectedCategoryId, toggleComplete } = useTasks();
+  const { tasks, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask } = useTasks();
   const { categories } = useCategories();
 
-  const activeTasks = tasks.filter(task => !task.completed);
-  const completedTasks = tasks.filter(task => task.completed);
+  const filteredTasks = useMemo(() => sortTasks(tasks.filter((task) => matchesSearch(task, query)), sortBy), [query, sortBy, tasks]);
+  const activeTasks = filteredTasks.filter(task => !task.completed);
+  const completedTasks = filteredTasks.filter(task => task.completed);
+
+  useEffect(() => {
+    localStorage.setItem(SORT_BY_KEY, sortBy);
+  }, [sortBy]);
 
   function handleChangeCategory(id: number) {
     setSelectedCategoryId(id);
@@ -45,6 +59,16 @@ function App() {
     setModalOpen(false);
   }
 
+  async function handleDeleteTask(task: ITask) {
+    if (window.confirm(`Удалить задачу «${task.title}»?\n\nЭто действие нельзя отменить.`)) {
+      await deleteTask(task.id);
+    }
+  }
+
+  async function handleDuplicateTask(task: ITask) {
+    await duplicateTask(task);
+  }
+
   return (
     <>
       <Header/>
@@ -52,6 +76,7 @@ function App() {
       <Categories selected={selectedCategoryId} items={categories} onSelect={handleChangeCategory}/>
 
       <main style={{ marginBottom: '40px' }}>
+        <TaskToolbar query={query} sortBy={sortBy} onQueryChange={setQuery} onSortChange={setSortBy} />
         {
           activeTasks.length ||
           completedTasks.length
@@ -66,6 +91,8 @@ function App() {
                       isOpen={activeOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
+                      onDelete={handleDeleteTask}
+                      onDuplicate={handleDuplicateTask}
                       onToggleView={() => setActiveOpen(!activeOpen)}
                     />
                   ) : ''
@@ -80,13 +107,21 @@ function App() {
                       isOpen={completedOpen}
                       onClick={openEditModal}
                       onComplete={toggleComplete}
+                      onDelete={handleDeleteTask}
+                      onDuplicate={handleDuplicateTask}
                       onToggleView={() => setCompletedOpen(!completedOpen)}
                     />
                   ) : ''
                 }
               </>
             )
-            : <div className="empty-list">Новых задач нет</div>
+            : (
+              <section className="empty-list" aria-live="polite">
+                <h1 className="empty-list__title">{query ? 'Ничего не найдено' : 'Здесь пока нет задач'}</h1>
+                <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
+                {!query && <Button onClick={openAddModal}><PlusIcon/>Добавить задачу</Button>}
+              </section>
+            )
         }
       </main>
 

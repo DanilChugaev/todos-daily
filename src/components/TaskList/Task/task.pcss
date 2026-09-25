@@ -1,6 +1,6 @@
 .task {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     border-radius: var(--border-radius-c);
     border: 1px solid var(--border-color);
     background-color: var(--task-bg-color);
@@ -13,6 +13,11 @@
         box-shadow: var(--box-shadow-hover);
     }
 
+    &:focus-visible {
+        outline: 2px solid var(--grab-box-shadow);
+        outline-offset: 2px;
+    }
+
     &__content {
         display: flex;
         flex-direction: column;
@@ -23,7 +28,14 @@
     }
 
     &__actions {
-        padding: var(--spacer-d);
+        display: flex;
+        align-items: center;
+        gap: var(--spacer-a);
+        padding: var(--spacer-b);
+
+        .button {
+            padding: var(--spacer-b);
+        }
     }
 
     &__info {
@@ -32,6 +44,39 @@
         gap: var(--spacer-b);
         color: var(--task-info-text-color);
         font-size: 0.667rem; /*12px при base 18px*/
+    }
+
+    &__subtasks-progress {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacer-a);
+    }
+
+    &__due-date {
+        font-weight: 500;
+
+        &--today,
+        &--tomorrow {
+            color: var(--due-date-warning-color);
+        }
+
+        &--overdue {
+            color: var(--due-date-overdue-color);
+        }
+    }
+
+    &__progress {
+        width: 100%;
+        height: 3px;
+        overflow: hidden;
+        border-radius: 99px;
+        background-color: var(--border-color);
+    }
+
+    &__progress-value {
+        height: 100%;
+        border-radius: inherit;
+        background-color: var(--text-color);
     }
 
     &__icons {

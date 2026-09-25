@@ -8,6 +8,21 @@
 }
 
 .empty-list {
-    padding: var(--spacer-d);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacer-c);
+    padding: calc(var(--spacer-e) * 2) var(--spacer-d);
     text-align: center;
+
+    &__title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    &__description {
+        margin: 0;
+        color: var(--task-info-text-color);
+    }
 }

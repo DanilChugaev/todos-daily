@@ -9,13 +9,13 @@ export const useTasks = () => {
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
   const tasks = useLiveQuery(() => {
     if (!selectedCategoryId) {
-      return db.todos.orderBy('priority').toArray();
+      return db.todos.toArray();
     }
 
     return db.todos
       .where('categoryId') // Фильтрация по индексированному полю ID
       .equals(selectedCategoryId)
-      .sortBy('priority');
+      .toArray();
   }, [selectedCategoryId]) ?? [];
 
   // ========== CRUD ==========
@@ -58,6 +58,26 @@ export const useTasks = () => {
     }
   }, []);
 
+  const duplicateTask = useCallback(async (task: ITask) => {
+    const now = new Date().toISOString();
+    const copy: Omit<ITask, 'id'> = {
+      ...task,
+      title: `${task.title} (копия)`,
+      completed: false,
+      subtasks: task.subtasks.map((subtask) => ({
+        ...subtask,
+        id: crypto.randomUUID(),
+        completed: false,
+        createdAt: now,
+        updatedAt: now,
+      })),
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    return db.todos.add(copy as ITask);
+  }, []);
+
   const toggleComplete = useCallback(async (id: number) => {
     try {
       await db.todos.update(id, (task) => {
@@ -89,6 +109,7 @@ export const useTasks = () => {
     addTask,
     updateTask,
     deleteTask,
+    duplicateTask,
     toggleComplete,
     reassignCategory,
   };

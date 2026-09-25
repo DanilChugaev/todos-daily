@@ -10,6 +10,7 @@ interface InputProps {
   type: string;
   value: string;
   placeholder?: string;
+  min?: string;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
 }
@@ -22,6 +23,7 @@ export function Input({
   type,
   value,
   placeholder,
+  min,
   onChange,
   onEnter,
 }: InputProps) {
@@ -54,6 +56,7 @@ export function Input({
         onChange={onChange}
         onKeyDown={handleEnter}
         placeholder={placeholder}
+        min={min}
       />
     </FormField>
   );

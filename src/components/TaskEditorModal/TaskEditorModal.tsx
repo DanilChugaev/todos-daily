@@ -12,6 +12,7 @@ import { useCategories } from '../../hooks/useCategories.ts';
 import { type ISubtask, type ITask, PriorityEnum } from '../../types.ts';
 import { PRIORITIES_OPTIONS } from '../../constants.ts';
 import { Subtask } from '../TaskList/Subtask/Subtask.tsx';
+import { getTodayDate } from '../../utils/tasks.ts';
 
 interface TaskEditorModalProps {
   task?: Partial<ITask>;
@@ -235,11 +236,20 @@ export function TaskEditorModal({
         />
       </div>
 
+      <Input
+        id="task-due-date"
+        label="Срок выполнения"
+        type="date"
+        min={getTodayDate()}
+        value={form.dueDate}
+        onChange={(e) => { setForm({ ...form, dueDate: e.target.value }); setIsFormModified(true); }}
+      />
+
       {form.subtasks.length > 0 && (
         <div className="task-editor-modal__subtasks-list">
-          {form.subtasks.map((subtask, index) => (
+          {form.subtasks.map((subtask) => (
               <Subtask
-                key={index}
+                key={subtask.id}
                 subtask={subtask}
                 onDelete={handleRemoveSubtask}
                 onChange={handleUpdateSubtask}
@@ -258,7 +268,7 @@ export function TaskEditorModal({
           onEnter={handleAddSubtask}
         />
 
-        <Button icon onClick={handleAddSubtask}>
+        <Button icon ariaLabel="Добавить подзадачу" onClick={handleAddSubtask}>
           <PlusIcon/>
         </Button>
       </div>
@@ -272,7 +282,7 @@ export function TaskEditorModal({
         </Button>
 
         {isEditMode && (
-          <Button icon onClick={handleDelete}>
+          <Button icon ariaLabel="Удалить задачу" onClick={handleDelete}>
             <TrashIcon/>
           </Button>
         )}
