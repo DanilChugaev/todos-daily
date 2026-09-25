@@ -8,6 +8,7 @@ interface ButtonProps {
   size?: 'small' | 'normal';
   color?: 'red';
   transparent?: boolean;
+  ariaLabel?: string;
   children: ReactNode;
   onClick: () => void;
 }
@@ -19,6 +20,7 @@ export function Button({
   size,
   color,
   transparent,
+  ariaLabel,
   children,
   onClick,
 }: ButtonProps) {
@@ -53,6 +55,7 @@ export function Button({
       className={classNames.join(' ')}
       type="button"
       onClick={onClick}
+      aria-label={ariaLabel}
     >
       {children}
     </button>

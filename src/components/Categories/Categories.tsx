@@ -55,6 +55,7 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
       <Button
         className="categories__edit"
         icon
+        ariaLabel="Редактировать категории"
         onClick={() => setModalOpen(true)}
       >
         <EditIcon width={20} height={20}/>

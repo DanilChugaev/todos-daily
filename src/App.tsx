@@ -51,7 +51,7 @@ function App() {
 
       <Categories selected={selectedCategoryId} items={categories} onSelect={handleChangeCategory}/>
 
-      <div style={{ marginBottom: '40px' }}>
+      <main style={{ marginBottom: '40px' }}>
         {
           activeTasks.length ||
           completedTasks.length
@@ -88,7 +88,7 @@ function App() {
             )
             : <div className="empty-list">Новых задач нет</div>
         }
-      </div>
+      </main>
 
       <Button className="new-task" onClick={openAddModal}>
         <PlusIcon/>
