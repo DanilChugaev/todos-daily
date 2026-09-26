@@ -1,4 +1,4 @@
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './modal-dialog.pcss';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
@@ -10,98 +10,141 @@ interface ModalDialogProps {
   isOpen: boolean;
   children: ReactNode;
   onClose: () => void;
-  /**
-   * Если true, при закрытии покажет предупреждение о потере данных.
-   */
   hasUnsavedChanges?: boolean;
 }
 
-export function ModalDialog({
-  title,
-  isOpen,
-  children,
-  onClose,
-  hasUnsavedChanges,
-}: ModalDialogProps) {
+const getFocusableElements = (container: HTMLElement) => {
+  return Array.from(container.querySelectorAll<HTMLElement>(
+    'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+  ));
+};
+
+export function ModalDialog({ title, isOpen, children, onClose, hasUnsavedChanges = false }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+  const titleId = useId();
+  const [isVisible, setIsVisible] = useState(isOpen);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [isShowModal, setIsShowModal] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  const handleClose = useCallback((onCloseFn: () => void) => {
+  const finishClose = useCallback(() => {
     setIsAnimating(false);
-
-    setTimeout(() => {
-      onCloseFn();
-
-      setIsShowModal(false);
+    closeTimerRef.current = window.setTimeout(() => {
+      setIsVisible(false);
+      setIsConfirmOpen(false);
+      onClose();
+      triggerRef.current?.focus();
     }, ANIMATION_MS);
-  }, []);
+  }, [onClose]);
 
-  // Запрос на закрытие с предупреждением (если есть неподтвержденные данные)
-  const handleRequestClose = useCallback(async () => {
-    if (hasUnsavedChanges === true) {
-      // Используем стандартный браузерный confirm
-      const confirmed = window.confirm('Вы уверены, что хотите закрыть окно? Введенные данные будут утеряны.');
-      if (confirmed) {
-        handleClose(onClose);
-      }
-    } else {
-      handleClose(onClose);
+  const requestClose = useCallback(() => {
+    if (hasUnsavedChanges) {
+      setIsConfirmOpen(true);
+      return;
     }
-  }, [hasUnsavedChanges, onClose, handleClose]);
+
+    finishClose();
+  }, [finishClose, hasUnsavedChanges]);
 
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
-        setIsShowModal(true);
-      }, 0);
-
-      setTimeout(() => {
-        setIsAnimating(true);
-      }, 10);
-    } else {
-      setTimeout(() => {
-        handleClose(() => {});
-      }, 0);
+      triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setIsVisible(true);
+      const animationFrame = requestAnimationFrame(() => setIsAnimating(true));
+      return () => cancelAnimationFrame(animationFrame);
     }
-  }, [isOpen, handleClose]);
+
+    setIsAnimating(false);
+    setIsConfirmOpen(false);
+    return undefined;
+  }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isVisible) return undefined;
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleRequestClose();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const focusTimer = window.setTimeout(() => {
+      const firstFocusable = dialogRef.current && getFocusableElements(dialogRef.current)[0];
+      firstFocusable?.focus();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
+    if (!isVisible) return undefined;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        if (isConfirmOpen) setIsConfirmOpen(false);
+        else requestClose();
+      }
+
+      if (event.key !== 'Tab' || !dialogRef.current) return;
+      const focusableElements = getFocusableElements(dialogRef.current);
+      if (!focusableElements.length) return;
+
+      const first = focusableElements[0];
+      const last = focusableElements.at(-1)!;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
-    document.addEventListener('keydown', handleEscape, false);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isConfirmOpen, isVisible, requestClose]);
 
-    return () => document.removeEventListener('keydown', handleEscape, false);
-  }, [isOpen, handleRequestClose]);
+  useEffect(() => () => {
+    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
+  }, []);
 
-  return (
-    <>
-      {isShowModal && (createPortal(
-        <>
-          <div
-            className={`modal-dialog ${isAnimating ? 'modal-dialog--active' : ''}`}
-            ref={dialogRef}
-          >
-            <div className="modal-dialog__header">
-              <div className="modal-dialog__title">{title}</div>
+  if (!isVisible) return null;
 
-              <Button icon className="modal-dialog__close-btn" onClick={() => handleRequestClose()}>
-                <CloseIcon />
-              </Button>
+  return createPortal(
+    <div className={`modal-layer ${isAnimating ? 'modal-layer--active' : ''}`}>
+      <div className="modal-dialog-backdrop" onClick={requestClose} aria-hidden="true" />
+      <div
+        className="modal-dialog"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
+        <div className="modal-dialog__header">
+          <h2 id={titleId} className="modal-dialog__title">{title}</h2>
+          <Button icon ariaLabel="Закрыть окно" className="modal-dialog__close-btn" onClick={requestClose}>
+            <CloseIcon />
+          </Button>
+        </div>
+
+        <div className="modal-dialog__content">{children}</div>
+
+        {isConfirmOpen && (
+          <div className="modal-dialog__confirm" role="alertdialog" aria-modal="true" aria-labelledby={`${titleId}-confirm`}>
+            <div className="modal-dialog__confirm-card">
+              <h3 id={`${titleId}-confirm`}>Закрыть без сохранения?</h3>
+              <p>Внесённые изменения будут потеряны.</p>
+              <div className="modal-dialog__confirm-actions">
+                <Button inverted onClick={() => setIsConfirmOpen(false)}>Остаться</Button>
+                <Button color="red" onClick={finishClose}>Закрыть без сохранения</Button>
+              </div>
             </div>
-
-            <div className="modal-dialog__content">{children}</div>
           </div>
-          <div className="modal-dialog-backdrop" onClick={() => handleRequestClose()}></div>
-        </>,
-        document.body,
-      ))}
-    </>
+        )}
+      </div>
+    </div>,
+    document.body,
   );
 }

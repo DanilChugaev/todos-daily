@@ -4,7 +4,7 @@ import { Textarea } from '../Form/Textarea/Textarea.tsx';
 import { Button } from '../Button/Button.tsx';
 import { PlusIcon } from '../Icon/PlusIcon.tsx';
 import { ModalDialog } from '../ModalDialog/ModalDialog.tsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { Select } from '../Form/Select/Select.tsx';
@@ -29,6 +29,22 @@ interface TaskForm {
   subtasks: ISubtask[];
 }
 
+const createInitialForm = (task?: Partial<ITask>): TaskForm => ({
+  title: task?.title ?? '',
+  description: task?.description ?? '',
+  categoryId: task?.categoryId ?? 0,
+  priority: task?.priority ?? PriorityEnum.OTHER,
+  dueDate: task?.dueDate ?? '',
+  subtasks: task?.subtasks?.map((subtask) => ({ ...subtask })) ?? [],
+});
+
+const serializeForm = (form: TaskForm) => JSON.stringify({
+  ...form,
+  title: form.title.trim(),
+  description: form.description.trim(),
+  subtasks: form.subtasks.map(({ id, title, completed }) => ({ id, title: title.trim(), completed })),
+});
+
 export function TaskEditorModal({
   task,
   isOpen,
@@ -37,55 +53,19 @@ export function TaskEditorModal({
   const { addTask, updateTask, deleteTask } = useTasks();
   const { categories } = useCategories();
 
-  const [form, setForm] = useState<TaskForm>({
-    title: '',
-    description: '',
-    categoryId: 0,
-    priority: PriorityEnum.OTHER,
-    dueDate: '',
-    subtasks: [] as ISubtask[],
-  });
+  const initialForm = useMemo(() => createInitialForm(task), [task]);
+  const [form, setForm] = useState<TaskForm>(initialForm);
 
   const [newSubtask, setNewSubtask] = useState('');
-  const [isFormModified, setIsFormModified] = useState(false);
   const isEditMode = Boolean(task?.id);
 
-  // Подставляем данные при открытии на редактирование
   useEffect(() => {
-    if (task?.id) {
-      setTimeout(() => {
-        setForm({
-          title: task.title!,
-          description: task.description || '',
-          categoryId: task.categoryId ?? 0,
-          priority: task.priority ?? PriorityEnum.OTHER,
-          dueDate: task.dueDate || '',
-          subtasks: [...(task.subtasks ?? [])],
-        });
-        setIsFormModified(false);
-      }, 0);
-    } else {
-      setTimeout(() => {
-        setForm({
-          title: '',
-          description: '',
-          categoryId: task?.categoryId ?? 0,
-          priority: PriorityEnum.OTHER,
-          dueDate: '',
-          subtasks: [],
-        });
-        setIsFormModified(false);
-      }, 0);
+    if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setForm(initialForm);
+      setNewSubtask('');
     }
-    setTimeout(() => setNewSubtask(''), 0);
-  }, [task]);
-
-  // Проверяем: форма не пустая (есть введенные данные)
-  function hasData(): boolean {
-    return form.title.trim().length > 0 ||
-           form.description.trim().length > 0 ||
-           form.subtasks.length > 0;
-  }
+  }, [initialForm, isOpen]);
 
   if (!isOpen) return null;
 
@@ -110,7 +90,6 @@ export function TaskEditorModal({
       await addTask(taskData);
     }
 
-    setIsFormModified(false);
     handleBeforeClose();
   }
 
@@ -127,16 +106,6 @@ export function TaskEditorModal({
   }
 
   function handleBeforeClose() {
-    setForm({
-      title: '',
-      description: '',
-      categoryId: 0,
-      priority: PriorityEnum.OTHER,
-      dueDate: '',
-      subtasks: [],
-    });
-
-    setIsFormModified(false);
     onClose();
   }
 
@@ -153,8 +122,6 @@ export function TaskEditorModal({
           updatedAt: new Date().toISOString(),
         }],
       }));
-      setIsFormModified(true);
-
       setNewSubtask('');
     }
   };
@@ -167,7 +134,6 @@ export function TaskEditorModal({
         ...prev,
         subtasks: prev.subtasks.filter((item) => item.id !== id),
       }));
-      setIsFormModified(true);
     }
   };
 
@@ -187,12 +153,10 @@ export function TaskEditorModal({
         return item;
       }),
     }));
-    setIsFormModified(true);
   }
   /* endregion Подзадачи */
 
-  // Показать подтверждение только если форма была модифицирована ИЛИ имеет данные
-  const showConfirmOnClose = isFormModified || hasData();
+  const showConfirmOnClose = serializeForm(form) !== serializeForm(initialForm);
 
   return (
     <ModalDialog
@@ -207,7 +171,7 @@ export function TaskEditorModal({
         type="text"
         placeholder="Название*"
         value={form.title}
-        onChange={(e) => { setForm({ ...form, title: e.target.value }); setIsFormModified(true); }}
+        onChange={(e) => setForm({ ...form, title: e.target.value })}
         onEnter={handleSubmit}
       />
 
@@ -215,7 +179,7 @@ export function TaskEditorModal({
         id="task-description"
         placeholder="Описание"
         value={form.description}
-        onChange={(e) => { setForm({ ...form, description: e.target.value }); setIsFormModified(true); }}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
 
       <div className="task-editor-modal__selects">
@@ -223,7 +187,7 @@ export function TaskEditorModal({
           id="task-category"
           placeholder="Категория"
           value={form.categoryId}
-          onChange={(categoryId) => { setForm({ ...form, categoryId }); setIsFormModified(true); }}
+          onChange={(categoryId) => setForm({ ...form, categoryId })}
           options={categories}
         />
 
@@ -231,7 +195,7 @@ export function TaskEditorModal({
           id="task-priority"
           placeholder="Приоритет"
           value={form.priority}
-          onChange={(priority) => { setForm({ ...form, priority }); setIsFormModified(true); }}
+          onChange={(priority) => setForm({ ...form, priority })}
           options={PRIORITIES_OPTIONS}
         />
       </div>
@@ -242,7 +206,7 @@ export function TaskEditorModal({
         type="date"
         min={getTodayDate()}
         value={form.dueDate}
-        onChange={(e) => { setForm({ ...form, dueDate: e.target.value }); setIsFormModified(true); }}
+        onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
       />
 
       {form.subtasks.length > 0 && (
