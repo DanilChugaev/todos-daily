@@ -37,6 +37,7 @@ function App() {
   const completedTasks = filteredTasks.filter((task) => task.status === TaskStatus.COMPLETED);
   const categoryCompletedCount = scopedTasks.filter((task) => task.status === TaskStatus.COMPLETED).length;
   const todayActiveCount = tasks.filter((task) => task.dueDate === getTodayDate() && task.status !== TaskStatus.COMPLETED).length;
+  const hasActiveTasksInCategory = scopedTasks.some((task) => task.status !== TaskStatus.COMPLETED);
 
   useEffect(() => {
     localStorage.setItem(SORT_BY_KEY, sortBy);
@@ -127,6 +128,13 @@ function App() {
                 onToggleView={() => setNewOpen(!newOpen)}
               />
             )}
+            {!hasActiveTasksInCategory && completedTasks.length > 0 && !query && (
+              <section className="empty-list empty-list--compact" aria-live="polite">
+                <h1 className="empty-list__title">Здесь нет задач в работе или новых задач</h1>
+                <p className="empty-list__description">Добавьте новую задачу, чтобы запланировать следующий шаг.</p>
+                <Button onClick={openAddModal}><PlusIcon/>Добавить задачу</Button>
+              </section>
+            )}
             {completedTasks.length > 0 && (
               <TaskList
                 title={`Готовые (${completedTasks.length})`}
@@ -142,7 +150,7 @@ function App() {
             )}
           </>
         ) : (
-          <section className="empty-list" aria-live="polite">
+          <section className={`empty-list${query ? '' : ' empty-list--compact'}`} aria-live="polite">
             <h1 className="empty-list__title">{query ? 'Ничего не найдено' : selectedCategoryId === 'today' ? 'На сегодня задач нет' : 'Здесь пока нет задач'}</h1>
             <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : selectedCategoryId === 'today' ? 'Запланируйте важную задачу и сфокусируйтесь на текущем дне.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
             {!query && <Button onClick={openAddModal}><PlusIcon/>Добавить задачу</Button>}
