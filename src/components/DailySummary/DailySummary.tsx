@@ -3,9 +3,10 @@ import './daily-summary.pcss';
 interface DailySummaryProps {
   activeCount: number;
   completedCount: number;
+  inProgressCount: number;
 }
 
-export function DailySummary({ activeCount, completedCount }: DailySummaryProps) {
+export function DailySummary({ activeCount, completedCount, inProgressCount }: DailySummaryProps) {
   const totalCount = activeCount + completedCount;
   const progress = totalCount ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -17,6 +18,7 @@ export function DailySummary({ activeCount, completedCount }: DailySummaryProps)
         <p className="daily-summary__description">
           {totalCount ? `Выполнено ${completedCount} из ${totalCount} задач.` : 'Добавьте первую задачу и начните свой день спокойно.'}
         </p>
+        {inProgressCount > 0 && <p className="daily-summary__in-progress">В работе: {inProgressCount}</p>}
       </div>
       <div className="daily-summary__progress" aria-label={`Выполнено ${progress}% задач`}>
         <strong>{progress}%</strong>

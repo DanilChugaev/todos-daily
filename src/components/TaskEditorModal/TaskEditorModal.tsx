@@ -9,8 +9,8 @@ import { useTasks } from '../../hooks/useTasks.ts';
 import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { Select } from '../Form/Select/Select.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
-import { type ISubtask, type ITask, PriorityEnum } from '../../types.ts';
-import { PRIORITIES_OPTIONS } from '../../constants.ts';
+import { type ISubtask, type ITask, PriorityEnum, TaskStatus, type TaskStatus as TaskStatusType } from '../../types.ts';
+import { PRIORITIES_OPTIONS, TASK_STATUS_OPTIONS } from '../../constants.ts';
 import { Subtask } from '../TaskList/Subtask/Subtask.tsx';
 import { getTodayDate } from '../../utils/tasks.ts';
 
@@ -26,6 +26,7 @@ interface TaskForm {
   description: string;
   categoryId: number;
   priority: PriorityEnum;
+  status: TaskStatusType;
   dueDate: string;
   subtasks: ISubtask[];
 }
@@ -35,6 +36,7 @@ const createInitialForm = (task?: Partial<ITask>): TaskForm => ({
   description: task?.description ?? '',
   categoryId: task?.categoryId ?? 0,
   priority: task?.priority ?? PriorityEnum.OTHER,
+  status: task?.status ?? TaskStatus.NEW,
   dueDate: task?.dueDate ?? '',
   subtasks: task?.subtasks?.map((subtask) => ({ ...subtask })) ?? [],
 });
@@ -52,13 +54,14 @@ export function TaskEditorModal({
   onClose,
   onExited,
 }: TaskEditorModalProps) {
-  const { addTask, updateTask, deleteTask } = useTasks();
+  const { addTask, updateTask, deleteTask, updateTaskStatus } = useTasks();
   const { categories } = useCategories();
 
   const initialForm = useMemo(() => createInitialForm(task), [task]);
   const [form, setForm] = useState<TaskForm>(initialForm);
 
   const [newSubtask, setNewSubtask] = useState('');
+  const [isWipLimitOpen, setIsWipLimitOpen] = useState(false);
   const isEditMode = Boolean(task?.id);
 
   useEffect(() => {
@@ -66,6 +69,7 @@ export function TaskEditorModal({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm(initialForm);
       setNewSubtask('');
+      setIsWipLimitOpen(false);
     }
   }, [initialForm, isOpen]);
 
@@ -80,14 +84,24 @@ export function TaskEditorModal({
       description: form.description.trim() || undefined,
       categoryId: form.categoryId,
       priority: form.priority,
+      status: form.status,
       dueDate: form.dueDate || undefined,
       subtasks: form.subtasks,
     };
 
     if (isEditMode && task?.id) {
+      const statusResult = await updateTaskStatus(task.id, form.status);
+      if (!statusResult?.success) {
+        setIsWipLimitOpen(true);
+        return;
+      }
       await updateTask(task.id, taskData);
     } else {
-      await addTask(taskData);
+      const addResult = await addTask(taskData);
+      if (!addResult.success) {
+        setIsWipLimitOpen(true);
+        return;
+      }
     }
 
     handleBeforeClose();
@@ -199,6 +213,14 @@ export function TaskEditorModal({
           onChange={(priority) => setForm({ ...form, priority })}
           options={PRIORITIES_OPTIONS}
         />
+
+        <Select
+          id="task-status"
+          placeholder="Статус"
+          value={form.status}
+          onChange={(status) => setForm({ ...form, status })}
+          options={TASK_STATUS_OPTIONS}
+        />
       </div>
 
       <Input
@@ -259,6 +281,14 @@ export function TaskEditorModal({
           </Button>
         )}
       </div>
+
+      {isWipLimitOpen && (
+        <div className="task-editor-modal__limit-alert" role="alert">
+          <strong>Лимит задач в работе</strong>
+          <span>В этой категории уже 3 задачи в работе. Завершите одну или верните её в новые, чтобы освободить место.</span>
+          <Button size="small" onClick={() => setIsWipLimitOpen(false)}>Понятно</Button>
+        </div>
+      )}
     </ModalDialog>
   );
 }

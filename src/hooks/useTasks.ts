@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
 import { db } from '../utils/db/db.ts';
-import type { ITask } from '../types.ts';
+import { TaskStatus, type ITask, type TaskStatus as TaskStatusType } from '../types.ts';
 import type { TaskFilterId } from '../utils/tasks.ts';
 
 export const useTasks = () => {
@@ -12,17 +12,29 @@ export const useTasks = () => {
 
   // ========== CRUD ==========
 
-  const addTask = useCallback(async (taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt' | 'completed'>) => {
+  const addTask = useCallback(async (taskData: Omit<ITask, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
-      const newTask: Omit<ITask, 'id'> = {
-        ...taskData,
-        completed: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      return await db.transaction('rw', db.todos, async () => {
+        const status = taskData.status ?? TaskStatus.NEW;
+        if (status === TaskStatus.IN_PROGRESS) {
+          const inProgressCount = await db.todos
+            .where('[categoryId+status]')
+            .equals([taskData.categoryId, TaskStatus.IN_PROGRESS])
+            .count();
 
-      await db.todos.add(newTask as ITask);
-      return newTask;
+          if (inProgressCount >= 3) return { success: false as const };
+        }
+
+        const newTask: Omit<ITask, 'id'> = {
+          ...taskData,
+          status,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        await db.todos.add(newTask as ITask);
+        return { success: true as const, task: newTask };
+      });
     } catch (error) {
       console.error('Failed to add task:', error);
       throw error;
@@ -59,7 +71,7 @@ export const useTasks = () => {
         categoryId: task.categoryId,
         priority: task.priority,
         dueDate: task.dueDate,
-        completed: false,
+        status: TaskStatus.NEW,
         subtasks: task.subtasks.map((subtask) => ({
           ...subtask,
           id: crypto.randomUUID(),
@@ -78,17 +90,38 @@ export const useTasks = () => {
     }
   }, []);
 
-  const toggleComplete = useCallback(async (id: number) => {
+  const updateTaskStatus = useCallback(async (id: number, status: TaskStatusType) => {
     try {
-      await db.todos.update(id, (task) => {
-        task.completed = !task.completed;
-        task.updatedAt = new Date().toISOString();
+      await db.transaction('rw', db.todos, async () => {
+        const task = await db.todos.get(id);
+        if (!task) throw new Error(`Task ${id} not found`);
+
+        if (status === TaskStatus.IN_PROGRESS && task.status !== TaskStatus.IN_PROGRESS) {
+          const inProgressCount = await db.todos
+            .where('[categoryId+status]')
+            .equals([task.categoryId, TaskStatus.IN_PROGRESS])
+            .count();
+
+          if (inProgressCount >= 3) {
+            throw new Error('WIP_LIMIT_REACHED');
+          }
+        }
+
+        await db.todos.update(id, { status, updatedAt: new Date().toISOString() });
       });
     } catch (error) {
-      console.error(`Failed to toggle task complete ${id}:`, error);
+      if (error instanceof Error && error.message === 'WIP_LIMIT_REACHED') return { success: false as const };
+      console.error(`Failed to update task ${id} status:`, error);
       throw error;
     }
+    return { success: true as const };
   }, []);
+
+  const toggleComplete = useCallback(async (id: number) => {
+    const task = await db.todos.get(id);
+    if (!task) return;
+    return updateTaskStatus(id, task.status === TaskStatus.COMPLETED ? TaskStatus.NEW : TaskStatus.COMPLETED);
+  }, [updateTaskStatus]);
 
   const reassignCategory = useCallback((oldCategoryId: number, newCategoryId: number) => {
     if (oldCategoryId === newCategoryId) return;
@@ -111,6 +144,7 @@ export const useTasks = () => {
     deleteTask,
     duplicateTask,
     toggleComplete,
+    updateTaskStatus,
     reassignCategory,
   };
 };

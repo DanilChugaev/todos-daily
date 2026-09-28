@@ -32,6 +32,26 @@
         margin-top: calc(var(--spacer-c) * -1);
     }
 
+    &__limit-alert {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacer-c);
+        padding: var(--spacer-d);
+        border: 1px solid var(--due-date-warning-color);
+        border-radius: var(--border-radius-d);
+        background: color-mix(in srgb, var(--due-date-warning-color) 12%, transparent);
+        color: var(--text-color);
+
+        span {
+            color: var(--muted-text-color);
+            font-size: .78rem;
+        }
+
+        .button {
+            align-self: flex-start;
+        }
+    }
+
     &__new-subtask {
         display: flex;
         align-items: center;

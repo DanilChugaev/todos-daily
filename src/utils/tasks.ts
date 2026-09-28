@@ -1,4 +1,4 @@
-import { PriorityEnum, type ITask } from '../types.ts';
+import { PriorityEnum, TaskStatus, type ITask } from '../types.ts';
 
 export type SortOption = 'priority' | 'dueDate' | 'createdAt';
 export type TaskFilterId = number | 'today';
@@ -63,6 +63,10 @@ export function matchesSearch(task: ITask, query: string): boolean {
 
 export function getCompletedSubtasksCount(task: ITask): number {
   return task.subtasks.filter((subtask) => subtask.completed).length;
+}
+
+export function isTaskCompleted(task: ITask): boolean {
+  return task.status === TaskStatus.COMPLETED;
 }
 
 export const DEFAULT_PRIORITY = PriorityEnum.OTHER;

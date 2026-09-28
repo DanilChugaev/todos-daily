@@ -60,6 +60,18 @@
         gap: var(--spacer-a);
     }
 
+    &__status {
+        padding: 1px var(--spacer-b);
+        border-radius: 99px;
+        background: var(--border-color);
+        font-weight: 500;
+
+        &--inProgress {
+            background: color-mix(in srgb, var(--accent-color) 16%, transparent);
+            color: var(--accent-color);
+        }
+    }
+
     &__due-date {
         font-weight: 500;
 
@@ -126,7 +138,7 @@
 @media (hover: hover) and (pointer: fine) {
     .task__actions {
         position: absolute;
-        top: var(--spacer-c);
+        top: var(--spacer-b);
         right: var(--spacer-b);
         z-index: 2;
         opacity: 0;

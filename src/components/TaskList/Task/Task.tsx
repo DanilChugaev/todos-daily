@@ -4,7 +4,7 @@ import { Checkbox } from '../../Checkbox/Checkbox.tsx';
 import { DocIcon } from '../../Icon/DocIcon.tsx';
 import { PriorityIcon } from '../../Icon/PriorityIcon.tsx';
 import { PRIORITIES_COLOR_MAP, PRIORITY } from '../../../constants.ts';
-import { type ITask, PriorityEnum } from '../../../types.ts';
+import { type ITask, PriorityEnum, TaskStatus } from '../../../types.ts';
 import { BranchIcon } from '../../Icon/BranchIcon.tsx';
 import { Button } from '../../Button/Button.tsx';
 import { TrashIcon } from '../../Icon/TrashIcon.tsx';
@@ -36,10 +36,10 @@ export const Task = memo(({
       handleTaskClick();
     }
   };
-  const dueDate = getDueDateLabel(item.dueDate, item.completed);
+  const dueDate = getDueDateLabel(item.dueDate, item.status === TaskStatus.COMPLETED);
   const completedSubtasks = getCompletedSubtasksCount(item);
   const subtaskProgress = item.subtasks.length ? (completedSubtasks / item.subtasks.length) * 100 : 0;
-  const canCompleteFromSubtasks = !item.completed && item.subtasks.length > 0 && completedSubtasks === item.subtasks.length;
+  const canCompleteFromSubtasks = item.status !== TaskStatus.COMPLETED && item.subtasks.length > 0 && completedSubtasks === item.subtasks.length;
 
   return (
     <li
@@ -51,7 +51,7 @@ export const Task = memo(({
     >
       <Checkbox
         id={item.id.toString()}
-        checked={item.completed}
+        checked={item.status === TaskStatus.COMPLETED}
         onChange={handleComplete}
       />
 
@@ -64,6 +64,8 @@ export const Task = memo(({
           {categoryName && (
             <span className="task__category">{categoryName}</span>
           )}
+
+          <span className={`task__status task__status--${item.status}`}>{item.status === TaskStatus.NEW ? 'Новая' : item.status === TaskStatus.IN_PROGRESS ? 'В работе' : 'Готовая'}</span>
 
           {item.description && <DocIcon width="0.8rem" height="0.8rem"/>}
 

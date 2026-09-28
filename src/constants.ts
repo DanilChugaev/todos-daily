@@ -1,4 +1,4 @@
-import { type IPriority, PriorityEnum } from './types.ts';
+import { type IPriority, type ITaskStatus, PriorityEnum, TaskStatus } from './types.ts';
 
 export const ICON_SIZE = '1rem';
 export const ANIMATION_MS = 300;
@@ -17,6 +17,18 @@ export const PRIORITIES_OPTIONS: IPriority[] = [
   { id: PriorityEnum.OTHER, name: 'Приоритет не определен' },
 ];
 
+export const TASK_STATUS_OPTIONS: ITaskStatus[] = [
+  { id: TaskStatus.NEW, name: 'Новая' },
+  { id: TaskStatus.IN_PROGRESS, name: 'В работе' },
+  { id: TaskStatus.COMPLETED, name: 'Готовая' },
+];
+
+export const TASK_STATUS_LABELS: Record<TaskStatus, string> = {
+  [TaskStatus.NEW]: 'Новая',
+  [TaskStatus.IN_PROGRESS]: 'В работе',
+  [TaskStatus.COMPLETED]: 'Готовая',
+};
+
 export const PRIORITY: Record<PriorityEnum, string> = {
   [PriorityEnum.HIGH]: 'Высокий',
   [PriorityEnum.MEDIUM]: 'Средний',
@@ -30,4 +42,3 @@ export const PRIORITIES_COLOR_MAP: Record<PriorityEnum, string> = {
   [PriorityEnum.LOW]: '#7A9BBD',
   [PriorityEnum.OTHER]: '#999999',
 };
-

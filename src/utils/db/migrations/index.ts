@@ -6,6 +6,7 @@ import { v4Migration } from './v4';
 import { v5Migration } from './v5';
 import { v6Migration } from './v6';
 import { v7Migration } from './v7';
+import { v8Migration } from './v8';
 
 export const MIGRATIONS: MigrationConfig[] = [
   v1Migration,
@@ -15,4 +16,5 @@ export const MIGRATIONS: MigrationConfig[] = [
   v5Migration,
   v6Migration,
   v7Migration,
+  v8Migration,
 ];
