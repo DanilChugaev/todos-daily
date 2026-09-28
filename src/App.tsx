@@ -11,7 +11,8 @@ import { useCategories } from './hooks/useCategories.ts';
 import type { ITask } from './types.ts';
 import { TaskToolbar } from './components/TaskToolbar/TaskToolbar.tsx';
 import { DailySummary } from './components/DailySummary/DailySummary.tsx';
-import { matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
+import { CategoryProgress } from './components/CategoryProgress/CategoryProgress.tsx';
+import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
 
@@ -29,15 +30,18 @@ function App() {
   const { tasks, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask } = useTasks();
   const { categories } = useCategories();
 
-  const filteredTasks = useMemo(() => sortTasks(tasks.filter((task) => matchesSearch(task, query)), sortBy), [query, sortBy, tasks]);
+  const scopedTasks = useMemo(() => filterTasksByScope(tasks, selectedCategoryId), [selectedCategoryId, tasks]);
+  const filteredTasks = useMemo(() => sortTasks(scopedTasks.filter((task) => matchesSearch(task, query)), sortBy), [query, scopedTasks, sortBy]);
   const activeTasks = filteredTasks.filter(task => !task.completed);
   const completedTasks = filteredTasks.filter(task => task.completed);
+  const categoryCompletedCount = scopedTasks.filter((task) => task.completed).length;
+  const todayActiveCount = tasks.filter((task) => task.dueDate === getTodayDate() && !task.completed).length;
 
   useEffect(() => {
     localStorage.setItem(SORT_BY_KEY, sortBy);
   }, [sortBy]);
 
-  function handleChangeCategory(id: number) {
+  function handleChangeCategory(id: typeof selectedCategoryId) {
     setSelectedCategoryId(id);
     setActiveOpen(true);
     setCompletedOpen(false);
@@ -45,7 +49,8 @@ function App() {
 
   function openAddModal() {
     setEditingTask({
-      categoryId: selectedCategoryId,
+      categoryId: typeof selectedCategoryId === 'number' ? selectedCategoryId : 0,
+      dueDate: selectedCategoryId === 'today' ? getTodayDate() : undefined,
     });
     setModalOpen(true);
   }
@@ -74,10 +79,11 @@ function App() {
     <>
       <Header/>
 
-      <Categories selected={selectedCategoryId} items={categories} onSelect={handleChangeCategory}/>
+      <Categories selected={selectedCategoryId} items={categories} todayActiveCount={todayActiveCount} onSelect={handleChangeCategory}/>
 
       <main style={{ marginBottom: '40px' }}>
-        <DailySummary activeCount={activeTasks.length} completedCount={completedTasks.length} />
+        {selectedCategoryId === 'today' && <DailySummary activeCount={scopedTasks.filter((task) => !task.completed).length} completedCount={categoryCompletedCount} />}
+        {selectedCategoryId !== 'today' && <CategoryProgress completedCount={categoryCompletedCount} totalCount={scopedTasks.length} />}
         <TaskToolbar query={query} sortBy={sortBy} onQueryChange={setQuery} onSortChange={setSortBy} />
         {
           activeTasks.length ||
@@ -119,8 +125,8 @@ function App() {
             )
             : (
               <section className="empty-list" aria-live="polite">
-                <h1 className="empty-list__title">{query ? 'Ничего не найдено' : 'Здесь пока нет задач'}</h1>
-                <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
+                <h1 className="empty-list__title">{query ? 'Ничего не найдено' : selectedCategoryId === 'today' ? 'На сегодня задач нет' : 'Здесь пока нет задач'}</h1>
+                <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : selectedCategoryId === 'today' ? 'Запланируйте важную задачу и сфокусируйтесь на текущем дне.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
                 {!query && <Button onClick={openAddModal}><PlusIcon/>Добавить задачу</Button>}
               </section>
             )

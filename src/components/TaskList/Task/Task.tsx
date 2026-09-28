@@ -36,9 +36,10 @@ export const Task = memo(({
       handleTaskClick();
     }
   };
-  const dueDate = getDueDateLabel(item.dueDate);
+  const dueDate = getDueDateLabel(item.dueDate, item.completed);
   const completedSubtasks = getCompletedSubtasksCount(item);
   const subtaskProgress = item.subtasks.length ? (completedSubtasks / item.subtasks.length) * 100 : 0;
+  const canCompleteFromSubtasks = !item.completed && item.subtasks.length > 0 && completedSubtasks === item.subtasks.length;
 
   return (
     <li
@@ -79,6 +80,13 @@ export const Task = memo(({
         {item.subtasks.length > 0 && (
           <div className="task__progress" aria-label={`Подзадачи: выполнено ${completedSubtasks} из ${item.subtasks.length}`}>
             <div className="task__progress-value" style={{ width: `${subtaskProgress}%` }} />
+          </div>
+        )}
+
+        {canCompleteFromSubtasks && (
+          <div className="task__completion-hint" onClick={(event) => event.stopPropagation()}>
+            <span>Все подзадачи выполнены</span>
+            <Button transparent onClick={handleComplete}>Завершить задачу</Button>
           </div>
         )}
 

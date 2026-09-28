@@ -12,7 +12,7 @@ export function DailySummary({ activeCount, completedCount }: DailySummaryProps)
   return (
     <section className="daily-summary" aria-labelledby="daily-summary-title">
       <div>
-        <p className="daily-summary__eyebrow">Сегодня</p>
+        <p className="daily-summary__eyebrow">Фокус на сегодня</p>
         <h1 id="daily-summary-title">Ваш фокус на день</h1>
         <p className="daily-summary__description">
           {totalCount ? `Выполнено ${completedCount} из ${totalCount} задач.` : 'Добавьте первую задачу и начните свой день спокойно.'}

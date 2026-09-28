@@ -207,6 +207,14 @@ export function TaskEditorModal({
         value={form.dueDate}
         onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
       />
+      <Button
+        className="task-editor-modal__today-button"
+        size="small"
+        inverted
+        onClick={() => setForm({ ...form, dueDate: getTodayDate() })}
+      >
+        Сегодня
+      </Button>
 
       {form.subtasks.length > 0 && (
         <div className="task-editor-modal__subtasks-list">

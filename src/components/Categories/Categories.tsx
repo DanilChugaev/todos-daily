@@ -4,26 +4,28 @@ import { useEffect, useState } from 'react';
 import { CategoriesEditorModal } from '../CategoriesEditorModal/CategoriesEditorModal.tsx';
 import { EditIcon } from '../Icon/EditIcon.tsx';
 import type { ICategory } from '../../types.ts';
+import type { TaskFilterId } from '../../utils/tasks.ts';
 
 interface CategoriesProps {
-  selected: number;
+  selected: TaskFilterId;
   items: ICategory[];
-  onSelect: (item: number) => void;
+  todayActiveCount: number;
+  onSelect: (item: TaskFilterId) => void;
 }
 
-export function Categories({ selected, items, onSelect }: CategoriesProps) {
+export function Categories({ selected, items, todayActiveCount, onSelect }: CategoriesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
-  function getClassName(id: number) {
+  function getClassName(id: TaskFilterId) {
     return `categories__button ${selected === id ? 'categories__button--active' : ''}`;
   }
 
-  function handleSelect(id: number) {
+  function handleSelect(id: TaskFilterId) {
     onSelect(id);
   }
 
   useEffect(() => {
-    if (selected !== 0 && !items.some((category) => category.id === selected)) {
+    if (typeof selected === 'number' && selected !== 0 && !items.some((category) => category.id === selected)) {
       onSelect(0);
     }
   }, [items, onSelect, selected]);
@@ -31,6 +33,13 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
   return (
     <div className="categories">
       <div className="categories__container">
+        <Button
+          className={getClassName('today')}
+          onClick={() => handleSelect('today')}
+        >
+          Сегодня{todayActiveCount > 0 ? ` · ${todayActiveCount}` : ''}
+        </Button>
+
         <Button
           className={getClassName(0)}
           onClick={() => handleSelect(0)}
@@ -62,7 +71,7 @@ export function Categories({ selected, items, onSelect }: CategoriesProps) {
       </Button>
 
       <CategoriesEditorModal
-        selected={selected}
+        selected={typeof selected === 'number' ? selected : 0}
         isOpen={modalOpen}
         onSelected={handleSelect}
         onClose={() => setModalOpen(false)}

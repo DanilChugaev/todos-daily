@@ -4,11 +4,12 @@ import { ArrowIcon } from '../Icon/ArrowIcon.tsx';
 import { useCategories } from '../../hooks/useCategories.ts';
 import type { ITask } from '../../types.ts';
 import { Button } from '../Button/Button.tsx';
+import type { TaskFilterId } from '../../utils/tasks.ts';
 
 interface TaskListProps {
   title: string;
   items: ITask[];
-  selectedCategoryId: number;
+  selectedCategoryId: TaskFilterId;
   isOpen: boolean;
   onClick:  (item: ITask) => void;
   onComplete:  (id: number) => void;
@@ -22,11 +23,11 @@ const getCategoryName = ({
   categoryId,
   categoriesMap,
 }: {
-  selectedCategoryId: number;
+  selectedCategoryId: TaskFilterId;
   categoryId?: number;
   categoriesMap?: Map<number, string>
 }): string => {
-  if (selectedCategoryId === categoryId) return '';
+  if (selectedCategoryId === categoryId || selectedCategoryId === 'today') return '';
   if (categoriesMap) return categoriesMap.get(categoryId ?? 0) ?? '';
   return '';
 };

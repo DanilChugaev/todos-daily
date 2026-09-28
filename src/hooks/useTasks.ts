@@ -2,21 +2,13 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { useCallback, useState } from 'react';
 import { db } from '../utils/db/db.ts';
 import type { ITask } from '../types.ts';
+import type { TaskFilterId } from '../utils/tasks.ts';
 
 export const useTasks = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<TaskFilterId>('today');
 
   // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
-  const tasks = useLiveQuery(() => {
-    if (!selectedCategoryId) {
-      return db.todos.toArray();
-    }
-
-    return db.todos
-      .where('categoryId') // Фильтрация по индексированному полю ID
-      .equals(selectedCategoryId)
-      .toArray();
-  }, [selectedCategoryId]) ?? [];
+  const tasks = useLiveQuery(() => db.todos.toArray(), []) ?? [];
 
   // ========== CRUD ==========
 

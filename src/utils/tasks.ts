@@ -1,6 +1,7 @@
 import { PriorityEnum, type ITask } from '../types.ts';
 
 export type SortOption = 'priority' | 'dueDate' | 'createdAt';
+export type TaskFilterId = number | 'today';
 
 export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'priority', label: 'По приоритету' },
@@ -14,7 +15,7 @@ export function getTodayDate(): string {
   return new Date(now.getTime() - offset).toISOString().slice(0, 10);
 }
 
-export function getDueDateLabel(dueDate?: string): { label: string; status: 'today' | 'tomorrow' | 'overdue' | 'upcoming' } | null {
+export function getDueDateLabel(dueDate: string | undefined, completed = false): { label: string; status: 'today' | 'tomorrow' | 'overdue' | 'upcoming' } | null {
   if (!dueDate) return null;
 
   const today = getTodayDate();
@@ -22,7 +23,7 @@ export function getDueDateLabel(dueDate?: string): { label: string; status: 'tod
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowDate = tomorrow.toISOString().slice(0, 10);
 
-  if (dueDate < today) return { label: 'Просрочено', status: 'overdue' };
+  if (dueDate < today && !completed) return { label: 'Просрочено', status: 'overdue' };
   if (dueDate === today) return { label: 'Сегодня', status: 'today' };
   if (dueDate === tomorrowDate) return { label: 'Завтра', status: 'tomorrow' };
 
@@ -30,6 +31,12 @@ export function getDueDateLabel(dueDate?: string): { label: string; status: 'tod
     label: new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short' }).format(new Date(`${dueDate}T00:00:00`)),
     status: 'upcoming',
   };
+}
+
+export function filterTasksByScope(tasks: ITask[], filterId: TaskFilterId): ITask[] {
+  if (filterId === 'today') return tasks.filter((task) => task.dueDate === getTodayDate());
+  if (filterId === 0) return tasks;
+  return tasks.filter((task) => task.categoryId === filterId);
 }
 
 export function sortTasks(tasks: ITask[], sortBy: SortOption): ITask[] {
