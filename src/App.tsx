@@ -61,8 +61,11 @@ function App() {
   }
 
   function closeModal() {
-    setEditingTask(undefined);
     setModalOpen(false);
+  }
+
+  function handleModalExited() {
+    setEditingTask(undefined);
   }
 
   async function handleDeleteTask(task: ITask) {
@@ -143,6 +146,7 @@ function App() {
         task={editingTask}
         isOpen={modalOpen}
         onClose={closeModal}
+        onExited={handleModalExited}
       />
     </>
   );

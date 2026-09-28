@@ -10,33 +10,42 @@ interface ModalDialogProps {
   isOpen: boolean;
   children: ReactNode;
   onClose: () => void;
+  onExited?: () => void;
   hasUnsavedChanges?: boolean;
 }
 
-const getFocusableElements = (container: HTMLElement) => {
-  return Array.from(container.querySelectorAll<HTMLElement>(
-    'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
-  ));
-};
+type ModalPhase = 'closed' | 'opening' | 'open' | 'closing';
 
-export function ModalDialog({ title, isOpen, children, onClose, hasUnsavedChanges = false }: ModalDialogProps) {
+const getFocusableElements = (container: HTMLElement) => Array.from(container.querySelectorAll<HTMLElement>(
+  'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+));
+
+export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUnsavedChanges = false }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
-  const closeTimerRef = useRef<number | null>(null);
+  const frameRef = useRef<number | null>(null);
+  const nestedFrameRef = useRef<number | null>(null);
+  const fallbackTimerRef = useRef<number | null>(null);
   const titleId = useId();
-  const [isVisible, setIsVisible] = useState(isOpen);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [phase, setPhase] = useState<ModalPhase>(isOpen ? 'opening' : 'closed');
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  const finishClose = useCallback(() => {
-    setIsAnimating(false);
-    closeTimerRef.current = window.setTimeout(() => {
-      setIsVisible(false);
-      setIsConfirmOpen(false);
-      onClose();
-      triggerRef.current?.focus();
-    }, ANIMATION_MS);
-  }, [onClose]);
+  const clearScheduledWork = useCallback(() => {
+    if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    if (nestedFrameRef.current) cancelAnimationFrame(nestedFrameRef.current);
+    if (fallbackTimerRef.current) window.clearTimeout(fallbackTimerRef.current);
+    frameRef.current = null;
+    nestedFrameRef.current = null;
+    fallbackTimerRef.current = null;
+  }, []);
+
+  const completeExit = useCallback(() => {
+    clearScheduledWork();
+    setPhase('closed');
+    setIsConfirmOpen(false);
+    onExited?.();
+    triggerRef.current?.focus();
+  }, [clearScheduledWork, onExited]);
 
   const requestClose = useCallback(() => {
     if (hasUnsavedChanges) {
@@ -44,55 +53,94 @@ export function ModalDialog({ title, isOpen, children, onClose, hasUnsavedChange
       return;
     }
 
-    finishClose();
-  }, [finishClose, hasUnsavedChanges]);
+    onClose();
+  }, [hasUnsavedChanges, onClose]);
 
   useEffect(() => {
+    clearScheduledWork();
+
     if (isOpen) {
-      triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsVisible(true);
-      const animationFrame = requestAnimationFrame(() => setIsAnimating(true));
-      return () => cancelAnimationFrame(animationFrame);
+      if (phase === 'closed' || phase === 'closing') {
+        triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setPhase('opening');
+      }
+
+      return clearScheduledWork;
     }
 
-    setIsAnimating(false);
-    setIsConfirmOpen(false);
-    return undefined;
-  }, [isOpen]);
+    if (phase !== 'closed') {
+      setPhase('closing');
+      fallbackTimerRef.current = window.setTimeout(completeExit, ANIMATION_MS + 100);
+    }
+
+    return clearScheduledWork;
+  }, [clearScheduledWork, completeExit, isOpen, phase]);
 
   useEffect(() => {
-    if (!isVisible) return undefined;
+    if (phase !== 'opening') return undefined;
+
+    frameRef.current = requestAnimationFrame(() => {
+      nestedFrameRef.current = requestAnimationFrame(() => setPhase('open'));
+    });
+
+    return clearScheduledWork;
+  }, [clearScheduledWork, phase]);
+
+  useEffect(() => {
+    if (phase === 'closed') return undefined;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const focusTimer = window.setTimeout(() => {
-      const firstFocusable = dialogRef.current && getFocusableElements(dialogRef.current)[0];
-      firstFocusable?.focus();
-    }, 0);
-
     return () => {
-      window.clearTimeout(focusTimer);
       document.body.style.overflow = previousOverflow;
     };
-  }, [isVisible]);
+  }, [phase]);
 
   useEffect(() => {
-    if (!isVisible) return undefined;
+    if (phase !== 'open' || !dialogRef.current) return undefined;
+
+    const focusTimer = window.setTimeout(() => {
+      const initialFocus = dialogRef.current?.querySelector<HTMLElement>('[data-modal-autofocus="true"]');
+      const firstFocusable = getFocusableElements(dialogRef.current!)[0];
+      (initialFocus ?? firstFocusable)?.focus();
+    }, 0);
+
+    return () => window.clearTimeout(focusTimer);
+  }, [phase]);
+
+  useEffect(() => {
+    if (!isConfirmOpen || !dialogRef.current) return undefined;
+
+    const focusTimer = window.setTimeout(() => {
+      dialogRef.current?.querySelector<HTMLElement>('.modal-dialog__confirm button')?.focus();
+    }, 0);
+
+    return () => window.clearTimeout(focusTimer);
+  }, [isConfirmOpen]);
+
+  useEffect(() => {
+    if (phase === 'closed') return undefined;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         if (isConfirmOpen) setIsConfirmOpen(false);
         else requestClose();
+        return;
       }
 
       if (event.key !== 'Tab' || !dialogRef.current) return;
-      const focusableElements = getFocusableElements(dialogRef.current);
-      if (!focusableElements.length) return;
+      const focusScope = isConfirmOpen
+        ? dialogRef.current.querySelector<HTMLElement>('.modal-dialog__confirm-card')
+        : dialogRef.current;
+      if (!focusScope) return;
 
+      const focusableElements = getFocusableElements(focusScope);
+      if (!focusableElements.length) return;
       const first = focusableElements[0];
       const last = focusableElements.at(-1)!;
+
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault();
         last.focus();
@@ -104,23 +152,28 @@ export function ModalDialog({ title, isOpen, children, onClose, hasUnsavedChange
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isConfirmOpen, isVisible, requestClose]);
+  }, [isConfirmOpen, phase, requestClose]);
 
-  useEffect(() => () => {
-    if (closeTimerRef.current) window.clearTimeout(closeTimerRef.current);
-  }, []);
+  useEffect(() => clearScheduledWork, [clearScheduledWork]);
 
-  if (!isVisible) return null;
+  function handleTransitionEnd(event: React.TransitionEvent<HTMLDivElement>) {
+    if (event.target !== event.currentTarget || event.propertyName !== 'transform') return;
+    if (phase === 'opening') setPhase('open');
+    if (phase === 'closing') completeExit();
+  }
+
+  if (phase === 'closed') return null;
 
   return createPortal(
-    <div className={`modal-layer ${isAnimating ? 'modal-layer--active' : ''}`}>
-      <div className="modal-dialog-backdrop" onClick={requestClose} aria-hidden="true" />
+    <div className={`modal-layer modal-layer--${phase}`}>
+      <div className="modal-dialog-backdrop" onClick={phase === 'open' ? requestClose : undefined} aria-hidden="true" />
       <div
         className="modal-dialog"
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        onTransitionEnd={handleTransitionEnd}
       >
         <div className="modal-dialog__header">
           <h2 id={titleId} className="modal-dialog__title">{title}</h2>
@@ -138,7 +191,7 @@ export function ModalDialog({ title, isOpen, children, onClose, hasUnsavedChange
               <p>Внесённые изменения будут потеряны.</p>
               <div className="modal-dialog__confirm-actions">
                 <Button inverted onClick={() => setIsConfirmOpen(false)}>Остаться</Button>
-                <Button color="red" onClick={finishClose}>Закрыть без сохранения</Button>
+                <Button color="red" onClick={onClose}>Закрыть без сохранения</Button>
               </div>
             </div>
           </div>

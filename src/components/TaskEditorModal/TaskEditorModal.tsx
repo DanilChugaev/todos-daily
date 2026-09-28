@@ -18,6 +18,7 @@ interface TaskEditorModalProps {
   task?: Partial<ITask>;
   isOpen: boolean;
   onClose: () => void;
+  onExited: () => void;
 }
 
 interface TaskForm {
@@ -49,6 +50,7 @@ export function TaskEditorModal({
   task,
   isOpen,
   onClose,
+  onExited,
 }: TaskEditorModalProps) {
   const { addTask, updateTask, deleteTask } = useTasks();
   const { categories } = useCategories();
@@ -66,8 +68,6 @@ export function TaskEditorModal({
       setNewSubtask('');
     }
   }, [initialForm, isOpen]);
-
-  if (!isOpen) return null;
 
   async function handleSubmit() {
     if (!form.title.trim()) {
@@ -163,10 +163,11 @@ export function TaskEditorModal({
       title={task?.title ? 'Редактировать задачу' : 'Добавить задачу'}
       isOpen={isOpen}
       onClose={handleBeforeClose}
+      onExited={onExited}
       hasUnsavedChanges={showConfirmOnClose}
     >
       <Input
-        focus
+        modalAutoFocus
         id="task-name"
         type="text"
         placeholder="Название*"

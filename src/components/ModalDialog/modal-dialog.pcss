@@ -6,19 +6,17 @@
   inset: 0;
   display: flex;
   align-items: flex-end;
-  pointer-events: none;
+  pointer-events: auto;
 
-  &--active {
-    pointer-events: auto;
-
+  &--open {
     .modal-dialog-backdrop {
       opacity: 1;
       background-color: var(--modal-dialog-backdrop);
     }
+  }
 
-    .modal-dialog {
-      transform: translateY(0);
-    }
+  &--open .modal-dialog {
+    transform: translateY(0);
   }
 }
 
@@ -135,7 +133,7 @@
     opacity: 0;
     transform: translateY(1rem) scale(.98);
 
-    .modal-layer--active & {
+    .modal-layer--open & {
       opacity: 1;
       transform: translateY(0) scale(1);
     }

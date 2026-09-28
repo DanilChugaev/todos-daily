@@ -13,6 +13,7 @@ interface InputProps {
   min?: string;
   size?: 'small' | 'normal';
   ariaLabel?: string;
+  modalAutoFocus?: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onEnter?: () => void;
 }
@@ -28,6 +29,7 @@ export function Input({
   min,
   size = 'normal',
   ariaLabel,
+  modalAutoFocus,
   onChange,
   onEnter,
 }: InputProps) {
@@ -62,6 +64,7 @@ export function Input({
         placeholder={placeholder}
         min={min}
         aria-label={ariaLabel}
+        data-modal-autofocus={modalAutoFocus ? 'true' : undefined}
       />
     </FormField>
   );
