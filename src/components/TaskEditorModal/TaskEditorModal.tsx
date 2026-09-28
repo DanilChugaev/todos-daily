@@ -202,7 +202,6 @@ export function TaskEditorModal({
 
       <Input
         id="task-due-date"
-        label="Срок выполнения"
         type="date"
         min={getTodayDate()}
         value={form.dueDate}
