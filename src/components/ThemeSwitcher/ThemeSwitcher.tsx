@@ -13,7 +13,11 @@ const themeColorMapping: Record<ThemeColorState, string> = {
 
 const items: ThemeSwitcherState[] = ['light', 'system', 'dark'];
 
-export function ThemeSwitcher() {
+interface ThemeSwitcherProps {
+  variant?: 'header' | 'menu';
+}
+
+export function ThemeSwitcher({ variant = 'header' }: ThemeSwitcherProps) {
   const [selected, setSelected] = useState<ThemeSwitcherState>(getSavedScheme() || 'system');
 
   useEffect(() => {
@@ -74,15 +78,16 @@ export function ThemeSwitcher() {
   }
 
   return (
-    <fieldset className="theme-switcher">
-        <legend className="theme-switcher__legend">Цветовая тема</legend>
+    <fieldset className={`theme-switcher theme-switcher--${variant}`}>
+        <legend className="theme-switcher__legend">Тема</legend>
+        {variant === 'menu' && <span className="theme-switcher__label">Тема</span>}
 
         {items.map(item => (
           <input
             key={item}
-            className={`theme-switcher__radio theme-switcher__radio--${item}`}
+            className={`theme-switcher__radio theme-switcher__radio--${item}${selected === item ? ' theme-switcher__radio--selected' : ''}`}
             type="radio"
-            name="color-scheme"
+            name={`color-scheme-${variant}`}
             value={item}
             aria-label={{ light: 'Светлая тема', system: 'Системная тема', dark: 'Тёмная тема' }[item]}
             checked={selected === item}

@@ -53,6 +53,8 @@ export const Task = memo(({
         id={item.id.toString()}
         checked={item.status === TaskStatus.COMPLETED}
         onChange={handleComplete}
+        width={22}
+        height={22}
       />
 
       <div className="task__content">
@@ -104,8 +106,8 @@ export const Task = memo(({
       </div>
 
       <div className="task__actions" onClick={(event) => event.stopPropagation()}>
-        <Button icon ariaLabel="Создать копию задачи" onClick={() => onDuplicate(item)}><CopyIcon width={20} height={20} /></Button>
-        <Button icon ariaLabel="Удалить задачу" onClick={() => onDelete(item)}><TrashIcon width={20} height={20} /></Button>
+        <Button icon ariaLabel="Создать копию задачи" onClick={() => onDuplicate(item)}><CopyIcon width={22} height={22} /></Button>
+        <Button icon ariaLabel="Удалить задачу" onClick={() => onDelete(item)}><TrashIcon width={22} height={22} /></Button>
       </div>
     </li>
   );

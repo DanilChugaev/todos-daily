@@ -1,0 +1,104 @@
+.mobile-menu {
+  display: none;
+
+  &__trigger {
+    display: grid;
+    justify-items: end;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    background: transparent;
+    color: var(--text-color);
+    cursor: pointer;
+
+    span {
+      display: block;
+      height: 2px;
+      border-radius: 99px;
+      background: currentColor;
+      transform-origin: right center;
+      transition: width .18s ease, transform .18s ease, opacity .18s ease;
+    }
+
+    span:nth-child(1) { width: 24px; }
+    span:nth-child(2) { width: 18px; }
+    span:nth-child(3) { width: 12px; }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent-color);
+      outline-offset: 2px;
+      border-radius: var(--border-radius-c);
+    }
+  }
+
+  &__layer {
+    position: fixed;
+    z-index: 30;
+    inset: 0;
+
+    &--open {
+      .mobile-menu__backdrop { opacity: 1; }
+      .mobile-menu__drawer { transform: translateX(0); }
+    }
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: var(--modal-dialog-backdrop);
+    transition: opacity .22s ease;
+  }
+
+  &__drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    width: min(86vw, 22rem);
+    height: 100%;
+    padding: calc(var(--spacer-d) + env(safe-area-inset-top)) calc(var(--spacer-d) + env(safe-area-inset-right)) calc(var(--spacer-d) + env(safe-area-inset-bottom)) var(--spacer-d);
+    background: var(--surface-color);
+    box-shadow: -14px 0 36px color-mix(in srgb, #000 20%, transparent);
+    color: var(--text-color);
+    transform: translateX(100%);
+    transition: transform .24s ease;
+
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 650;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacer-d);
+  }
+
+  &__close {
+    width: 44px;
+    height: 44px;
+    max-height: none;
+    padding: 0;
+  }
+
+  &__settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacer-e);
+    margin-top: var(--spacer-e);
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-menu { display: block; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu * { transition: none !important; }
+}

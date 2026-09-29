@@ -17,16 +17,12 @@
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 640px) {
     .header {
-        justify-content: flex-start;
+        justify-content: space-between;
 
         &__controls {
-            gap: var(--spacer-b);
+            &--desktop { display: none; }
         }
-    }
-
-    .accent-color-picker {
-        display: none;
     }
 }
