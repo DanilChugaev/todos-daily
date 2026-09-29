@@ -1,6 +1,8 @@
 @import '../../styles/vars/media.pcss';
 
 .modal-layer {
+  --modal-viewport-height: 100dvh;
+  --modal-viewport-offset: 0px;
   position: fixed;
   z-index: 20;
   inset: 0;
@@ -72,7 +74,8 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 0 var(--spacer-b) var(--spacer-b) 0;
+    scroll-padding-block: var(--spacer-d) calc(var(--spacer-e) + env(safe-area-inset-bottom));
+    padding: 0 var(--spacer-b) calc(var(--spacer-e) + env(safe-area-inset-bottom)) 0;
   }
 
   &__confirm {
@@ -119,8 +122,24 @@
   }
 }
 
+@media (max-width: 640px) {
+  .modal-layer {
+    top: var(--modal-viewport-offset);
+    right: 0;
+    bottom: auto;
+    left: 0;
+    height: var(--modal-viewport-height);
+  }
+
+  .modal-dialog {
+    max-height: calc(var(--modal-viewport-height) - var(--spacer-d));
+  }
+}
+
 @media (--min-media-mobile) {
   .modal-layer {
+    inset: 0;
+    height: auto;
     align-items: center;
     justify-content: center;
     padding: var(--spacer-d);

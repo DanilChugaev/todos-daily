@@ -22,6 +22,7 @@ const getFocusableElements = (container: HTMLElement) => Array.from(container.qu
 
 export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUnsavedChanges = false }: ModalDialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const layerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const nestedFrameRef = useRef<number | null>(null);
@@ -104,9 +105,49 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
       const initialFocus = dialogRef.current?.querySelector<HTMLElement>('[data-modal-autofocus="true"]');
       const firstFocusable = getFocusableElements(dialogRef.current!)[0];
       (initialFocus ?? firstFocusable)?.focus();
-    }, 0);
+    }, ANIMATION_MS + 50);
 
     return () => window.clearTimeout(focusTimer);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === 'closed' || !layerRef.current) return undefined;
+
+    const viewport = window.visualViewport;
+    const dialogElement = dialogRef.current;
+    if (!dialogElement) return undefined;
+    let scrollTimer: number | null = null;
+
+    const keepFocusedElementVisible = () => {
+      const activeElement = document.activeElement;
+      if (!(activeElement instanceof HTMLElement) || !dialogElement.contains(activeElement)) return;
+
+      activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
+
+    const syncViewport = () => {
+      const height = viewport?.height ?? window.innerHeight;
+      const offsetTop = viewport?.offsetTop ?? 0;
+      layerRef.current?.style.setProperty('--modal-viewport-height', `${height}px`);
+      layerRef.current?.style.setProperty('--modal-viewport-offset', `${offsetTop}px`);
+
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(keepFocusedElementVisible, 80);
+    };
+
+    const handleFocusIn = () => window.setTimeout(keepFocusedElementVisible, 0);
+
+    syncViewport();
+    viewport?.addEventListener('resize', syncViewport);
+    viewport?.addEventListener('scroll', syncViewport);
+    dialogElement.addEventListener('focusin', handleFocusIn);
+
+    return () => {
+      if (scrollTimer) window.clearTimeout(scrollTimer);
+      viewport?.removeEventListener('resize', syncViewport);
+      viewport?.removeEventListener('scroll', syncViewport);
+      dialogElement.removeEventListener('focusin', handleFocusIn);
+    };
   }, [phase]);
 
   useEffect(() => {
@@ -165,7 +206,7 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
   if (phase === 'closed') return null;
 
   return createPortal(
-    <div className={`modal-layer modal-layer--${phase}`}>
+    <div ref={layerRef} className={`modal-layer modal-layer--${phase}`}>
       <div className="modal-dialog-backdrop" onClick={phase === 'open' ? requestClose : undefined} aria-hidden="true" />
       <div
         className="modal-dialog"
