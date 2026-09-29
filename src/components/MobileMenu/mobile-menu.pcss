@@ -11,6 +11,8 @@
     background: transparent;
     color: var(--text-color);
     cursor: pointer;
+    transition: transform 0.3s, color 0.3s;
+    will-change: transform;
 
     span {
       display: block;
@@ -21,14 +23,24 @@
       transition: width .18s ease, transform .18s ease, opacity .18s ease;
     }
 
-    span:nth-child(1) { width: 24px; }
-    span:nth-child(2) { width: 18px; }
-    span:nth-child(3) { width: 12px; }
+    span:nth-child(1) { width: 22px; }
+    span:nth-child(2) { width: 16px; }
+    span:nth-child(3) { width: 10px; }
 
     &:focus-visible {
       outline: 2px solid var(--accent-color);
       outline-offset: 2px;
       border-radius: var(--border-radius-c);
+    }
+
+    &:hover {
+      color: rgb(from var(--button-bg-color) r g b / 90%);
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(2px);
+      color: rgb(from var(--button-bg-color) r g b / 80%);
     }
   }
 

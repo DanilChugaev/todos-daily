@@ -16,6 +16,7 @@ import { AppLoader } from './components/AppLoader/AppLoader.tsx';
 import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
+const APP_LOADER_MIN_DURATION_MS = 2_000;
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,6 +25,7 @@ function App() {
   const [completedOpen, setCompletedOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
   const [query, setQuery] = useState('');
+  const [isLoaderDelayElapsed, setIsLoaderDelayElapsed] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>(() => {
     const savedSort = localStorage.getItem(SORT_BY_KEY);
     return savedSort === 'dueDate' || savedSort === 'createdAt' ? savedSort : 'priority';
@@ -43,6 +45,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem(SORT_BY_KEY, sortBy);
   }, [sortBy]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsLoaderDelayElapsed(true), APP_LOADER_MIN_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   function handleChangeCategory(id: typeof selectedCategoryId) {
     setSelectedCategoryId(id);
@@ -85,7 +92,7 @@ function App() {
 
   const hasTasks = inProgressTasks.length || newTasks.length || completedTasks.length;
 
-  if (isTasksLoading || isCategoriesLoading) return <AppLoader />;
+  if (isTasksLoading || isCategoriesLoading || !isLoaderDelayElapsed) return <AppLoader />;
 
   return (
     <>
