@@ -27,7 +27,7 @@ const getCategoryName = ({
   categoryId?: number;
   categoriesMap?: Map<number, string>
 }): string => {
-  if (selectedCategoryId === categoryId || selectedCategoryId === 'today') return '';
+  if (selectedCategoryId === categoryId) return '';
   if (categoriesMap) return categoriesMap.get(categoryId ?? 0) ?? '';
   return '';
 };
