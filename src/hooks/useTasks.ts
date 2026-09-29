@@ -4,11 +4,14 @@ import { db } from '../utils/db/db.ts';
 import { TaskStatus, type ITask, type TaskStatus as TaskStatusType } from '../types.ts';
 import type { TaskFilterId } from '../utils/tasks.ts';
 
+const EMPTY_TASKS: ITask[] = [];
+
 export const useTasks = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<TaskFilterId>('today');
 
-  // Реактивный список задач (обновляется автоматически при любых изменениях в БД)
-  const tasks = useLiveQuery(() => db.todos.toArray(), []) ?? [];
+  const tasksResult = useLiveQuery(() => db.todos.toArray(), []);
+  const tasks = tasksResult ?? EMPTY_TASKS;
+  const isLoading = tasksResult === undefined;
 
   // ========== CRUD ==========
 
@@ -137,6 +140,7 @@ export const useTasks = () => {
 
   return {
     tasks,
+    isLoading,
     selectedCategoryId,
     setSelectedCategoryId,
     addTask,

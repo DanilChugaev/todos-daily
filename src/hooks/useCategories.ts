@@ -3,9 +3,12 @@ import { useCallback, useMemo } from 'react';
 import { db } from '../utils/db/db.ts';
 import type { ICategory } from '../types.ts';
 
+const EMPTY_CATEGORIES: ICategory[] = [];
+
 export const useCategories = () => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const categories = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []) ?? [];
+  const categoriesResult = useLiveQuery(() => db.categories.orderBy('orderId').toArray(), []);
+  const categories = categoriesResult ?? EMPTY_CATEGORIES;
+  const isLoading = categoriesResult === undefined;
 
   const categoriesMap = useMemo(() => {
     return new Map(categories.map((category) => [category.id, category.name]));
@@ -57,6 +60,7 @@ export const useCategories = () => {
 
   return {
     categories,
+    isLoading,
     categoriesMap,
     addCategory,
     updateCategory,

@@ -12,6 +12,7 @@ import { TaskStatus, type ITask } from './types.ts';
 import { TaskToolbar } from './components/TaskToolbar/TaskToolbar.tsx';
 import { DailySummary } from './components/DailySummary/DailySummary.tsx';
 import { CategoryProgress } from './components/CategoryProgress/CategoryProgress.tsx';
+import { AppLoader } from './components/AppLoader/AppLoader.tsx';
 import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
@@ -28,8 +29,8 @@ function App() {
     return savedSort === 'dueDate' || savedSort === 'createdAt' ? savedSort : 'priority';
   });
 
-  const { tasks, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask } = useTasks();
-  const { categories } = useCategories();
+  const { tasks, isLoading: isTasksLoading, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask } = useTasks();
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
   const scopedTasks = useMemo(() => filterTasksByScope(tasks, selectedCategoryId), [selectedCategoryId, tasks]);
   const filteredTasks = useMemo(() => sortTasks(scopedTasks.filter((task) => matchesSearch(task, query)), sortBy), [query, scopedTasks, sortBy]);
   const inProgressTasks = filteredTasks.filter((task) => task.status === TaskStatus.IN_PROGRESS);
@@ -83,6 +84,8 @@ function App() {
   }
 
   const hasTasks = inProgressTasks.length || newTasks.length || completedTasks.length;
+
+  if (isTasksLoading || isCategoriesLoading) return <AppLoader />;
 
   return (
     <>
