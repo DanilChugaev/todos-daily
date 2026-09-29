@@ -16,7 +16,7 @@ import { AppLoader } from './components/AppLoader/AppLoader.tsx';
 import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
-const APP_LOADER_MIN_DURATION_MS = 2_000;
+const APP_LOADER_MIN_DURATION_MS = 1_800;
 
 function App() {
   const [modalOpen, setModalOpen] = useState(false);
