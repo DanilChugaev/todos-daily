@@ -1,4 +1,4 @@
-import { type PointerEvent, useEffect, useId, useRef, useState } from 'react';
+import { type PointerEvent as ReactPointerEvent, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import './accent-color-picker.pcss';
 
@@ -40,7 +40,7 @@ export function AccentColorPicker({ variant = 'header' }: AccentColorPickerProps
   useEffect(() => {
     if (variant !== 'header' || !isOpen) return undefined;
 
-    const handlePointerDown = (event: PointerEvent) => {
+    const handlePointerDown = (event: globalThis.PointerEvent) => {
       if (!triggerRef.current?.contains(event.target as Node) && !paletteRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
       }
@@ -80,11 +80,11 @@ export function AccentColorPicker({ variant = 'header' }: AccentColorPickerProps
     closeTimerRef.current = window.setTimeout(() => setIsOpen(false), 140);
   }
 
-  function handlePointerEnter(event: PointerEvent<HTMLDivElement>) {
+  function handlePointerEnter(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType === 'mouse') openPalette();
   }
 
-  function handlePointerLeave(event: PointerEvent<HTMLDivElement>) {
+  function handlePointerLeave(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType === 'mouse') scheduleClose();
   }
 
