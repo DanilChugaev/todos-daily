@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../Button/Button.tsx';
 import './confirm-dialog.pcss';
+import { useOverlayHistory } from '../../hooks/useOverlayHistory.ts';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -29,6 +30,14 @@ export function ConfirmDialog({
   const cancelRef = useRef<HTMLButtonElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const titleId = useId();
+
+  useOverlayHistory({
+    isOpen,
+    onBack: () => {
+      onCancel();
+      return false;
+    },
+  });
 
   useEffect(() => {
     if (!isOpen) return undefined;

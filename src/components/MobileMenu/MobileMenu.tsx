@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import './mobile-menu.pcss';
 import { Button } from '../Button/Button.tsx';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
+import { useOverlayHistory } from '../../hooks/useOverlayHistory.ts';
 
 interface MobileMenuProps {
   children: ReactNode;
@@ -51,6 +52,14 @@ export function MobileMenu({ children }: MobileMenuProps) {
       frameRef.current = requestAnimationFrame(() => setPhase('open'));
     });
   }
+
+  useOverlayHistory({
+    isOpen: phase !== 'closed',
+    onBack: () => {
+      closeMenu();
+      return false;
+    },
+  });
 
   useEffect(() => {
     if (phase === 'closed') return undefined;

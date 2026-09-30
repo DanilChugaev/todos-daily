@@ -5,6 +5,7 @@ import { CloseIcon } from '../Icon/CloseIcon.tsx';
 import { Button } from '../Button/Button.tsx';
 import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.tsx';
 import { ANIMATION_MS } from '../../constants.ts';
+import { useOverlayHistory } from '../../hooks/useOverlayHistory.ts';
 
 interface ModalDialogProps {
   title: string;
@@ -52,11 +53,14 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
   const requestClose = useCallback(() => {
     if (hasUnsavedChanges) {
       setIsConfirmOpen(true);
-      return;
+      return true;
     }
 
     onClose();
+    return false;
   }, [hasUnsavedChanges, onClose]);
+
+  useOverlayHistory({ isOpen: phase !== 'closed', onBack: requestClose });
 
   useEffect(() => {
     clearScheduledWork();

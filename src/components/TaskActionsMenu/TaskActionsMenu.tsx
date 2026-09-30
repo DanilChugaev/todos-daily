@@ -6,6 +6,7 @@ import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { StartIcon } from '../Icon/StartIcon.tsx';
 import { TaskStatus, type ITask } from '../../types.ts';
 import './task-actions-menu.pcss';
+import { useOverlayHistory } from '../../hooks/useOverlayHistory.ts';
 
 interface TaskActionsMenuProps {
   task: ITask;
@@ -38,6 +39,14 @@ export function TaskActionsMenu({ task, onStart, onDuplicate, onDelete }: TaskAc
     setIsOpen(false);
     triggerRef.current?.focus();
   }
+
+  useOverlayHistory({
+    isOpen,
+    onBack: () => {
+      closeMenu();
+      return false;
+    },
+  });
 
   useEffect(() => {
     if (!isOpen) return undefined;
