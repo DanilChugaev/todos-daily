@@ -9,6 +9,7 @@ interface ConfirmDialogProps {
   description: string;
   confirmLabel: string;
   cancelLabel?: string;
+  hideCancel?: boolean;
   destructive?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -20,6 +21,7 @@ export function ConfirmDialog({
   description,
   confirmLabel,
   cancelLabel = 'Отмена',
+  hideCancel = false,
   destructive = false,
   onConfirm,
   onCancel,
@@ -57,7 +59,7 @@ export function ConfirmDialog({
         <h3 id={titleId}>{title}</h3>
         <p>{description}</p>
         <div className="confirm-dialog__actions">
-          <Button ref={cancelRef} inverted onClick={onCancel}>{cancelLabel}</Button>
+          {!hideCancel && <Button ref={cancelRef} inverted onClick={onCancel}>{cancelLabel}</Button>}
           <Button color={destructive ? 'red' : undefined} onClick={onConfirm}>{confirmLabel}</Button>
         </div>
       </section>

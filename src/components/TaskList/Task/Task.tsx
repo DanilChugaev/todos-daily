@@ -6,10 +6,9 @@ import { PriorityIcon } from '../../Icon/PriorityIcon.tsx';
 import { PRIORITIES_COLOR_MAP, PRIORITY } from '../../../constants.ts';
 import { type ITask, PriorityEnum, TaskStatus } from '../../../types.ts';
 import { BranchIcon } from '../../Icon/BranchIcon.tsx';
-import { Button } from '../../Button/Button.tsx';
-import { TrashIcon } from '../../Icon/TrashIcon.tsx';
-import { CopyIcon } from '../../Icon/CopyIcon.tsx';
 import { getCompletedSubtasksCount, getDueDateLabel } from '../../../utils/tasks.ts';
+import { TaskActionsMenu } from '../../TaskActionsMenu/TaskActionsMenu.tsx';
+import { Button } from '../../Button/Button.tsx';
 
 interface TaskProps {
   item: ITask;
@@ -18,6 +17,7 @@ interface TaskProps {
   onComplete:  (id: number) => void;
   onDelete: (item: ITask) => void;
   onDuplicate: (item: ITask) => void;
+  onStart: (item: ITask) => Promise<void>;
 }
 
 export const Task = memo(({
@@ -27,6 +27,7 @@ export const Task = memo(({
   onComplete,
   onDelete,
   onDuplicate,
+  onStart,
 }: TaskProps) => {
   const handleTaskClick = () => onClick(item);
   const handleComplete = () => onComplete(item.id);
@@ -105,9 +106,8 @@ export const Task = memo(({
         )}
       </div>
 
-      <div className="task__actions" onClick={(event) => event.stopPropagation()}>
-        <Button icon ariaLabel="Создать копию задачи" onClick={() => onDuplicate(item)}><CopyIcon width={22} height={22} /></Button>
-        <Button icon ariaLabel="Удалить задачу" onClick={() => onDelete(item)}><TrashIcon width={22} height={22} /></Button>
+      <div className="task__actions">
+        <TaskActionsMenu task={item} onStart={onStart} onDuplicate={onDuplicate} onDelete={onDelete} />
       </div>
     </li>
   );

@@ -28,12 +28,13 @@ function App() {
   const [query, setQuery] = useState('');
   const [isLoaderDelayElapsed, setIsLoaderDelayElapsed] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<ITask | null>(null);
+  const [isWipLimitDialogOpen, setIsWipLimitDialogOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>(() => {
     const savedSort = localStorage.getItem(SORT_BY_KEY);
     return savedSort === 'dueDate' || savedSort === 'createdAt' ? savedSort : 'priority';
   });
 
-  const { tasks, isLoading: isTasksLoading, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask } = useTasks();
+  const { tasks, isLoading: isTasksLoading, selectedCategoryId, setSelectedCategoryId, toggleComplete, deleteTask, duplicateTask, updateTaskStatus } = useTasks();
   const { categories, isLoading: isCategoriesLoading } = useCategories();
   const scopedTasks = useMemo(() => filterTasksByScope(tasks, selectedCategoryId), [selectedCategoryId, tasks]);
   const filteredTasks = useMemo(() => sortTasks(scopedTasks.filter((task) => matchesSearch(task, query)), sortBy), [query, scopedTasks, sortBy]);
@@ -96,6 +97,13 @@ function App() {
     await duplicateTask(task);
   }
 
+  async function handleStartTask(task: ITask) {
+    const result = await updateTaskStatus(task.id, TaskStatus.IN_PROGRESS);
+    if (!result.success) {
+      setIsWipLimitDialogOpen(true);
+    }
+  }
+
   const hasTasks = inProgressTasks.length || newTasks.length || completedTasks.length;
 
   if (isTasksLoading || isCategoriesLoading || !isLoaderDelayElapsed) return <AppLoader />;
@@ -128,6 +136,7 @@ function App() {
                 onComplete={toggleComplete}
                 onDelete={handleDeleteTask}
                 onDuplicate={handleDuplicateTask}
+                onStart={handleStartTask}
                 onToggleView={() => setActiveOpen(!activeOpen)}
               />
             )}
@@ -141,6 +150,7 @@ function App() {
                 onComplete={toggleComplete}
                 onDelete={handleDeleteTask}
                 onDuplicate={handleDuplicateTask}
+                onStart={handleStartTask}
                 onToggleView={() => setNewOpen(!newOpen)}
               />
             )}
@@ -161,6 +171,7 @@ function App() {
                 onComplete={toggleComplete}
                 onDelete={handleDeleteTask}
                 onDuplicate={handleDuplicateTask}
+                onStart={handleStartTask}
                 onToggleView={() => setCompletedOpen(!completedOpen)}
               />
             )}
@@ -185,6 +196,15 @@ function App() {
         destructive
         onConfirm={confirmDeleteTask}
         onCancel={() => setTaskToDelete(null)}
+      />
+      <ConfirmDialog
+        isOpen={isWipLimitDialogOpen}
+        title="Лимит задач в работе"
+        description="В этой категории уже 3 задачи в работе. Завершите одну или верните её в новые, чтобы освободить место."
+        confirmLabel="Понятно"
+        hideCancel
+        onConfirm={() => setIsWipLimitDialogOpen(false)}
+        onCancel={() => setIsWipLimitDialogOpen(false)}
       />
     </>
   );

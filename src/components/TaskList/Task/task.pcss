@@ -34,15 +34,7 @@
     &__actions {
         display: flex;
         align-items: center;
-        gap: var(--spacer-a);
         padding: var(--spacer-b);
-
-        .button {
-            width: 44px;
-            height: 44px;
-            max-height: none;
-            padding: 0;
-        }
     }
 
     &__info {
@@ -143,9 +135,6 @@
         z-index: 2;
         opacity: 0;
         transform: translateX(.25rem);
-        background: color-mix(in srgb, var(--surface-color) 90%, transparent);
-        border-radius: var(--border-radius-c);
-        backdrop-filter: blur(8px);
         transition: opacity .18s ease, transform .18s ease;
     }
 

@@ -15,6 +15,7 @@ interface TaskListProps {
   onComplete:  (id: number) => void;
   onDelete: (item: ITask) => void;
   onDuplicate: (item: ITask) => void;
+  onStart: (item: ITask) => Promise<void>;
   onToggleView: () => void;
 }
 
@@ -41,6 +42,7 @@ export function TaskList({
   onComplete,
   onDelete,
   onDuplicate,
+  onStart,
   onToggleView,
 }: TaskListProps) {
   const { categoriesMap } = useCategories();
@@ -71,6 +73,7 @@ export function TaskList({
             onComplete={onComplete}
             onDelete={onDelete}
             onDuplicate={onDuplicate}
+            onStart={onStart}
           />
         ))}
       </ul>
