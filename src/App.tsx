@@ -13,6 +13,7 @@ import { TaskToolbar } from './components/TaskToolbar/TaskToolbar.tsx';
 import { DailySummary } from './components/DailySummary/DailySummary.tsx';
 import { CategoryProgress } from './components/CategoryProgress/CategoryProgress.tsx';
 import { AppLoader } from './components/AppLoader/AppLoader.tsx';
+import { ConfirmDialog } from './components/ConfirmDialog/ConfirmDialog.tsx';
 import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
@@ -26,6 +27,7 @@ function App() {
   const [editingTask, setEditingTask] = useState<Partial<ITask> | undefined>(undefined);
   const [query, setQuery] = useState('');
   const [isLoaderDelayElapsed, setIsLoaderDelayElapsed] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<ITask | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>(() => {
     const savedSort = localStorage.getItem(SORT_BY_KEY);
     return savedSort === 'dueDate' || savedSort === 'createdAt' ? savedSort : 'priority';
@@ -80,10 +82,14 @@ function App() {
     setEditingTask(undefined);
   }
 
-  async function handleDeleteTask(task: ITask) {
-    if (window.confirm(`Удалить задачу «${task.title}»?\n\nЭто действие нельзя отменить.`)) {
-      await deleteTask(task.id);
-    }
+  function handleDeleteTask(task: ITask) {
+    setTaskToDelete(task);
+  }
+
+  async function confirmDeleteTask() {
+    if (!taskToDelete) return;
+    await deleteTask(taskToDelete.id);
+    setTaskToDelete(null);
   }
 
   async function handleDuplicateTask(task: ITask) {
@@ -171,6 +177,15 @@ function App() {
       <Button className="new-task" onClick={openAddModal}><PlusIcon/>Добавить</Button>
 
       <TaskEditorModal task={editingTask} isOpen={modalOpen} onClose={closeModal} onExited={handleModalExited} />
+      <ConfirmDialog
+        isOpen={taskToDelete !== null}
+        title="Удалить задачу?"
+        description={`Задача «${taskToDelete?.title ?? ''}» будет удалена без возможности восстановления.`}
+        confirmLabel="Удалить"
+        destructive
+        onConfirm={confirmDeleteTask}
+        onCancel={() => setTaskToDelete(null)}
+      />
     </>
   );
 }

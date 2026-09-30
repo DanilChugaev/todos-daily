@@ -78,48 +78,6 @@
     padding: 0 var(--spacer-b) calc(var(--spacer-e) + env(safe-area-inset-bottom)) 0;
   }
 
-  &__confirm {
-    position: absolute;
-    z-index: 2;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    padding: var(--spacer-d);
-    border-radius: inherit;
-    background: color-mix(in srgb, var(--modal-dialog-backdrop) 82%, transparent);
-  }
-
-  &__confirm-card {
-    width: min(100%, 23rem);
-    padding: var(--spacer-de);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-d);
-    background: var(--surface-color);
-    box-shadow: var(--surface-shadow);
-
-    h3,
-    p {
-      margin: 0;
-    }
-
-    h3 {
-      font-size: 1rem;
-      font-weight: 650;
-    }
-
-    p {
-      margin-top: var(--spacer-c);
-      color: var(--muted-text-color);
-    }
-  }
-
-  &__confirm-actions {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: var(--spacer-c);
-    margin-top: var(--spacer-de);
-  }
 }
 
 @media (max-width: 640px) {

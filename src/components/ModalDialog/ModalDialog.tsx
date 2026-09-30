@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import './modal-dialog.pcss';
 import { CloseIcon } from '../Icon/CloseIcon.tsx';
 import { Button } from '../Button/Button.tsx';
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.tsx';
 import { ANIMATION_MS } from '../../constants.ts';
 
 interface ModalDialogProps {
@@ -151,16 +152,6 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
   }, [phase]);
 
   useEffect(() => {
-    if (!isConfirmOpen || !dialogRef.current) return undefined;
-
-    const focusTimer = window.setTimeout(() => {
-      dialogRef.current?.querySelector<HTMLElement>('.modal-dialog__confirm button')?.focus();
-    }, 0);
-
-    return () => window.clearTimeout(focusTimer);
-  }, [isConfirmOpen]);
-
-  useEffect(() => {
     if (phase === 'closed') return undefined;
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -172,12 +163,8 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
       }
 
       if (event.key !== 'Tab' || !dialogRef.current) return;
-      const focusScope = isConfirmOpen
-        ? dialogRef.current.querySelector<HTMLElement>('.modal-dialog__confirm-card')
-        : dialogRef.current;
-      if (!focusScope) return;
-
-      const focusableElements = getFocusableElements(focusScope);
+      if (isConfirmOpen) return;
+      const focusableElements = getFocusableElements(dialogRef.current);
       if (!focusableElements.length) return;
       const first = focusableElements[0];
       const last = focusableElements.at(-1)!;
@@ -225,19 +212,17 @@ export function ModalDialog({ title, isOpen, children, onClose, onExited, hasUns
 
         <div className="modal-dialog__content">{children}</div>
 
-        {isConfirmOpen && (
-          <div className="modal-dialog__confirm" role="alertdialog" aria-modal="true" aria-labelledby={`${titleId}-confirm`}>
-            <div className="modal-dialog__confirm-card">
-              <h3 id={`${titleId}-confirm`}>Закрыть без сохранения?</h3>
-              <p>Внесённые изменения будут потеряны.</p>
-              <div className="modal-dialog__confirm-actions">
-                <Button inverted onClick={() => setIsConfirmOpen(false)}>Остаться</Button>
-                <Button color="red" onClick={onClose}>Закрыть без сохранения</Button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Закрыть без сохранения?"
+        description="Внесённые изменения будут потеряны."
+        confirmLabel="Закрыть без сохранения"
+        cancelLabel="Остаться"
+        destructive
+        onConfirm={onClose}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>,
     document.body,
   );

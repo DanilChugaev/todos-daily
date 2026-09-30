@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import './button.pcss';
 
 interface ButtonProps {
@@ -13,7 +13,7 @@ interface ButtonProps {
   onClick: () => void;
 }
 
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   inverted,
   icon,
   className,
@@ -23,7 +23,7 @@ export function Button({
   ariaLabel,
   children,
   onClick,
-}: ButtonProps) {
+}, ref) {
   const classNames = ['button'];
 
   if (className) {
@@ -52,6 +52,7 @@ export function Button({
 
   return (
     <button
+      ref={ref}
       className={classNames.join(' ')}
       type="button"
       onClick={onClick}
@@ -60,4 +61,4 @@ export function Button({
       {children}
     </button>
   );
-}
+});

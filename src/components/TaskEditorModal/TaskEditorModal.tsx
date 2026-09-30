@@ -13,6 +13,7 @@ import { type ISubtask, type ITask, PriorityEnum, TaskStatus, type TaskStatus as
 import { PRIORITIES_OPTIONS, TASK_STATUS_OPTIONS } from '../../constants.ts';
 import { Subtask } from '../TaskList/Subtask/Subtask.tsx';
 import { getTodayDate } from '../../utils/tasks.ts';
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.tsx';
 
 interface TaskEditorModalProps {
   task?: Partial<ITask>;
@@ -62,6 +63,9 @@ export function TaskEditorModal({
 
   const [newSubtask, setNewSubtask] = useState('');
   const [isWipLimitOpen, setIsWipLimitOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<'deleteTask' | 'deleteSubtask' | null>(null);
+  const [subtaskToDelete, setSubtaskToDelete] = useState<string | null>(null);
+  const [titleError, setTitleError] = useState('');
   const isEditMode = Boolean(task?.id);
 
   useEffect(() => {
@@ -70,12 +74,15 @@ export function TaskEditorModal({
       setForm(initialForm);
       setNewSubtask('');
       setIsWipLimitOpen(false);
+      setConfirmAction(null);
+      setSubtaskToDelete(null);
+      setTitleError('');
     }
   }, [initialForm, isOpen]);
 
   async function handleSubmit() {
     if (!form.title.trim()) {
-      alert('Название задачи обязательно!');
+      setTitleError('Введите название задачи.');
       return;
     }
 
@@ -107,16 +114,8 @@ export function TaskEditorModal({
     handleBeforeClose();
   }
 
-  async function handleDelete() {
-    if (!task) return;
-
-    const confirmed = window.confirm('Точно удалить задачу?\n\nЭто действие нельзя отменить.');
-
-    if (confirmed) {
-      await deleteTask(task.id!);
-
-      handleBeforeClose();
-    }
+  function handleDelete() {
+    setConfirmAction('deleteTask');
   }
 
   function handleBeforeClose() {
@@ -141,14 +140,8 @@ export function TaskEditorModal({
   };
 
   function handleRemoveSubtask(id: string) {
-    const confirmed = window.confirm('Точно удалить?');
-
-    if (confirmed) {
-      setForm((prev) => ({
-        ...prev,
-        subtasks: prev.subtasks.filter((item) => item.id !== id),
-      }));
-    }
+    setSubtaskToDelete(id);
+    setConfirmAction('deleteSubtask');
   };
 
   function handleUpdateSubtask(id: string, title: string, completed: boolean) {
@@ -173,7 +166,8 @@ export function TaskEditorModal({
   const showConfirmOnClose = serializeForm(form) !== serializeForm(initialForm);
 
   return (
-    <ModalDialog
+    <>
+      <ModalDialog
       title={task?.title ? 'Редактировать задачу' : 'Добавить задачу'}
       isOpen={isOpen}
       onClose={handleBeforeClose}
@@ -186,9 +180,10 @@ export function TaskEditorModal({
         type="text"
         placeholder="Название*"
         value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
+        onChange={(e) => { setForm({ ...form, title: e.target.value }); setTitleError(''); }}
         onEnter={handleSubmit}
       />
+      {titleError && <p className="task-editor-modal__field-error" role="alert">{titleError}</p>}
 
       <Textarea
         id="task-description"
@@ -289,6 +284,27 @@ export function TaskEditorModal({
           <Button size="small" onClick={() => setIsWipLimitOpen(false)}>Понятно</Button>
         </div>
       )}
-    </ModalDialog>
+      </ModalDialog>
+
+    <ConfirmDialog
+      isOpen={confirmAction !== null}
+      title={confirmAction === 'deleteTask' ? 'Удалить задачу?' : 'Удалить подзадачу?'}
+      description={confirmAction === 'deleteTask' ? 'Это действие нельзя отменить.' : 'Это действие нельзя отменить.'}
+      confirmLabel="Удалить"
+      destructive
+      onCancel={() => { setConfirmAction(null); setSubtaskToDelete(null); }}
+      onConfirm={async () => {
+        if (confirmAction === 'deleteTask' && task?.id) {
+          await deleteTask(task.id);
+          handleBeforeClose();
+        }
+        if (confirmAction === 'deleteSubtask' && subtaskToDelete) {
+          setForm((prev) => ({ ...prev, subtasks: prev.subtasks.filter((item) => item.id !== subtaskToDelete) }));
+        }
+        setConfirmAction(null);
+        setSubtaskToDelete(null);
+      }}
+    />
+    </>
   );
 }

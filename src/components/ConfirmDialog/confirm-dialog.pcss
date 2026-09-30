@@ -1,0 +1,38 @@
+.confirm-dialog {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--spacer-d);
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--modal-dialog-backdrop) 82%, transparent);
+  }
+
+  &__card {
+    position: relative;
+    width: min(100%, 23rem);
+    padding: var(--spacer-de);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-d);
+    background: var(--surface-color);
+    box-shadow: var(--surface-shadow);
+    color: var(--text-color);
+
+    h3,
+    p { margin: 0; }
+    h3 { font-size: 1rem; font-weight: 650; }
+    p { margin-top: var(--spacer-c); color: var(--muted-text-color); }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--spacer-c);
+    margin-top: var(--spacer-de);
+  }
+}

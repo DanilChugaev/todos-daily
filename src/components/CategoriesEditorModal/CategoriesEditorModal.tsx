@@ -9,6 +9,7 @@ import { TrashIcon } from '../Icon/TrashIcon.tsx';
 import { useTasks } from '../../hooks/useTasks.ts';
 import { GrabPlaceIcon } from '../Icon/GrabPlaceIcon.tsx';
 import type { ICategory } from '../../types.ts';
+import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog.tsx';
 
 interface CategoriesEditorModalProps {
   selected: number;
@@ -25,6 +26,7 @@ export function CategoriesEditorModal({
 }: CategoriesEditorModalProps) {
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<ICategory | null>(null);
 
   const { categories, addCategory, updateCategory, deleteCategory, bulkUpdateCategories } = useCategories();
   const { reassignCategory } = useTasks();
@@ -33,19 +35,20 @@ export function CategoriesEditorModal({
     updateCategory(id, name);
   }
 
-  async function handleDelete({ id, name }: ICategory) {
-    if (!id) return;
+  function handleDelete(category: ICategory) {
+    setCategoryToDelete(category);
+  }
 
-    const confirmed = window.confirm(`Точно удалить категорию "${name}"?\nУ всех задач в этой категории будут убраны категории.\n\nЭто действие нельзя отменить.`);
+  async function confirmDeleteCategory() {
+    if (!categoryToDelete) return;
 
-    if (confirmed) {
-      if (selected === id) {
-        onSelected(0);
-      }
-
-      await reassignCategory(id, 0);
-      await deleteCategory(id);
+    if (selected === categoryToDelete.id) {
+      onSelected(0);
     }
+
+    await reassignCategory(categoryToDelete.id, 0);
+    await deleteCategory(categoryToDelete.id);
+    setCategoryToDelete(null);
   }
 
   function handleBeforeClose() {
@@ -95,7 +98,8 @@ export function CategoriesEditorModal({
   };
 
   return (
-    <ModalDialog
+    <>
+      <ModalDialog
       title="Редактировать категории"
       isOpen={isOpen}
       onClose={handleBeforeClose}
@@ -137,6 +141,16 @@ export function CategoriesEditorModal({
 
         Добавить
       </Button>
-    </ModalDialog>
+      </ModalDialog>
+      <ConfirmDialog
+        isOpen={categoryToDelete !== null}
+        title="Удалить категорию?"
+        description={`Задачи из категории «${categoryToDelete?.name ?? ''}» останутся без категории. Это действие нельзя отменить.`}
+        confirmLabel="Удалить"
+        destructive
+        onConfirm={confirmDeleteCategory}
+        onCancel={() => setCategoryToDelete(null)}
+      />
+    </>
   );
 }
