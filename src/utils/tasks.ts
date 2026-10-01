@@ -1,7 +1,7 @@
 import { PriorityEnum, TaskStatus, type ITask } from '../types.ts';
 
 export type SortOption = 'priority' | 'dueDate' | 'createdAt';
-export type TaskFilterId = number | 'today';
+export type TaskFilterId = number | 'today' | 'overdue';
 
 export const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'priority', label: 'По приоритету' },
@@ -33,8 +33,15 @@ export function getDueDateLabel(dueDate: string | undefined, completed = false):
   };
 }
 
+export function isTaskOverdue(task: ITask): boolean {
+  return Boolean(task.dueDate)
+    && task.dueDate! < getTodayDate()
+    && task.status !== TaskStatus.COMPLETED;
+}
+
 export function filterTasksByScope(tasks: ITask[], filterId: TaskFilterId): ITask[] {
   if (filterId === 'today') return tasks.filter((task) => task.dueDate === getTodayDate());
+  if (filterId === 'overdue') return tasks.filter(isTaskOverdue);
   if (filterId === 0) return tasks;
   return tasks.filter((task) => task.categoryId === filterId);
 }

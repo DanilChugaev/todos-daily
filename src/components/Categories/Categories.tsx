@@ -10,10 +10,11 @@ interface CategoriesProps {
   selected: TaskFilterId;
   items: ICategory[];
   todayActiveCount: number;
+  overdueActiveCount: number;
   onSelect: (item: TaskFilterId) => void;
 }
 
-export function Categories({ selected, items, todayActiveCount, onSelect }: CategoriesProps) {
+export function Categories({ selected, items, todayActiveCount, overdueActiveCount, onSelect }: CategoriesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   function getClassName(id: TaskFilterId) {
@@ -28,7 +29,10 @@ export function Categories({ selected, items, todayActiveCount, onSelect }: Cate
     if (typeof selected === 'number' && selected !== 0 && !items.some((category) => category.id === selected)) {
       onSelect(0);
     }
-  }, [items, onSelect, selected]);
+    if (selected === 'overdue' && overdueActiveCount === 0) {
+      onSelect('today');
+    }
+  }, [items, onSelect, overdueActiveCount, selected]);
 
   return (
     <div className="categories">
@@ -39,6 +43,15 @@ export function Categories({ selected, items, todayActiveCount, onSelect }: Cate
         >
           Сегодня{todayActiveCount > 0 ? ` · ${todayActiveCount}` : ''}
         </Button>
+
+        {overdueActiveCount > 0 && (
+          <Button
+            className={getClassName('overdue')}
+            onClick={() => handleSelect('overdue')}
+          >
+            Просрочено · {overdueActiveCount}
+          </Button>
+        )}
 
         <Button
           className={getClassName(0)}

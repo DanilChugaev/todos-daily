@@ -14,7 +14,7 @@ import { DailySummary } from './components/DailySummary/DailySummary.tsx';
 import { CategoryProgress } from './components/CategoryProgress/CategoryProgress.tsx';
 import { AppLoader } from './components/AppLoader/AppLoader.tsx';
 import { ConfirmDialog } from './components/ConfirmDialog/ConfirmDialog.tsx';
-import { filterTasksByScope, getTodayDate, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
+import { filterTasksByScope, getTodayDate, isTaskOverdue, matchesSearch, sortTasks, type SortOption } from './utils/tasks.ts';
 
 const SORT_BY_KEY = 'tasks-sort-by';
 const APP_LOADER_MIN_DURATION_MS = 1_800;
@@ -43,6 +43,7 @@ function App() {
   const completedTasks = filteredTasks.filter((task) => task.status === TaskStatus.COMPLETED);
   const categoryCompletedCount = scopedTasks.filter((task) => task.status === TaskStatus.COMPLETED).length;
   const todayActiveCount = tasks.filter((task) => task.dueDate === getTodayDate() && task.status !== TaskStatus.COMPLETED).length;
+  const overdueActiveCount = tasks.filter(isTaskOverdue).length;
   const hasActiveTasksInCategory = scopedTasks.some((task) => task.status !== TaskStatus.COMPLETED);
 
   useEffect(() => {
@@ -111,7 +112,7 @@ function App() {
   return (
     <>
       <Header/>
-      <Categories selected={selectedCategoryId} items={categories} todayActiveCount={todayActiveCount} onSelect={handleChangeCategory}/>
+      <Categories selected={selectedCategoryId} items={categories} todayActiveCount={todayActiveCount} overdueActiveCount={overdueActiveCount} onSelect={handleChangeCategory}/>
 
       <main style={{ marginBottom: '40px' }}>
         {selectedCategoryId === 'today' && (
@@ -121,14 +122,14 @@ function App() {
             inProgressCount={scopedTasks.filter((task) => task.status === TaskStatus.IN_PROGRESS).length}
           />
         )}
-        {selectedCategoryId !== 'today' && <CategoryProgress completedCount={categoryCompletedCount} totalCount={scopedTasks.length} />}
+        {selectedCategoryId !== 'today' && selectedCategoryId !== 'overdue' && <CategoryProgress completedCount={categoryCompletedCount} totalCount={scopedTasks.length} />}
         <TaskToolbar query={query} sortBy={sortBy} onQueryChange={setQuery} onSortChange={setSortBy} />
 
         {hasTasks ? (
           <>
             {inProgressTasks.length > 0 && (
               <TaskList
-                title={selectedCategoryId === 'today' ? `В работе (${inProgressTasks.length})` : `В работе · ${inProgressTasks.length} из 3`}
+                title={typeof selectedCategoryId === 'number' && selectedCategoryId !== 0 ? `В работе · ${inProgressTasks.length} из 3` : `В работе (${inProgressTasks.length})`}
                 items={inProgressTasks}
                 selectedCategoryId={selectedCategoryId}
                 isOpen={activeOpen}
@@ -178,8 +179,8 @@ function App() {
           </>
         ) : (
           <section className={`empty-list${query ? '' : ' empty-list--compact'}`} aria-live="polite">
-            <h1 className="empty-list__title">{query ? 'Ничего не найдено' : selectedCategoryId === 'today' ? 'На сегодня задач нет' : 'Здесь пока нет задач'}</h1>
-            <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : selectedCategoryId === 'today' ? 'Запланируйте важную задачу и сфокусируйтесь на текущем дне.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
+            <h1 className="empty-list__title">{query ? 'Ничего не найдено' : selectedCategoryId === 'today' ? 'На сегодня задач нет' : selectedCategoryId === 'overdue' ? 'Просроченных задач нет' : 'Здесь пока нет задач'}</h1>
+            <p className="empty-list__description">{query ? 'Попробуйте изменить запрос.' : selectedCategoryId === 'today' ? 'Запланируйте важную задачу и сфокусируйтесь на текущем дне.' : selectedCategoryId === 'overdue' ? 'Все задачи с прошедшим сроком уже завершены.' : 'Добавьте первую задачу и держите важное под контролем.'}</p>
             {!query && <Button onClick={openAddModal}><PlusIcon/>Добавить задачу</Button>}
           </section>
         )}
