@@ -1,0 +1,35 @@
+.desktop-settings-menu {
+  display: flex;
+
+  > .button {
+    width: 32px;
+    height: 32px;
+    max-height: none;
+    padding: 0;
+  }
+
+  &__popup {
+    position: fixed;
+    z-index: 35;
+    width: 300px;
+    max-height: min(80dvh, 38rem);
+    overflow-y: auto;
+    padding: var(--spacer-d);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-d);
+    background: var(--surface-color);
+    box-shadow: var(--surface-shadow);
+    animation: desktop-settings-menu-show .16s ease both;
+
+    .data-management { border-top: 0; padding-top: 0; }
+  }
+}
+
+@keyframes desktop-settings-menu-show {
+  from { opacity: 0; transform: translateY(-4px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-settings-menu__popup { animation: none; }
+}
